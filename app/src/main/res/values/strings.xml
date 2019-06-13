@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">MH lead management system dev</string>
+    <string name="login_screen_note">Note : Please add your real name in user name field.</string>
+
+    <string-array name="property_type">
+        <item>None</item>
+        <item>Self Occupied Resdential Property</item>
+        <item>Self Occupied Commercial Property</item>
+        <item>Rented</item>
+        <item>Commercial</item>
+        <item>Industrial</item>
+    </string-array>
+
+    <string-array name="loan_type">
+        <item>None</item>
+        <item>Home Loan</item>
+        <item>Bussiness Loan</item>
+        <item>Personal Loan</item>
+        <item>Loan Against Property</item>
+        <item>Over Draft</item>
+        <item>Credit Cash</item>
+    </string-array>
+
+    <string-array name="location">
+        <item>None</item>
+        <item>Delhi</item>
+        <item>Indore</item>
+        <item>Jaipur</item>
+        <item>Gwalior</item>
+    </string-array>
+
+</resources>
