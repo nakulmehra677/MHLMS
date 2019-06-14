@@ -72,7 +72,7 @@ public class LeadsListActivity extends BaseActivity {
         progress.setMessage("Loading..");
         progress.setCancelable(false);
         progress.setCanceledOnTouchOutside(false);
-        progress.show();
+        progress.show(); //dd
 
         Query query = FirebaseDatabase.getInstance().getReference();
 
