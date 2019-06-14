@@ -33,7 +33,7 @@ import java.util.Date;
 public class FeedCustomerDetailsActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText name, contactNumber, loanAmount, remarks;
-    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner;
+    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedtospinner;
     ArrayAdapter<CharSequence> propertyTypeAdapter, loanTypeAdapter, locationAdapter;
     private String strEmployment = null, strName, strContactNumber, strLoanAmount,
             strRemarks, strPropertyType, strLoanType, strLocation;
@@ -42,9 +42,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private CustomerDetails customerDetails;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
-
-    private FirebaseAuth mAuth;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,15 +55,15 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         locationSpinner = findViewById(R.id.location);
         loanAmount = findViewById(R.id.loan_amount);
         remarks = findViewById(R.id.remarks);
+        assignedtospinner = findViewById(R.id.assigned_to);
+
         Button button = findViewById(R.id.list);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(FeedCustomerDetailsActivity.this,LeadsListActivity.class));
+                startActivity(new Intent(FeedCustomerDetailsActivity.this, LeadsListActivity.class));
             }
         });
-
-        mAuth = FirebaseAuth.getInstance();
 
         // Property type Spinner
         propertyTypeAdapter = ArrayAdapter.createFromResource(this,
@@ -134,32 +131,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.logout_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.logout:
-                if (isNetworkConnected()) {
-                    mAuth.signOut();
-                    Toast.makeText(FeedCustomerDetailsActivity.this, "Logged Out.", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(FeedCustomerDetailsActivity.this, MainActivity.class));
-                    finish();
-                } else
-                    Toast.makeText(FeedCustomerDetailsActivity.this, "No Internet Connection...", Toast.LENGTH_SHORT).show();
-
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     public void onUploadDetailsButtonClicked(View view) {
         if (isNetworkConnected()) {
             getDetails();
@@ -175,7 +146,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                                 Log.i("Fields filled", "All the fields are filled");
 
                                 getDate();
-                                getMailId();
                                 makeObject();
 
                                 progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
@@ -218,13 +188,9 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         date = df.format(c);
     }
 
-    private void getMailId() {
-        mailId = mAuth.getCurrentUser().getDisplayName();
-    }
-
     private void makeObject() {
         customerDetails = new CustomerDetails(strName, strContactNumber, strPropertyType,
-                strEmployment, strLoanType, strLocation, strLoanAmount, strRemarks, date, mailId);
+                strEmployment, strLoanType, strLocation, strLoanAmount, strRemarks, date, "cbdgfbf");
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {

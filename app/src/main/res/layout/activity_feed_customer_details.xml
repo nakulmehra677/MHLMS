@@ -145,6 +145,26 @@
                 android:hint="Remarks"
                 android:inputType="textCapSentences" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Assigned to" />
+
+                <Spinner
+                    android:id="@+id/assigned_to"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp" />
+
+            </LinearLayout>
+
 
             <Button
                 android:id="@+id/upload_details"
@@ -160,6 +180,7 @@
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
         </LinearLayout>
 
     </ScrollView>

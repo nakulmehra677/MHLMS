@@ -1,13 +1,18 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -15,24 +20,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.LeadsListAdapter;
+import com.development.mhleadmanagementsystemdev.Interfaces.ItemClickListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
 import com.development.mhleadmanagementsystemdev.R;
+import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
+import com.github.aakira.expandablelayout.ExpandableLinearLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-public class LeadsListActivity extends AppCompatActivity {
+public class LeadsListActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
     private ProgressDialog progress;
+    private FloatingActionButton fab;
+    private FirebaseAuth mAuth;
 
-    private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,33 +49,22 @@ public class LeadsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_leads_list);
 
         recyclerView = findViewById(R.id.recycler_view);
+        fab = findViewById(R.id.fab);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LeadsListActivity.this, FeedCustomerDetailsActivity.class));
+            }
+        });
 
         // Setting up the recyclerView //
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         fetch();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public LinearLayout root;
-        public TextView txtTitle;
-        public TextView txtDesc;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            root = itemView.findViewById(R.id.list_root);
-            txtTitle = itemView.findViewById(R.id.list_title);
-            txtDesc = itemView.findViewById(R.id.list_desc);
-        }
-
-        public void setTxtTitle(String string) {
-            txtTitle.setText(string);
-        }
-
-        public void setTxtDesc(String string) {
-            txtDesc.setText(string);
-        }
     }
 
     private void fetch() {
@@ -98,42 +96,81 @@ public class LeadsListActivity extends AppCompatActivity {
                         })
                         .build();
 
-        adapter = new FirebaseRecyclerAdapter<CustomerDetails, ViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<CustomerDetails, LeadListViewHolder>(options) {
             @Override
-            public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            public int getItemViewType(int position) {
+                return 1;
+            }
+
+            @Override
+            public LeadListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.lead_list_item, parent, false);
 
-                return new ViewHolder(view);
+                return new LeadListViewHolder(view);
             }
 
             @Override
-            protected void onBindViewHolder(ViewHolder holder, final int position, CustomerDetails model) {
-                holder.setTxtTitle(model.getName());
-                holder.setTxtDesc(model.getContactNumber());
-                progress.dismiss();
+            protected void onBindViewHolder(final LeadListViewHolder holder, final int position, CustomerDetails model) {
+                holder.setIsRecyclable(false);
 
-                holder.root.setOnClickListener(new View.OnClickListener() {
+                holder.name.setText(model.getName());
+                holder.contact.setText("Contact : " + model.getContactNumber());
+                holder.propertyType.setText("Property type : " + model.getPropertyType());
+                holder.employment.setText("Employment : " + model.getEmployement());
+                holder.loanType.setText("Loan type : " + model.getLoanType());
+                holder.location.setText("Location : " + model.getLocation());
+                holder.loanAmount.setText("Loan amount : " + model.getLoanAmount());
+                holder.remarks.setText("Remarks : " + model.getRemarks());
+                holder.assignedTo.setText("Assigned to\n" + model.getAssignedTo());
+                //holder.status.setText("Property type\n"model.getStatus());
+                holder.date.setText("Date\n" + model.getDate());
+
+                holder.expandableLinearLayout.setInRecyclerView(true);
+                holder.expandableLinearLayout.setExpanded(false);
+
+                holder.button.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-                        Toast.makeText(LeadsListActivity.this, String.valueOf(position), Toast.LENGTH_SHORT).show();
+                    public void onClick(View v) {
+                        holder.expandableLinearLayout.toggle();
                     }
                 });
+                progress.dismiss();
             }
-
         };
+        adapter.startListening();
         recyclerView.setAdapter(adapter);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        adapter.startListening();
+    protected void onDestroy() {
+        super.onDestroy();
+        adapter.stopListening();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.logout_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.logout:
+                if (isNetworkConnected()) {
+                    mAuth.signOut();
+                    Toast.makeText(LeadsListActivity.this, "Logged Out.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LeadsListActivity.this, MainActivity.class));
+                    finish();
+                } else
+                    Toast.makeText(LeadsListActivity.this, "No Internet Connection...", Toast.LENGTH_SHORT).show();
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

@@ -55,7 +55,7 @@ public class CustomerDetails {
         this.propertyType = propertyType;
     }
 
-    public void setEmployement(String employement) {
+    public void setEmployment(String employement) {
         this.employement = employement;
     }
 

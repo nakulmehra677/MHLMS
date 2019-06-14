@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.development.mhleadmanagementsystemdev.R;
@@ -24,7 +25,7 @@ public class MainActivity extends BaseActivity {
     private FirebaseAuth mAuth;
     private EditText mail, password, userName;
     private Button loginButton;
-    private String strMail, strPassword, strUserName;
+    private String strMail, strPassword, strUserName, strUserType;
     private ProgressDialog progress;
 
     @Override
@@ -38,6 +39,17 @@ public class MainActivity extends BaseActivity {
         password = findViewById(R.id.password);
         userName = findViewById(R.id.user_name);
         loginButton = findViewById(R.id.login);
+
+        if (isNetworkConnected()) {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
+                startActivity(new Intent(MainActivity.this, LeadsListActivity.class));
+                finish();
+            }
+        } else {
+            Toast.makeText(MainActivity.this, "No Internet Connection...", Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,13 +79,14 @@ public class MainActivity extends BaseActivity {
                                             Toast.makeText(MainActivity.this, "Logged In.", Toast.LENGTH_SHORT).show();
                                             progress.dismiss();
 
-                                            startActivity(new Intent(MainActivity.this, FeedCustomerDetailsActivity.class));
+                                            startActivity(new Intent(MainActivity.this, LeadsListActivity.class));
                                             finish();
                                         } else {
                                             // If sign in fails, display a message to the user.
                                             Log.w("TAG", "signInWithEmail:failure", task.getException());
                                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                                     Toast.LENGTH_SHORT).show();
+                                            progress.dismiss();
                                         }
                                     }
                                 });
@@ -86,25 +99,28 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        if (isNetworkConnected()) {
-            FirebaseUser currentUser = mAuth.getCurrentUser();
-            if (currentUser != null) {
-                startActivity(new Intent(MainActivity.this, FeedCustomerDetailsActivity.class));
-                finish();
-            }
-        } else {
-            Toast.makeText(MainActivity.this, "No Internet Connection...", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-    }
-
     private void getDetail() {
         strMail = mail.getText().toString();
         strPassword = password.getText().toString();
         strUserName = userName.getText().toString();
+    }
+
+    public void onRadioButtonLoginClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch (view.getId()) {
+            case R.id.salaried:
+                if (checked) {
+                    strUserType = "Telecaller";
+                    break;
+                }
+            case R.id.self_employed:
+                if (checked) {
+                    strUserType = "Sales person";
+                    break;
+                }
+        }
     }
 }
