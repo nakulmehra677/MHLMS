@@ -4,31 +4,24 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Interfaces.ItemClickListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
-import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -53,6 +46,17 @@ public class LeadsListActivity extends BaseActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        if (isNetworkConnected()) {
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser == null) {
+                startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
+                finish();
+            }
+        } else {
+            showToastMessage(R.string.no_internet);
+            finish();
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,7 +78,7 @@ public class LeadsListActivity extends BaseActivity {
         progress.setCanceledOnTouchOutside(false);
         progress.show(); //dd
 
-        Query query = FirebaseDatabase.getInstance().getReference();
+        Query query = FirebaseDatabase.getInstance().getReference("leadsList");
 
         FirebaseRecyclerOptions<CustomerDetails> options =
                 new FirebaseRecyclerOptions.Builder<CustomerDetails>()
@@ -91,7 +95,8 @@ public class LeadsListActivity extends BaseActivity {
                                         snapshot.child("loanAmount").getValue().toString(),
                                         snapshot.child("remarks").getValue().toString(),
                                         snapshot.child("date").getValue().toString(),
-                                        snapshot.child("assignedTo").getValue().toString());
+                                        snapshot.child("assignedTo").getValue().toString(),
+                                        snapshot.child("status").getValue().toString());
                             }
                         })
                         .build();
@@ -123,7 +128,7 @@ public class LeadsListActivity extends BaseActivity {
                 holder.loanAmount.setText("Loan amount : " + model.getLoanAmount());
                 holder.remarks.setText("Remarks : " + model.getRemarks());
                 holder.assignedTo.setText("Assigned to\n" + model.getAssignedTo());
-                //holder.status.setText("Property type\n"model.getStatus());
+                holder.status.setText("Status\n" + model.getStatus());
                 holder.date.setText("Date\n" + model.getDate());
 
                 holder.expandableLinearLayout.setInRecyclerView(true);
@@ -151,7 +156,7 @@ public class LeadsListActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.logout_menu, menu);
+        inflater.inflate(R.menu.lead_list_menu, menu);
         return true;
     }
 
@@ -162,11 +167,19 @@ public class LeadsListActivity extends BaseActivity {
             case R.id.logout:
                 if (isNetworkConnected()) {
                     mAuth.signOut();
-                    Toast.makeText(LeadsListActivity.this, "Logged Out.", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(LeadsListActivity.this, MainActivity.class));
+                    showToastMessage(R.string.logged_out);
+                    startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
                     finish();
                 } else
-                    Toast.makeText(LeadsListActivity.this, "No Internet Connection...", Toast.LENGTH_SHORT).show();
+                    showToastMessage(R.string.no_internet);
+
+                return true;
+
+            case R.id.user_list_menu:
+                if (isNetworkConnected()) {
+                    startActivity(new Intent(LeadsListActivity.this, UsersListActivity.class));
+                } else
+                    showToastMessage(R.string.no_internet);
 
                 return true;
             default:

@@ -4,16 +4,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -21,23 +16,29 @@ import android.widget.Toast;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.CountNoOfNodesInDatabaseListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
 import com.development.mhleadmanagementsystemdev.R;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class FeedCustomerDetailsActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText name, contactNumber, loanAmount, remarks;
-    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedtospinner;
-    ArrayAdapter<CharSequence> propertyTypeAdapter, loanTypeAdapter, locationAdapter;
+    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, remarksSpinner, assignedToSpinner, statusSpinner;
+    ArrayAdapter<CharSequence> propertyTypeAdapter;
+    ArrayAdapter<CharSequence> loanTypeAdapter;
+    ArrayAdapter<CharSequence> locationAdapter;
+    ArrayAdapter<CharSequence> remarksAdapter;
+    ArrayAdapter<String> assignedToAdapter;
+    ArrayAdapter<CharSequence> statusAdapter;
     private String strEmployment = null, strName, strContactNumber, strLoanAmount,
-            strRemarks, strPropertyType, strLoanType, strLocation;
-    private String date, mailId;
+            strRemarks, strPropertyType, strLoanType, strLocation, strAssignTo, strStatus;
+    private String date;
     private ProgressDialog progress;
 
     private CustomerDetails customerDetails;
@@ -54,16 +55,11 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         loanTypeSpinner = findViewById(R.id.loan_type);
         locationSpinner = findViewById(R.id.location);
         loanAmount = findViewById(R.id.loan_amount);
-        remarks = findViewById(R.id.remarks);
-        assignedtospinner = findViewById(R.id.assigned_to);
+        remarksSpinner = findViewById(R.id.remarks);
+        assignedToSpinner = findViewById(R.id.assign_to);
+        statusSpinner = findViewById(R.id.status);
 
-        Button button = findViewById(R.id.list);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(FeedCustomerDetailsActivity.this, LeadsListActivity.class));
-            }
-        });
+        firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
 
         // Property type Spinner
         propertyTypeAdapter = ArrayAdapter.createFromResource(this,
@@ -85,6 +81,22 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         locationSpinner.setAdapter(locationAdapter);
         locationSpinner.setOnItemSelectedListener(this);
+
+        // Remarks Spinner
+        remarksAdapter = ArrayAdapter.createFromResource(this,
+                R.array.remarks, android.R.layout.simple_spinner_item);
+        remarksAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        remarksSpinner.setAdapter(remarksAdapter);
+        remarksSpinner.setOnItemSelectedListener(this);
+
+        // Status Spinner
+        statusAdapter = ArrayAdapter.createFromResource(this,
+                R.array.status, android.R.layout.simple_spinner_item);
+        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        statusSpinner.setAdapter(statusAdapter);
+        statusSpinner.setOnItemSelectedListener(this);
+
+        firebaseDatabaseHelper.listAllUsers(onFetchSalesPersonListListener());
     }
 
     public void onRadioButtonClicked(View view) {
@@ -121,6 +133,18 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 strLocation = parent.getItemAtPosition(position).toString();
                 break;
 
+            case R.id.assign_to:
+                strAssignTo = parent.getItemAtPosition(position).toString();
+                break;
+
+            case R.id.remarks:
+                strRemarks = parent.getItemAtPosition(position).toString();
+                break;
+
+            case R.id.status:
+                strStatus = parent.getItemAtPosition(position).toString();
+                break;
+
             default:
                 break;
         }
@@ -136,8 +160,9 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             getDetails();
 
             if (!strName.isEmpty() && !strContactNumber.isEmpty() && !strLoanAmount.isEmpty() &&
-                    !strRemarks.isEmpty() && !strPropertyType.equals("None") &&
-                    !strLoanType.equals("None") && !strLocation.equals("None") && strEmployment != null) {
+                    !strRemarks.equals("None") && !strPropertyType.equals("None") &&
+                    !strLoanType.equals("None") && !strLocation.equals("None") &&
+                    !strAssignTo.equals("None") && !strStatus.equals("None") && strEmployment != null) {
 
                 AlertDialog alertDialog = new AlertDialog.Builder(this)
                         .setMessage("Are you sure you want to upload the details?")
@@ -154,8 +179,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                                 progress.setCanceledOnTouchOutside(false);
                                 progress.show();
 
-                                firebaseDatabaseHelper = new FirebaseDatabaseHelper(FeedCustomerDetailsActivity.this);
-                                firebaseDatabaseHelper.countNoOfNodesInDatabase(onCountNoOfNodesInDatabase());
+                                firebaseDatabaseHelper.countNoOfNodes(onCountNoOfNodesInDatabase(), "leadsList");
                             }
                         })
 
@@ -167,11 +191,11 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 alertDialog.setCanceledOnTouchOutside(false);
 
             } else {
-                Toast.makeText(FeedCustomerDetailsActivity.this, "Fill all the fields.", Toast.LENGTH_SHORT).show();
+                showToastMessage(R.string.fill_all_fields);
                 Log.i("Fields filled", "All the fields are not filled");
             }
         } else {
-            Toast.makeText(FeedCustomerDetailsActivity.this, "No Internet Connection...", Toast.LENGTH_SHORT).show();
+            showToastMessage(R.string.no_internet);
         }
     }
 
@@ -190,7 +214,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private void makeObject() {
         customerDetails = new CustomerDetails(strName, strContactNumber, strPropertyType,
-                strEmployment, strLoanType, strLocation, strLoanAmount, strRemarks, date, "cbdgfbf");
+                strEmployment, strLoanType, strLocation, strLoanAmount, strRemarks, date, strAssignTo, strStatus);
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {
@@ -199,7 +223,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             public void onDataUploaded() {
                 Log.i("No of Nodes", "Uploaded");
                 progress.dismiss();
-                Toast.makeText(FeedCustomerDetailsActivity.this, "Data Uploaded.", Toast.LENGTH_SHORT).show();
+                showToastMessage(R.string.data_uploaded);
                 Intent intent = getIntent();
                 finish();
                 startActivity(intent);
@@ -208,7 +232,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             @Override
             public void failedToUpload() {
                 progress.dismiss();
-                Toast.makeText(FeedCustomerDetailsActivity.this, "Failed to upload data.", Toast.LENGTH_SHORT).show();
+                showToastMessage(R.string.failed_to_upload);
             }
         };
     }
@@ -219,13 +243,31 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             @Override
             public void onFetched(long nodes) {
                 Log.i("No of Nodes", "About to upload details");
-                firebaseDatabaseHelper.uploadCustomerdetails(onUploadCustomerdetails(), customerDetails, nodes);
+                firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), customerDetails, nodes);
             }
 
             @Override
             public void failedToFetch() {
                 progress.dismiss();
-                Toast.makeText(FeedCustomerDetailsActivity.this, "Failed to upload data.", Toast.LENGTH_SHORT).show();
+                showToastMessage(R.string.failed_to_upload);
+            }
+        };
+    }
+
+    private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
+        return new OnFetchSalesPersonListListener() {
+
+            @Override
+            public void onListFetched(List arrayList) {
+                Log.i("userList", String.valueOf(arrayList));
+
+                // AssignedTo Spinner
+                assignedToAdapter = new ArrayAdapter<String>(FeedCustomerDetailsActivity.this,
+                        android.R.layout.simple_list_item_1, arrayList);
+                assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                assignedToSpinner.setAdapter(assignedToAdapter);
+
+                assignedToSpinner.setOnItemSelectedListener(FeedCustomerDetailsActivity.this);
             }
         };
     }

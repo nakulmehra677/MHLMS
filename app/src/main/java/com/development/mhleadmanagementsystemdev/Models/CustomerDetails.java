@@ -1,7 +1,7 @@
 package com.development.mhleadmanagementsystemdev.Models;
 
 public class CustomerDetails {
-    String name, contactNumber, propertyType, employement, loanType, location, loanAmount, remarks, date, assignedTo;
+    String name, contactNumber, propertyType, employement, loanType, location, loanAmount, remarks, date, assignedTo, status;
 
     public String getName() {
         return name;
@@ -55,7 +55,7 @@ public class CustomerDetails {
         this.propertyType = propertyType;
     }
 
-    public void setEmployment(String employement) {
+    public void setEmployement(String employement) {
         this.employement = employement;
     }
 
@@ -83,9 +83,18 @@ public class CustomerDetails {
         this.assignedTo = assignedTo;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public CustomerDetails(String name, String contactNumber, String propertyType,
                            String employement, String loanType, String location,
-                           String loanAmount, String remarks, String date, String assignedTo) {
+                           String loanAmount, String remarks, String date, String assignedTo, String status) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.propertyType = propertyType;
@@ -96,5 +105,6 @@ public class CustomerDetails {
         this.remarks = remarks;
         this.date = date;
         this.assignedTo = assignedTo;
+        this.status = status;
     }
 }

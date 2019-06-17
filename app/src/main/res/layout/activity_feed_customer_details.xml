@@ -33,25 +33,13 @@
                 android:hint="Contact number"
                 android:inputType="phone" />
 
-            <LinearLayout
+            <EditText
+                android:id="@+id/loan_amount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:text="Property Type" />
-
-                <Spinner
-                    android:id="@+id/property_type"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp" />
-
-            </LinearLayout>
+                android:layout_marginVertical="4dp"
+                android:hint="Loan amount"
+                android:inputType="number" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -86,6 +74,27 @@
                         android:text="Self employed" />
 
                 </RadioGroup>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Property Type" />
+
+                <Spinner
+                    android:id="@+id/property_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp" />
 
             </LinearLayout>
 
@@ -129,21 +138,25 @@
 
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/loan_amount"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="4dp"
-                android:hint="Loan amount"
-                android:inputType="number" />
+                android:layout_marginVertical="8dp"
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/remarks"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="4dp"
-                android:hint="Remarks"
-                android:inputType="textCapSentences" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Remarks" />
+
+                <Spinner
+                    android:id="@+id/remarks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -155,16 +168,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:text="Assigned to" />
+                    android:text="Assign to" />
 
                 <Spinner
-                    android:id="@+id/assigned_to"
+                    android:id="@+id/assign_to"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="8dp" />
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Status" />
+
+                <Spinner
+                    android:id="@+id/status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp" />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/upload_details"
@@ -175,11 +207,6 @@
                 android:onClick="onUploadDetailsButtonClicked"
                 android:text="Upload details"
                 android:textColor="@color/colorWhite" />
-
-            <Button
-                android:id="@+id/list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

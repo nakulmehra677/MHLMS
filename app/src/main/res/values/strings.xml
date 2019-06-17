@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">MH lead management system dev</string>
-    <string name="login_screen_note">Note : Please add your real name in user name field.</string>
+    <string name="passwords_not_matching">Passwords are not matching.</string>
+    <string name="fill_all_fields">Fill all the fields.</string>
+    <string name="no_internet">No Internet Connection.</string>
+    <string name="authentication_failed">Authentication failed.</string>
+    <string name="signed_up">Signed Up.</string>
+    <string name="logged_out">Logged Out.</string>
+    <string name="failed_to_fetch">Failed to fetch data.</string>
+    <string name="failed_to_upload">Failed to upload data.</string>
+    <string name="data_uploaded">Data uploaded.</string>
 
     <string-array name="property_type">
         <item>None</item>
@@ -27,6 +35,24 @@
         <item>Indore</item>
         <item>Jaipur</item>
         <item>Gwalior</item>
+    </string-array>
+
+    <string-array name="status">
+        <item>None</item>
+        <item>Active</item>
+        <item>Non Active</item>
+        <item>Work in Progress</item>
+        <item>Closed</item>
+        <item>Follow Up</item>
+    </string-array>
+
+    <string-array name="remarks">
+        <item>None</item>
+        <item>Customer Not Interested</item>
+        <item>Document Picked</item>
+        <item>Customer follow Up</item>
+        <item>Customer Not Contactable</item>
+        <item>Customer Interested but Document Pending</item>
     </string-array>
 
 </resources>

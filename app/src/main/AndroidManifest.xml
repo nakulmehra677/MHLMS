@@ -12,13 +12,17 @@
         android:roundIcon="@mipmap/app_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.LeadsListActivity"></activity>
+        <activity android:name=".Activities.UsersListActivity"></activity>
+        <activity
+            android:name=".Activities.SignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Activities.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activities.FeedCustomerDetailsActivity"
             android:label="Feed Customer Details" />
-        <activity
-            android:name=".Activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".Activities.LeadsListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
