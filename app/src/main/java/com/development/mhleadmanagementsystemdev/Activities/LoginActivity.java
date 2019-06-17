@@ -63,7 +63,7 @@ public class LoginActivity extends BaseActivity {
                                         if (task.isSuccessful()) {
                                             // Sign in success, update UI with the signed-in user's information
                                             Log.d("TAG", "loginInWithEmail:success");
-                                            Toast.makeText(LoginActivity.this, "Logged In.", Toast.LENGTH_SHORT).show();
+                                            showToastMessage(R.string.logged_in);
                                             progress.dismiss();
 
                                             startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
@@ -71,17 +71,16 @@ public class LoginActivity extends BaseActivity {
                                         } else {
                                             // If sign in fails, display a message to the user.
                                             Log.w("TAG", "signInWithEmail:failure", task.getException());
-                                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                                    Toast.LENGTH_SHORT).show();
+                                            showToastMessage(R.string.authentication_failed);
                                             progress.dismiss();
                                         }
                                     }
                                 });
                     } else
-                        Toast.makeText(LoginActivity.this, "Fill all the fields.", Toast.LENGTH_SHORT).show();
+                        showToastMessage(R.string.fill_all_fields);
 
                 } else
-                    Toast.makeText(LoginActivity.this, "No Internet Connection...", Toast.LENGTH_SHORT).show();
+                    showToastMessage(R.string.no_internet);
             }
         });
 

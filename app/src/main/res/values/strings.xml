@@ -6,6 +6,7 @@
     <string name="authentication_failed">Authentication failed.</string>
     <string name="signed_up">Signed Up.</string>
     <string name="logged_out">Logged Out.</string>
+    <string name="logged_in">Logged In.</string>
     <string name="failed_to_fetch">Failed to fetch data.</string>
     <string name="failed_to_upload">Failed to upload data.</string>
     <string name="data_uploaded">Data uploaded.</string>
