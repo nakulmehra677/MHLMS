@@ -81,7 +81,8 @@
                     android:gravity="center"
                     android:text="Sign Up"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="18dp" />
+                    android:textSize="18dp"
+                    android:visibility="gone" />
             </LinearLayout>
 
         </LinearLayout>

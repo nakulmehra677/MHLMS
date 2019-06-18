@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 public class BaseActivity extends AppCompatActivity {
 
+    //protected boolean isAdmin = false;
 
     protected boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

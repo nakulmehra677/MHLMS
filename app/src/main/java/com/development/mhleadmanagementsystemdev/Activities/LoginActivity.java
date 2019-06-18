@@ -9,9 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.development.mhleadmanagementsystemdev.Helper.FirebaseAuthenticationHelper;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnCheckAdminListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnUserLoginListener;
 import com.development.mhleadmanagementsystemdev.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,13 +22,13 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends BaseActivity {
 
-    private FirebaseAuth mAuth;
     private EditText mail, password;
     private Button loginButton;
     private String strMail, strPassword;
     private ProgressDialog progress;
-    private TextView signUp;
+    //private TextView signUp;
 
+    private FirebaseAuthenticationHelper firebaseAuthenticationHelper;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
     @Override
@@ -34,13 +36,13 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
 
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
         loginButton = findViewById(R.id.login);
-        signUp = findViewById(R.id.sign_up);
+        //signUp = findViewById(R.id.sign_up);
 
+        firebaseAuthenticationHelper = new FirebaseAuthenticationHelper(this);
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -56,26 +58,7 @@ public class LoginActivity extends BaseActivity {
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
 
-                        mAuth.signInWithEmailAndPassword(mail.getText().toString(), password.getText().toString())
-                                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) {
-                                            // Sign in success, update UI with the signed-in user's information
-                                            Log.d("TAG", "loginInWithEmail:success");
-                                            showToastMessage(R.string.logged_in);
-                                            progress.dismiss();
-
-                                            //startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
-                                            //finish();
-                                        } else {
-                                            // If sign in fails, display a message to the user.
-                                            Log.w("TAG", "signInWithEmail:failure", task.getException());
-                                            showToastMessage(R.string.authentication_failed);
-                                            progress.dismiss();
-                                        }
-                                    }
-                                });
+                        firebaseAuthenticationHelper.loginUser(onUserLoginListener(), strMail, strPassword);
                     } else
                         showToastMessage(R.string.fill_all_fields);
 
@@ -84,17 +67,47 @@ public class LoginActivity extends BaseActivity {
             }
         });
 
-        signUp.setOnClickListener(new View.OnClickListener() {
+        /*signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+                startActivity(new Intent(LoginActivity.this, CreateUserActivity.class));
                 finish();
             }
-        });
+        });*/
     }
 
     private void getDetail() {
         strMail = mail.getText().toString();
         strPassword = password.getText().toString();
+    }
+
+    private OnUserLoginListener onUserLoginListener() {
+        return new OnUserLoginListener() {
+            @Override
+            public void onSuccess() {
+                firebaseDatabaseHelper.checkAdmin(onCheckAdminListener(), strMail);
+            }
+
+            @Override
+            public void onFailer() {
+                progress.dismiss();
+                showToastMessage(R.string.authentication_failed);
+            }
+        };
+    }
+
+    private OnCheckAdminListener onCheckAdminListener() {
+        return new OnCheckAdminListener() {
+            @Override
+            public void onSuccess(boolean a) {
+                progress.dismiss();
+                showToastMessage(R.string.logged_in);
+            }
+
+            @Override
+            public void onFailer() {
+                progress.dismiss();
+            }
+        };
     }
 }

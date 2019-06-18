@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.ListView;
 
 import com.development.mhleadmanagementsystemdev.Interfaces.CountNoOfNodesInDatabaseListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnCheckAdminListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
@@ -32,6 +32,7 @@ import java.util.List;
 public class FirebaseDatabaseHelper {
     Context context;
     private long nodes = 0;
+    private boolean isAdmin = false;
 
     public FirebaseDatabaseHelper(Context context) {
         this.context = context;
@@ -156,6 +157,30 @@ public class FirebaseDatabaseHelper {
                 // Getting Post failed, log a message
                 Log.w("TAG", "loadPost:onCancelled", databaseError.toException());
                 onFetchUserListListener.onFailed();
+            }
+        });
+    }
+
+    public void checkAdmin(final OnCheckAdminListener onCheckAdminListener, final String mail) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("adminList");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
+                    if (mail.equals(postSnapshot.getValue(String.class))) {
+                        isAdmin = true;
+                        break;
+                    }
+                onCheckAdminListener.onSuccess(isAdmin);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("TAG", "loadPost:onCancelled", databaseError.toException());
+                onCheckAdminListener.onFailer();
             }
         });
     }

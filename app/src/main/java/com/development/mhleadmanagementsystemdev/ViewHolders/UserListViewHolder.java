@@ -13,14 +13,13 @@ import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 
 public class UserListViewHolder extends RecyclerView.ViewHolder {
 
-    public TextView userName, userType, optionMenu;
+    public TextView userName, userType;
 
     public UserListViewHolder(View itemView) {
         super(itemView);
 
         userName = itemView.findViewById(R.id.user_name);
         userType = itemView.findViewById(R.id.user_type);
-        optionMenu = itemView.findViewById(R.id.menu_option);
 
 
         /*itemView.setOnClickListener(new View.OnClickListener() {

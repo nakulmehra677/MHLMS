@@ -1,8 +1,10 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,16 +14,11 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserListListener;
-import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
-import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
 import com.development.mhleadmanagementsystemdev.ViewHolders.UserListViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -40,14 +37,30 @@ public class UsersListActivity extends BaseActivity {
     private FirebaseRecyclerAdapter adapter;
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
+    //private FloatingActionButton fab;
 
+
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users_list);
 
         recyclerView = findViewById(R.id.recycler_view);
+        //fab = findViewById(R.id.user_list_fab);
+
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
+
+        /*if (isAdmin) {
+            fab.setVisibility(View.VISIBLE);
+        }
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(UsersListActivity.this, CreateUserActivity.class));
+            }
+        });*/
 
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -55,27 +68,6 @@ public class UsersListActivity extends BaseActivity {
         recyclerView.setHasFixedSize(true);
         fetch();
     }
-
-   /* private OnFetchUserListListener onFetchUserListListener() {
-        return new OnFetchUserListListener() {
-            @Override
-            public void onUserListFetched(List<String> list) {
-                // Create an ArrayAdapter from List
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>
-                        (UsersListActivity.this, android.R.layout.simple_list_item_1, list);
-
-                // DataBind ListView with items from ArrayAdapter
-                recyclerView.setAdapter(adapter);
-                progress.dismiss();
-            }
-
-            @Override
-            public void onFailed() {
-                progress.dismiss();
-                showToastMessage(R.string.failed_to_fetch);
-            }
-        };
-    }*/
 
     private void fetch() {
         progress = new ProgressDialog(UsersListActivity.this);
@@ -126,26 +118,6 @@ public class UsersListActivity extends BaseActivity {
                 holder.userType.setText(model.getUserType());
 
                 progress.dismiss();
-
-                holder.optionMenu.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        PopupMenu popupMenu = new PopupMenu(UsersListActivity.this, holder.optionMenu);
-                        popupMenu.inflate(R.menu.user_list_item_menu);
-                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                switch (item.getItemId()) {
-                                    case R.id.delete_account:
-                                        showToastMessage(R.string.no_internet);
-                                        break;
-                                }
-                                return false;
-                            }
-                        });
-                        popupMenu.show();
-                    }
-                });
             }
         };
         adapter.startListening();

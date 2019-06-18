@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="16dp"
-    tools:context=".Activities.SignUpActivity">
+    tools:context=".Activities.CreateUserActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp"
                 android:gravity="center"
-                android:text="Sign Up"
+                android:text="Create User"
                 android:textColor="@color/coloBlack"
                 android:textSize="24dp"
                 android:textStyle="bold" />
@@ -71,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:text="Are You a ?" />
+                    android:text="User is a" />
 
                 <RadioGroup
                     android:layout_width="match_parent"
@@ -105,9 +105,8 @@
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="8dp"
                 android:background="@color/colorPrimaryDark"
-                android:text="Sign In"
+                android:text="Create"
                 android:textColor="@color/colorWhite" />
-
 
         </LinearLayout>
 

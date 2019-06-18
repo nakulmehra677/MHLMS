@@ -2,14 +2,12 @@ package com.development.mhleadmanagementsystemdev.Activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.CountNoOfNodesInDatabaseListener;
@@ -17,9 +15,8 @@ import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadNewUserDetai
 import com.development.mhleadmanagementsystemdev.Interfaces.SignUpAccountListener;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
-import com.firebase.ui.auth.data.model.User;
 
-public class SignUpActivity extends BaseActivity {
+public class CreateUserActivity extends BaseActivity {
 
     private EditText mail, password, confirmPassword, userName;
     private Button signInButton;
@@ -32,7 +29,7 @@ public class SignUpActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_create_user);
 
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
@@ -51,7 +48,7 @@ public class SignUpActivity extends BaseActivity {
                             !strConfirmPassword.isEmpty() && !strUserName.isEmpty() && strUserType != null) {
 
                         if (strPassword.equals(strConfirmPassword)) {
-                            progress = new ProgressDialog(SignUpActivity.this);
+                            progress = new ProgressDialog(CreateUserActivity.this);
                             progress.setMessage("Signing Up..");
                             progress.setCancelable(false);
                             progress.setCanceledOnTouchOutside(false);
@@ -118,7 +115,6 @@ public class SignUpActivity extends BaseActivity {
             @Override
             public void onFetched(long nodes) {
                 Log.i("No of Nodes", "About to upload details");
-                showToastMessage(R.string.signed_up);
                 UserDetails userDetails = new UserDetails(UID, strPassword, strUserName, strMail, strUserType);
 
                 firebaseDatabaseHelper.uploadNewUserDetails(uploadNewUserDetailsListener(), userDetails, nodes);
@@ -136,7 +132,9 @@ public class SignUpActivity extends BaseActivity {
             @Override
             public void dataUploaded() {
                 progress.dismiss();
-                startActivity(new Intent(SignUpActivity.this, LeadsListActivity.class));
+
+                showToastMessage(R.string.user_created);
+                startActivity(new Intent(CreateUserActivity.this, LeadsListActivity.class));
                 finish();
             }
         };

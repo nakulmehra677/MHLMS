@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
 import com.development.mhleadmanagementsystemdev.R;
@@ -137,6 +138,26 @@ public class LeadsListActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
                         holder.expandableLinearLayout.toggle();
+                    }
+                });
+
+                holder.optionMenu.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopupMenu popupMenu = new PopupMenu(LeadsListActivity.this, holder.optionMenu);
+                        popupMenu.inflate(R.menu.lead_list_item_menu);
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.delete_account:
+                                        showToastMessage(R.string.no_internet);
+                                        break;
+                                }
+                                return false;
+                            }
+                        });
+                        popupMenu.show();
                     }
                 });
                 progress.dismiss();

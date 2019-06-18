@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".Activities.UsersListActivity"></activity>
         <activity
-            android:name=".Activities.SignUpActivity"
+            android:name=".Activities.CreateUserActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activities.LoginActivity"
