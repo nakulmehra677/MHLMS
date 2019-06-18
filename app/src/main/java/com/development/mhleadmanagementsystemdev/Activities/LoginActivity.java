@@ -66,8 +66,8 @@ public class LoginActivity extends BaseActivity {
                                             showToastMessage(R.string.logged_in);
                                             progress.dismiss();
 
-                                            startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
-                                            finish();
+                                            //startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
+                                            //finish();
                                         } else {
                                             // If sign in fails, display a message to the user.
                                             Log.w("TAG", "signInWithEmail:failure", task.getException());
@@ -88,6 +88,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+                finish();
             }
         });
     }

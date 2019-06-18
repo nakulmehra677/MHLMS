@@ -50,7 +50,6 @@ public class LeadsListActivity extends BaseActivity {
             FirebaseUser currentUser = mAuth.getCurrentUser();
             if (currentUser == null) {
                 startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
-                finish();
             }
         } else {
             showToastMessage(R.string.no_internet);
