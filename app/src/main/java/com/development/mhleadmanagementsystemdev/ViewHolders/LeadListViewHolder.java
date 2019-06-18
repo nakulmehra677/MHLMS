@@ -12,7 +12,7 @@ import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 public class LeadListViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout root;
     public TextView name, contact, propertyType, employment, loanType,
-            location, loanAmount, remarks, assignedTo, status, date, optionMenu;
+            location, loanAmount, remarks, assignedTo, status, date, optionMenu;//h
     public ItemClickListener itemClickListener;
     public ExpandableLinearLayout expandableLinearLayout;
     public LinearLayout button;
