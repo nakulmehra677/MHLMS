@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.CountNoOfNodesInDatabaseListener;
@@ -34,9 +33,9 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     ArrayAdapter<CharSequence> loanTypeAdapter;
     ArrayAdapter<CharSequence> locationAdapter;
     ArrayAdapter<CharSequence> remarksAdapter;
-    ArrayAdapter<String> assignedToAdapter;
+    ArrayAdapter<CharSequence> assignedToAdapter;
     ArrayAdapter<CharSequence> statusAdapter;
-    private String strEmployment = null, strName, strContactNumber, strLoanAmount,
+    private String strEmployment = null, strName, strContactNumber, strLoanAmount, strKey,
             strRemarks, strPropertyType, strLoanType, strLocation, strAssignTo, strStatus;
     private String date;
     private ProgressDialog progress;
@@ -95,8 +94,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statusSpinner.setAdapter(statusAdapter);
         statusSpinner.setOnItemSelectedListener(this);
-
-        firebaseDatabaseHelper.listAllUsers(onFetchSalesPersonListListener());
     }
 
     public void onRadioButtonClicked(View view) {
@@ -131,6 +128,14 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
             case R.id.location:
                 strLocation = parent.getItemAtPosition(position).toString();
+
+                assignedToSpinner.setSelection(0);
+                assignedToSpinner.setEnabled(false);
+                assignedToSpinner.setClickable(false);
+
+                if (!strLocation.equals("None")) {
+                    firebaseDatabaseHelper.fetchSalesPersons(onFetchSalesPersonListListener(), strLocation);
+                }
                 break;
 
             case R.id.assign_to:
@@ -179,7 +184,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                                 progress.setCanceledOnTouchOutside(false);
                                 progress.show();
 
-                                firebaseDatabaseHelper.countNoOfNodes(onCountNoOfNodesInDatabase(), "leadsList");
+                                firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), customerDetails);
+                                //firebaseDatabaseHelper.countNoOfNodes(onCountNoOfNodesInDatabase(), "leadsList");
                             }
                         })
 
@@ -203,7 +209,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         strName = name.getText().toString();
         strContactNumber = contactNumber.getText().toString();
         strLoanAmount = loanAmount.getText().toString();
-        strRemarks = remarks.getText().toString();
     }
 
     private void getDate() {
@@ -214,7 +219,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private void makeObject() {
         customerDetails = new CustomerDetails(strName, strContactNumber, strPropertyType,
-                strEmployment, strLoanType, strLocation, strLoanAmount, strRemarks, date, strAssignTo, strStatus);
+                strEmployment, strLoanType, strLocation, strLoanAmount, strRemarks, date, strAssignTo, strStatus, "null");
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {
@@ -237,12 +242,13 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         };
     }
 
-    private CountNoOfNodesInDatabaseListener onCountNoOfNodesInDatabase() {
+    /*private CountNoOfNodesInDatabaseListener onCountNoOfNodesInDatabase() {
         return new CountNoOfNodesInDatabaseListener() {
 
             @Override
             public void onFetched(long nodes) {
                 Log.i("No of Nodes", "About to upload details");
+                customerDetails.setKey(nodes);
                 firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), customerDetails, nodes);
             }
 
@@ -252,7 +258,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 showToastMessage(R.string.failed_to_upload);
             }
         };
-    }
+    }*/
 
     private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
         return new OnFetchSalesPersonListListener() {
@@ -262,12 +268,15 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 Log.i("userList", String.valueOf(arrayList));
 
                 // AssignedTo Spinner
-                assignedToAdapter = new ArrayAdapter<String>(FeedCustomerDetailsActivity.this,
-                        android.R.layout.simple_list_item_1, arrayList);
+                assignedToAdapter = new ArrayAdapter<CharSequence>(
+                        FeedCustomerDetailsActivity.this,
+                        android.R.layout.simple_spinner_item, arrayList);
                 assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 assignedToSpinner.setAdapter(assignedToAdapter);
-
                 assignedToSpinner.setOnItemSelectedListener(FeedCustomerDetailsActivity.this);
+
+                assignedToSpinner.setEnabled(true);
+                assignedToSpinner.setClickable(true);
             }
         };
     }

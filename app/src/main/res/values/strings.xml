@@ -10,6 +10,9 @@
     <string name="failed_to_fetch">Failed to fetch data.</string>
     <string name="failed_to_upload">Failed to upload data.</string>
     <string name="data_uploaded">Data uploaded.</string>
+    <string name="no_leads">No Leads are present yet.</string>
+    <string name="no_telecallers">No Telecallers are present yet.</string>
+    <string name="no_salesmen">No Salesmen are present yet.</string>
 
     <string-array name="property_type">
         <item>None</item>

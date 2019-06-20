@@ -13,7 +13,7 @@ import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDeta
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadNewUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.SignUpAccountListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
-import com.development.mhleadmanagementsystemdev.Models.UserDetails;
+import com.development.mhleadmanagementsystemdev.Models.TeleCallerDetails;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -38,7 +38,7 @@ public class FirebaseDatabaseHelper {
         this.context = context;
     }
 
-    public void countNoOfNodes(final CountNoOfNodesInDatabaseListener ofNodesInDatabaseListener, String nodePath) {
+    /*public void countNoOfNodes(final CountNoOfNodesInDatabaseListener ofNodesInDatabaseListener, String nodePath) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference(nodePath);
         Log.i("No of Nodes", "Fetching nodes...");
@@ -58,43 +58,47 @@ public class FirebaseDatabaseHelper {
                 ofNodesInDatabaseListener.failedToFetch();
             }
         });
-    }
+    }*/
 
     public void uploadCustomerDetails(OnUploadCustomerDetailsListener onUploadCustomerdetails,
-                                      CustomerDetails customerDetails, long nodes) {
+                                      CustomerDetails customerDetails) {
 
         Log.i("No of Nodes", "Uploading");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("leadsList").child(String.valueOf(nodes));
+        DatabaseReference myRef = database.getReference("leadsList").push();
 
+        String key = myRef.getKey();
+        customerDetails.setKey(key);
         myRef.setValue(customerDetails);
-
         onUploadCustomerdetails.onDataUploaded();
     }
 
-    public void listAllUsers(final OnFetchSalesPersonListListener onFetchSalesPersonListListener) {
+    public void fetchSalesPersons(final OnFetchSalesPersonListListener onFetchSalesPersonListListener, String location) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference();
+        DatabaseReference myRef = database.getReference("telecallerList");
         Log.i("Users", "Fetching Users...");
 
         final List<String> salesPersonList = new ArrayList<>();
         salesPersonList.add("None");
 
-        myRef.child("salesPersons").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    String personName = postSnapshot.getValue(String.class);
-                    salesPersonList.add(personName);
-                }
-                onFetchSalesPersonListListener.onListFetched(salesPersonList);
-            }
+        myRef.orderByChild("location").equalTo(location)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            TeleCallerDetails teleCallerDetails = snapshot.getValue(TeleCallerDetails.class);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                            Log.i("Users", teleCallerDetails.getUserName());
+                            salesPersonList.add(teleCallerDetails.getUserName());
+                        }
+                        onFetchSalesPersonListListener.onListFetched(salesPersonList);
+                    }
 
-            }
-        });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     public void signUpAccount(final SignUpAccountListener onSignUpAccountListener, String strMail, String strPassword, final String strUserName) {
@@ -125,12 +129,12 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void uploadNewUserDetails(OnUploadNewUserDetailsListener onUploadNewUserDetailsListener, UserDetails userDetails, long nodes) {
+    public void uploadNewUserDetails(OnUploadNewUserDetailsListener onUploadNewUserDetailsListener, TeleCallerDetails teleCallerDetails, long nodes) {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("userList").child(String.valueOf(nodes));
 
-        myRef.setValue(userDetails);
+        myRef.setValue(teleCallerDetails);
 
         onUploadNewUserDetailsListener.dataUploaded();
     }
@@ -143,11 +147,11 @@ public class FirebaseDatabaseHelper {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                UserDetails userDetails;
+                TeleCallerDetails teleCallerDetails;
                 List<String> list = new ArrayList<>();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    userDetails = postSnapshot.getValue(UserDetails.class);
-                    list.add(userDetails.getUserName());
+                    teleCallerDetails = postSnapshot.getValue(TeleCallerDetails.class);
+                    list.add(teleCallerDetails.getUserName());
                 }
                 onFetchUserListListener.onUserListFetched(list);
             }
@@ -185,4 +189,8 @@ public class FirebaseDatabaseHelper {
         });
     }
 
+    public void updateLeadDetails(String assignedTo, String status, String key) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("leadList").child(key);
+    }
 }

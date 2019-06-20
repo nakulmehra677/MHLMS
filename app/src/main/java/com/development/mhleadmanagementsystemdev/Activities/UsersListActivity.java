@@ -2,22 +2,18 @@ package com.development.mhleadmanagementsystemdev.Activities;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Models.UserDetails;
+import com.development.mhleadmanagementsystemdev.Models.TeleCallerDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.ViewHolders.UserListViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -26,9 +22,6 @@ import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class UsersListActivity extends BaseActivity {
 
@@ -76,24 +69,23 @@ public class UsersListActivity extends BaseActivity {
         progress.setCanceledOnTouchOutside(false);
         progress.show();
 
-        Query query = FirebaseDatabase.getInstance().getReference("userList");
+        Query query = FirebaseDatabase.getInstance().getReference("telecallerList");
 
-        FirebaseRecyclerOptions<UserDetails> options =
-                new FirebaseRecyclerOptions.Builder<UserDetails>()
-                        .setQuery(query, new SnapshotParser<UserDetails>() {
+        FirebaseRecyclerOptions<TeleCallerDetails> options =
+                new FirebaseRecyclerOptions.Builder<TeleCallerDetails>()
+                        .setQuery(query, new SnapshotParser<TeleCallerDetails>() {
                             @NonNull
                             @Override
-                            public UserDetails parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                return new UserDetails(snapshot.child("uId").getValue().toString(),
-                                        snapshot.child("password").getValue().toString(),
+                            public TeleCallerDetails parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                return new TeleCallerDetails(snapshot.child("uId").getValue().toString(),
                                         snapshot.child("userName").getValue().toString(),
                                         snapshot.child("mail").getValue().toString(),
-                                        snapshot.child("userType").getValue().toString());
+                                        snapshot.child("location").getValue().toString());
                             }
                         })
                         .build();
 
-        adapter = new FirebaseRecyclerAdapter<UserDetails, UserListViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<TeleCallerDetails, UserListViewHolder>(options) {
             @Override
             public int getItemViewType(int position) {
                 return 1;
@@ -108,14 +100,20 @@ public class UsersListActivity extends BaseActivity {
             }
 
             @Override
-            protected void onBindViewHolder(final UserListViewHolder holder, final int position, UserDetails model) {
+            public void onDataChanged() {
+                if (getItemCount() == 0) {
+                    showToastMessage(R.string.no_telecallers);
+                    progress.dismiss();
+                }
+                super.onDataChanged();
+            }
+
+            @Override
+            protected void onBindViewHolder(final UserListViewHolder holder, final int position, TeleCallerDetails model) {
                 holder.setIsRecyclable(false);
 
                 Log.d("userName", model.getUserName());
-                Log.d("userType", model.getUserType());
-
                 holder.userName.setText(model.getUserName());
-                holder.userType.setText(model.getUserType());
 
                 progress.dismiss();
             }

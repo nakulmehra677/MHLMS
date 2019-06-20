@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
+import com.development.mhleadmanagementsystemdev.Fragments.EditLeadDetailsFragment;
+import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
@@ -27,6 +30,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LeadsListActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
@@ -36,6 +42,9 @@ public class LeadsListActivity extends BaseActivity {
     private FloatingActionButton fab;
     private FirebaseAuth mAuth;
 
+    private FirebaseDatabaseHelper firebaseDatabaseHelper;
+
+    private List<Integer> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +55,7 @@ public class LeadsListActivity extends BaseActivity {
         fab = findViewById(R.id.fab);
 
         mAuth = FirebaseAuth.getInstance();
+        firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
 
         if (isNetworkConnected()) {
             FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -96,7 +106,8 @@ public class LeadsListActivity extends BaseActivity {
                                         snapshot.child("remarks").getValue().toString(),
                                         snapshot.child("date").getValue().toString(),
                                         snapshot.child("assignedTo").getValue().toString(),
-                                        snapshot.child("status").getValue().toString());
+                                        snapshot.child("status").getValue().toString(),
+                                        snapshot.child("key").getValue().toString());
                             }
                         })
                         .build();
@@ -116,7 +127,16 @@ public class LeadsListActivity extends BaseActivity {
             }
 
             @Override
-            protected void onBindViewHolder(final LeadListViewHolder holder, final int position, CustomerDetails model) {
+            public void onDataChanged() {
+                if (getItemCount() == 0) {
+                    showToastMessage(R.string.no_leads);
+                    progress.dismiss();
+                }
+                super.onDataChanged();
+            }
+
+            @Override
+            protected void onBindViewHolder(final LeadListViewHolder holder, final int position, final CustomerDetails model) {
                 holder.setIsRecyclable(false);
 
                 holder.name.setText(model.getName());
@@ -150,8 +170,16 @@ public class LeadsListActivity extends BaseActivity {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 switch (item.getItemId()) {
-                                    case R.id.delete_account:
-                                        showToastMessage(R.string.no_internet);
+                                    case R.id.edit_details:
+                                        /*EditLeadDetailsFragment.newInstance(
+                                                model.getAssignedTo(),
+                                                model.getStatus(),
+                                                new EditLeadDetailsFragment.OnSubmitClickListener() {
+                                                    @Override
+                                                    public void onSubmitClicked(String dialogAssignedTo, String dialogStatus) {
+                                                        firebaseDatabaseHelper.updateLeadDetails(dialogAssignedTo, dialogStatus, model.getKey());
+                                                    }
+                                                }).show(getSupportFragmentManager(), "promo");*/
                                         break;
                                 }
                                 return false;

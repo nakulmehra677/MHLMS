@@ -13,7 +13,7 @@ import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.CountNoOfNodesInDatabaseListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadNewUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.SignUpAccountListener;
-import com.development.mhleadmanagementsystemdev.Models.UserDetails;
+import com.development.mhleadmanagementsystemdev.Models.TeleCallerDetails;
 import com.development.mhleadmanagementsystemdev.R;
 
 public class CreateUserActivity extends BaseActivity {
@@ -98,7 +98,7 @@ public class CreateUserActivity extends BaseActivity {
             @Override
             public void signUpSuccessful(String uId) {
                 UID = uId;
-                firebaseDatabaseHelper.countNoOfNodes(onCountNoOfNodesInDatabase(), "userList");
+                //firebaseDatabaseHelper.countNoOfNodes(onCountNoOfNodesInDatabase(), "userList");
             }
 
             @Override
@@ -115,9 +115,9 @@ public class CreateUserActivity extends BaseActivity {
             @Override
             public void onFetched(long nodes) {
                 Log.i("No of Nodes", "About to upload details");
-                UserDetails userDetails = new UserDetails(UID, strPassword, strUserName, strMail, strUserType);
+                TeleCallerDetails teleCallerDetails = new TeleCallerDetails(UID, strUserName, strMail, "erfr");
 
-                firebaseDatabaseHelper.uploadNewUserDetails(uploadNewUserDetailsListener(), userDetails, nodes);
+                firebaseDatabaseHelper.uploadNewUserDetails(uploadNewUserDetailsListener(), teleCallerDetails, nodes);
             }
 
             @Override
