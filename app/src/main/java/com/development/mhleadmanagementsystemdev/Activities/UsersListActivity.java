@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Models.TeleCallerDetails;
+import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.ViewHolders.UserListViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -71,21 +71,22 @@ public class UsersListActivity extends BaseActivity {
 
         Query query = FirebaseDatabase.getInstance().getReference("telecallerList");
 
-        FirebaseRecyclerOptions<TeleCallerDetails> options =
-                new FirebaseRecyclerOptions.Builder<TeleCallerDetails>()
-                        .setQuery(query, new SnapshotParser<TeleCallerDetails>() {
+        FirebaseRecyclerOptions<UserDetails> options =
+                new FirebaseRecyclerOptions.Builder<UserDetails>()
+                        .setQuery(query, new SnapshotParser<UserDetails>() {
                             @NonNull
                             @Override
-                            public TeleCallerDetails parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                return new TeleCallerDetails(snapshot.child("uId").getValue().toString(),
+                            public UserDetails parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                return new UserDetails(snapshot.child("uId").getValue().toString(),
                                         snapshot.child("userName").getValue().toString(),
                                         snapshot.child("mail").getValue().toString(),
-                                        snapshot.child("location").getValue().toString());
+                                        snapshot.child("location").getValue().toString(),
+                                        snapshot.child("userType").getValue().toString());
                             }
                         })
                         .build();
 
-        adapter = new FirebaseRecyclerAdapter<TeleCallerDetails, UserListViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<UserDetails, UserListViewHolder>(options) {
             @Override
             public int getItemViewType(int position) {
                 return 1;
@@ -109,7 +110,7 @@ public class UsersListActivity extends BaseActivity {
             }
 
             @Override
-            protected void onBindViewHolder(final UserListViewHolder holder, final int position, TeleCallerDetails model) {
+            protected void onBindViewHolder(final UserListViewHolder holder, final int position, UserDetails model) {
                 holder.setIsRecyclable(false);
 
                 Log.d("userName", model.getUserName());

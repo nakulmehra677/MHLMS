@@ -18,6 +18,8 @@ import android.widget.PopupMenu;
 
 import com.development.mhleadmanagementsystemdev.Fragments.EditLeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
@@ -38,13 +40,12 @@ public class LeadsListActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private FirebaseRecyclerAdapter adapter;
-    private ProgressDialog progress;
     private FloatingActionButton fab;
     private FirebaseAuth mAuth;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
-    private List<Integer> list = new ArrayList<>();
+    private CustomerDetails updateLead;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +61,17 @@ public class LeadsListActivity extends BaseActivity {
         if (isNetworkConnected()) {
             FirebaseUser currentUser = mAuth.getCurrentUser();
             if (currentUser == null) {
-                startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
+                startActivityForResult(new Intent(LeadsListActivity.this, LoginActivity.class), 1);
+            } else {
+                intializeVariables();
             }
         } else {
             showToastMessage(R.string.no_internet);
             finish();
         }
+    }
 
+    private void intializeVariables() {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,13 +87,9 @@ public class LeadsListActivity extends BaseActivity {
     }
 
     private void fetch() {
-        progress = new ProgressDialog(LeadsListActivity.this);
-        progress.setMessage("Loading..");
-        progress.setCancelable(false);
-        progress.setCanceledOnTouchOutside(false);
-        progress.show(); //dd
+        showProgressDialog("Loading..", this);
 
-        Query query = FirebaseDatabase.getInstance().getReference("leadsList");
+        Query query = FirebaseDatabase.getInstance().getReference("leadList");
 
         FirebaseRecyclerOptions<CustomerDetails> options =
                 new FirebaseRecyclerOptions.Builder<CustomerDetails>()
@@ -171,15 +172,11 @@ public class LeadsListActivity extends BaseActivity {
                             public boolean onMenuItemClick(MenuItem item) {
                                 switch (item.getItemId()) {
                                     case R.id.edit_details:
-                                        /*EditLeadDetailsFragment.newInstance(
-                                                model.getAssignedTo(),
-                                                model.getStatus(),
-                                                new EditLeadDetailsFragment.OnSubmitClickListener() {
-                                                    @Override
-                                                    public void onSubmitClicked(String dialogAssignedTo, String dialogStatus) {
-                                                        firebaseDatabaseHelper.updateLeadDetails(dialogAssignedTo, dialogStatus, model.getKey());
-                                                    }
-                                                }).show(getSupportFragmentManager(), "promo");*/
+                                        showProgressDialog("Loading..", LeadsListActivity.this);
+
+                                        updateLead = model;
+                                        firebaseDatabaseHelper.fetchSalesPersons(
+                                                onFetchSalesPersonListListener(), model.getLocation());
                                         break;
                                 }
                                 return false;
@@ -196,9 +193,24 @@ public class LeadsListActivity extends BaseActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+        if (requestCode == 1) {
+            boolean message = data.getBooleanExtra("MESSAGE", false);
+            if (message)
+                intializeVariables();
+            else
+                finish();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null)
+            adapter.stopListening();
         super.onDestroy();
-        adapter.stopListening();
     }
 
     @Override
@@ -223,15 +235,46 @@ public class LeadsListActivity extends BaseActivity {
 
                 return true;
 
-            case R.id.user_list_menu:
+            /*case R.id.user_list_menu:
                 if (isNetworkConnected()) {
                     startActivity(new Intent(LeadsListActivity.this, UsersListActivity.class));
                 } else
                     showToastMessage(R.string.no_internet);
 
-                return true;
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
+        return new OnFetchSalesPersonListListener() {
+            @Override
+            public void onListFetched(List arrayList) {
+                progress.dismiss();
+                EditLeadDetailsFragment.newInstance(arrayList, new EditLeadDetailsFragment.OnSubmitClickListener() {
+                    @Override
+                    public void onSubmitClicked(String dialogAssignedTo, String dialogStatus) {
+                        updateLead.setAssignedTo(dialogAssignedTo);
+                        updateLead.setStatus(dialogStatus);
+                        firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
+                    }
+                }).show(getSupportFragmentManager(), "promo");
+            }
+        };
+    }
+
+    private OnUpdateLeadListener onUpdateLeadListener() {
+        return new OnUpdateLeadListener() {
+            @Override
+            public void onLeadUpdated() {
+                adapter.stopListening();
+                showToastMessage(R.string.lead_update);
+
+                showProgressDialog("Loading..", LeadsListActivity.this);
+
+                adapter.startListening();
+            }
+        };
     }
 }

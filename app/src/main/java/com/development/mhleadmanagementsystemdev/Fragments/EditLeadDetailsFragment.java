@@ -22,38 +22,26 @@ import android.widget.TextView;
 import com.development.mhleadmanagementsystemdev.Activities.FeedCustomerDetailsActivity;
 import com.development.mhleadmanagementsystemdev.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SuppressLint("ValidFragment")
 public class EditLeadDetailsFragment extends AppCompatDialogFragment {
     private String strAssignedTo, strStatus;
     private OnSubmitClickListener listener;
     private ArrayAdapter<CharSequence> statusAdapter, assignedToAdapter;
     private Spinner assignedToSpinner, statusSpinner;
+    List arrayList = new ArrayList();
 
-    public EditLeadDetailsFragment(OnSubmitClickListener listener) {
+    public EditLeadDetailsFragment(List arrayList, OnSubmitClickListener listener) {
         this.listener = listener;
+        this.arrayList = arrayList;
     }
 
-    public static EditLeadDetailsFragment newInstance(String assignedTo, String status, OnSubmitClickListener listener) {
+    public static EditLeadDetailsFragment newInstance(List arrayList, OnSubmitClickListener listener) {
 
-        EditLeadDetailsFragment f = new EditLeadDetailsFragment(listener);
-
-        // Supply num input as an argument.
-        Bundle args = new Bundle();
-        args.putString("assigned_to", assignedTo);
-        args.putString("status", status);
-        f.setArguments(args);
-
-        Log.i("Assignedto", assignedTo);
-        Log.i("status", status);
-
+        EditLeadDetailsFragment f = new EditLeadDetailsFragment(arrayList, listener);
         return f;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        strAssignedTo = getArguments().getString("assigned_to");
-        strStatus = getArguments().getString("status");
     }
 
     @Override
@@ -61,36 +49,50 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_lead_details_, null);
 
-        final EditText assignTo = v.findViewById(R.id.assign_to);
-        final EditText status = v.findViewById(R.id.status);
+        assignedToSpinner = v.findViewById(R.id.assign_to);
+        statusSpinner = v.findViewById(R.id.status);
 
-
-        /*// AssignedTo Spinner
+        // AssignedTo Spinner
         assignedToAdapter = new ArrayAdapter<CharSequence>(
                 getContext(),
                 android.R.layout.simple_spinner_item, arrayList);
         assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         assignedToSpinner.setAdapter(assignedToAdapter);
-        assignedToSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) getContext());
+        assignedToSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                strAssignedTo = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         statusAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.status, android.R.layout.simple_spinner_item);
         statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         statusSpinner.setAdapter(statusAdapter);
-        statusSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) getContext());
+        statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view,
+                                       int position, long id) {
+                strStatus = parent.getItemAtPosition(position).toString();
+            }
 
-*/
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         builder.setView(v)
                 .setTitle("Edit details")
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        strAssignedTo = assignTo.getText().toString();
-                        strStatus = status.getText().toString();
-                        if (!strStatus.isEmpty() && !strAssignedTo.isEmpty()) {
+                        if (!strAssignedTo.equals("None") && !strStatus.equals("None"))
                             listener.onSubmitClicked(strAssignedTo, strStatus);
-                        }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

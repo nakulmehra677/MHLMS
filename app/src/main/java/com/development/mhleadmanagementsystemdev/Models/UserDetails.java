@@ -1,16 +1,25 @@
 package com.development.mhleadmanagementsystemdev.Models;
 
-public class TeleCallerDetails {
-    private String uId, userName, mail, location;
+public class UserDetails {
+    private String uId, userName, mail, location, userType;
 
-    public TeleCallerDetails() {
+    public UserDetails() {
     }
 
-    public TeleCallerDetails(String uId, String userName, String mail, String location) {
+    public UserDetails(String uId, String userName, String mail, String location, String userType) {
         this.uId = uId;
         this.userName = userName;
         this.mail = mail;
         this.location = location;
+        this.userType = userType;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 
     public String getLocation() {

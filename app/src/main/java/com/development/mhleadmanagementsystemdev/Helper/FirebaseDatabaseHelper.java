@@ -1,25 +1,14 @@
 package com.development.mhleadmanagementsystemdev.Helper;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.development.mhleadmanagementsystemdev.Interfaces.CountNoOfNodesInDatabaseListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnCheckAdminListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserListListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadNewUserDetailsListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.SignUpAccountListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
-import com.development.mhleadmanagementsystemdev.Models.TeleCallerDetails;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
+import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -65,7 +54,7 @@ public class FirebaseDatabaseHelper {
 
         Log.i("No of Nodes", "Uploading");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("leadsList").push();
+        DatabaseReference myRef = database.getReference("leadList").push();
 
         String key = myRef.getKey();
         customerDetails.setKey(key);
@@ -75,7 +64,7 @@ public class FirebaseDatabaseHelper {
 
     public void fetchSalesPersons(final OnFetchSalesPersonListListener onFetchSalesPersonListListener, String location) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("telecallerList");
+        DatabaseReference myRef = database.getReference("userList");
         Log.i("Users", "Fetching Users...");
 
         final List<String> salesPersonList = new ArrayList<>();
@@ -86,10 +75,12 @@ public class FirebaseDatabaseHelper {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            TeleCallerDetails teleCallerDetails = snapshot.getValue(TeleCallerDetails.class);
+                            UserDetails userDetails = snapshot.getValue(UserDetails.class);
 
-                            Log.i("Users", teleCallerDetails.getUserName());
-                            salesPersonList.add(teleCallerDetails.getUserName());
+                            if (userDetails.getUserType().equals("Telecaller")) {
+                                Log.i("Users", userDetails.getUserName());
+                                salesPersonList.add(userDetails.getUserName());
+                            }
                         }
                         onFetchSalesPersonListListener.onListFetched(salesPersonList);
                     }
@@ -101,7 +92,7 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void signUpAccount(final SignUpAccountListener onSignUpAccountListener, String strMail, String strPassword, final String strUserName) {
+    /*public void signUpAccount(final SignUpAccountListener onSignUpAccountListener, String strMail, String strPassword, final String strUserName) {
         final FirebaseAuth mAuth;
         mAuth = FirebaseAuth.getInstance();
 
@@ -127,9 +118,9 @@ public class FirebaseDatabaseHelper {
                         }
                     }
                 });
-    }
+    }*/
 
-    public void uploadNewUserDetails(OnUploadNewUserDetailsListener onUploadNewUserDetailsListener, TeleCallerDetails teleCallerDetails, long nodes) {
+    /*public void uploadNewUserDetails(OnUploadNewUserDetailsListener onUploadNewUserDetailsListener, UserDetails teleCallerDetails, long nodes) {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("userList").child(String.valueOf(nodes));
@@ -137,9 +128,9 @@ public class FirebaseDatabaseHelper {
         myRef.setValue(teleCallerDetails);
 
         onUploadNewUserDetailsListener.dataUploaded();
-    }
+    }*/
 
-    public void fetchUserList(final OnFetchUserListListener onFetchUserListListener) {
+    /*public void fetchUserList(final OnFetchUserListListener onFetchUserListListener) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("userList");
 
@@ -147,10 +138,10 @@ public class FirebaseDatabaseHelper {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                TeleCallerDetails teleCallerDetails;
+                UserDetails teleCallerDetails;
                 List<String> list = new ArrayList<>();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    teleCallerDetails = postSnapshot.getValue(TeleCallerDetails.class);
+                    teleCallerDetails = postSnapshot.getValue(UserDetails.class);
                     list.add(teleCallerDetails.getUserName());
                 }
                 onFetchUserListListener.onUserListFetched(list);
@@ -163,9 +154,9 @@ public class FirebaseDatabaseHelper {
                 onFetchUserListListener.onFailed();
             }
         });
-    }
+    }*/
 
-    public void checkAdmin(final OnCheckAdminListener onCheckAdminListener, final String mail) {
+    /*public void checkAdmin(final OnCheckAdminListener onCheckAdminListener, final String mail) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("adminList");
 
@@ -187,10 +178,14 @@ public class FirebaseDatabaseHelper {
                 onCheckAdminListener.onFailer();
             }
         });
-    }
+    }*/
 
-    public void updateLeadDetails(String assignedTo, String status, String key) {
+    public void updateLeadDetails(OnUpdateLeadListener onUpdateLeadListener, CustomerDetails updateLead) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("leadList").child(key);
+        DatabaseReference myRef = database.getReference("leadList").child(updateLead.getKey());
+        myRef.setValue(updateLead);
+
+        onUpdateLeadListener.onLeadUpdated();
+
     }
 }

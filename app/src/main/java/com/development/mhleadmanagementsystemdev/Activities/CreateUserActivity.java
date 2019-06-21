@@ -13,7 +13,7 @@ import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.CountNoOfNodesInDatabaseListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadNewUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.SignUpAccountListener;
-import com.development.mhleadmanagementsystemdev.Models.TeleCallerDetails;
+import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
 
 public class CreateUserActivity extends BaseActivity {
@@ -54,8 +54,7 @@ public class CreateUserActivity extends BaseActivity {
                             progress.setCanceledOnTouchOutside(false);
                             progress.show();
 
-                            firebaseDatabaseHelper.signUpAccount(onSignUpAccountListener(),
-                                    strMail, strPassword, strUserName);
+                            //firebaseDatabaseHelper.signUpAccount(onSignUpAccountListener(),strMail, strPassword, strUserName);
 
                         } else
                             showToastMessage(R.string.passwords_not_matching);
@@ -115,9 +114,9 @@ public class CreateUserActivity extends BaseActivity {
             @Override
             public void onFetched(long nodes) {
                 Log.i("No of Nodes", "About to upload details");
-                TeleCallerDetails teleCallerDetails = new TeleCallerDetails(UID, strUserName, strMail, "erfr");
+                //UserDetails userDetails = new UserDetails(UID, strUserName, strMail, "erfr");
 
-                firebaseDatabaseHelper.uploadNewUserDetails(uploadNewUserDetailsListener(), teleCallerDetails, nodes);
+                //firebaseDatabaseHelper.uploadNewUserDetails(uploadNewUserDetailsListener(), userDetails, nodes);
             }
 
             @Override

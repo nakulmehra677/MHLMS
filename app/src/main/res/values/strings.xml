@@ -13,6 +13,8 @@
     <string name="no_leads">No Leads are present yet.</string>
     <string name="no_telecallers">No Telecallers are present yet.</string>
     <string name="no_salesmen">No Salesmen are present yet.</string>
+    <string name="lead_update">Lead updated.</string>
+    <string name="logging_in">Logging in.</string>
 
     <string-array name="property_type">
         <item>None</item>

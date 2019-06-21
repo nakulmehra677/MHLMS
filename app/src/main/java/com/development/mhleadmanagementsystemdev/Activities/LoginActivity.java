@@ -25,7 +25,6 @@ public class LoginActivity extends BaseActivity {
     private EditText mail, password;
     private Button loginButton;
     private String strMail, strPassword;
-    private ProgressDialog progress;
     //private TextView signUp;
 
     private FirebaseAuthenticationHelper firebaseAuthenticationHelper;
@@ -52,11 +51,8 @@ public class LoginActivity extends BaseActivity {
                     getDetail();
 
                     if (!strMail.isEmpty() && !strPassword.isEmpty()) {
-                        progress = new ProgressDialog(LoginActivity.this);
-                        progress.setMessage("Logging In..");
-                        progress.setCancelable(false);
-                        progress.setCanceledOnTouchOutside(false);
-                        progress.show();
+
+                        showProgressDialog("Logging in", LoginActivity.this);
 
                         firebaseAuthenticationHelper.loginUser(onUserLoginListener(), strMail, strPassword);
                     } else
@@ -85,7 +81,14 @@ public class LoginActivity extends BaseActivity {
         return new OnUserLoginListener() {
             @Override
             public void onSuccess() {
-                firebaseDatabaseHelper.checkAdmin(onCheckAdminListener(), strMail);
+                progress.dismiss();
+                showToastMessage(R.string.logged_in);
+
+                Intent intent = new Intent();
+                intent.putExtra("MESSAGE", true);
+                setResult(1, intent);
+                finish();
+                //firebaseDatabaseHelper.checkAdmin(onCheckAdminListener(), strMail);
             }
 
             @Override
@@ -96,7 +99,15 @@ public class LoginActivity extends BaseActivity {
         };
     }
 
-    private OnCheckAdminListener onCheckAdminListener() {
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("MESSAGE", false);
+        setResult(1, intent);
+        finish();
+    }
+
+    /*private OnCheckAdminListener onCheckAdminListener() {
         return new OnCheckAdminListener() {
             @Override
             public void onSuccess(boolean a) {
@@ -109,5 +120,5 @@ public class LoginActivity extends BaseActivity {
                 progress.dismiss();
             }
         };
-    }
+    }*/
 }
