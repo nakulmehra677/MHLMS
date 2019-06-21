@@ -8,6 +8,6 @@
 
 /src/google-services.json
 
-/src/release/*.aab
-/src/release/*.apk
-/src/release/*.json
+*.aab
+*.apk
+*.json
