@@ -7,3 +7,5 @@
 *.pepk
 
 /src/google-services.json
+
+/release/
