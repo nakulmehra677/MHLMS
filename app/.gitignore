@@ -6,4 +6,4 @@
 #private key
 *.pepk
 
-.
+/src/google-services.json
