@@ -19,15 +19,14 @@ public class FirebaseAuthenticationHelper {
 
     public void loginUser(final OnUserLoginListener onUserLoginListener, String mail, String password) {
 
-        FirebaseAuth mAuth;
+        final FirebaseAuth mAuth;
         mAuth = FirebaseAuth.getInstance();
-
         mAuth.signInWithEmailAndPassword(mail, password)
                 .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            onUserLoginListener.onSuccess();
+                            onUserLoginListener.onSuccess(mAuth.getUid());
                         } else {
                             onUserLoginListener.onFailer();
                         }

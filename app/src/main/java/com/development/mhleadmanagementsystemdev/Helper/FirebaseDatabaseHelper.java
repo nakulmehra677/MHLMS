@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserTypeListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
@@ -77,12 +78,33 @@ public class FirebaseDatabaseHelper {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             UserDetails userDetails = snapshot.getValue(UserDetails.class);
 
-                            if (userDetails.getUserType().equals("Telecaller")) {
+                            if (userDetails.getUserType().equals("Salesman")) {
                                 Log.i("Users", userDetails.getUserName());
                                 salesPersonList.add(userDetails.getUserName());
                             }
                         }
                         onFetchSalesPersonListListener.onListFetched(salesPersonList);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    public void getUserType(final OnFetchUserTypeListener listener, String uId) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("userList");
+
+        myRef.orderByChild("uId").equalTo(uId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            UserDetails userDetails = snapshot.getValue(UserDetails.class);
+                            listener.onSuccess(userDetails.getUserType());
+                        }
                     }
 
                     @Override

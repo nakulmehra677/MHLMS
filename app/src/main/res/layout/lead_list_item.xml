@@ -20,6 +20,7 @@
             android:elevation="2dp"
             android:padding="18dp"
             android:text="&#8942;"
+            android:visibility="invisible"
             android:textColor="@color/coloBlack"
             android:textSize="18dp"
             android:textStyle="bold"

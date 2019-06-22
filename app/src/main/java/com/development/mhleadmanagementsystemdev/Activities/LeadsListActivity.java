@@ -1,7 +1,10 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
@@ -71,7 +74,14 @@ public class LeadsListActivity extends BaseActivity {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private void intializeVariables() {
+
+        SharedPreferences sharedPreferences = getSharedPreferences("shared_preference", Activity.MODE_PRIVATE);
+        Log.i("UUUSER_TYPE", sharedPreferences.getString("shared_preference_user_type", "Salesman"));
+        if (sharedPreferences.getString("shared_preference_user_type", "salesman").equals("Telecaller"))
+            fab.setVisibility(View.VISIBLE);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,8 +133,14 @@ public class LeadsListActivity extends BaseActivity {
             public LeadListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.lead_list_item, parent, false);
+                SharedPreferences sharedPreferences = getSharedPreferences("shared_preference", Activity.MODE_PRIVATE);
+                Log.i("UUUSER_TYPE", sharedPreferences.getString("shared_preference_user_type", "Salesman"));
 
-                return new LeadListViewHolder(view);
+                boolean showItemMenu = false;
+                if (sharedPreferences.getString("shared_preference_user_type", "Salesman").equals("Telecaller"))
+                    showItemMenu = true;
+
+                return new LeadListViewHolder(view, showItemMenu);
             }
 
             @Override

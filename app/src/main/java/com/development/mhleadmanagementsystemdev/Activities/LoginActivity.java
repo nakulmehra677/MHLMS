@@ -1,24 +1,20 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseAuthenticationHelper;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnCheckAdminListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserTypeListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUserLoginListener;
 import com.development.mhleadmanagementsystemdev.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends BaseActivity {
 
@@ -80,14 +76,8 @@ public class LoginActivity extends BaseActivity {
     private OnUserLoginListener onUserLoginListener() {
         return new OnUserLoginListener() {
             @Override
-            public void onSuccess() {
-                progress.dismiss();
-                showToastMessage(R.string.logged_in);
-
-                Intent intent = new Intent();
-                intent.putExtra("MESSAGE", true);
-                setResult(1, intent);
-                finish();
+            public void onSuccess(String uId) {
+                firebaseDatabaseHelper.getUserType(onFetchUserTypeListener(), uId);
                 //firebaseDatabaseHelper.checkAdmin(onCheckAdminListener(), strMail);
             }
 
@@ -105,6 +95,28 @@ public class LoginActivity extends BaseActivity {
         intent.putExtra("MESSAGE", false);
         setResult(1, intent);
         finish();
+    }
+
+    private OnFetchUserTypeListener onFetchUserTypeListener() {
+        return new OnFetchUserTypeListener() {
+            @Override
+            public void onSuccess(String userType) {
+                SharedPreferences sharedPreferences = getSharedPreferences("shared_preference", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("shared_preference_user_type", userType);
+                editor.commit();
+
+                Log.i("USER_TYPE", userType);
+
+                progress.dismiss();
+                showToastMessage(R.string.logged_in);
+
+                Intent intent = new Intent();
+                intent.putExtra("MESSAGE", true);
+                setResult(1, intent);
+                finish();
+            }
+        };
     }
 
     /*private OnCheckAdminListener onCheckAdminListener() {

@@ -21,7 +21,7 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         this.itemClickListener = itemClickListener;
     }
 
-    public LeadListViewHolder(View itemView) {
+    public LeadListViewHolder(View itemView, boolean showMenuItem) {
         super(itemView);
         name = itemView.findViewById(R.id.customer_name);
         contact = itemView.findViewById(R.id.customer_contact);
@@ -38,6 +38,9 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         optionMenu = itemView.findViewById(R.id.menu_option);
         expandableLinearLayout = itemView.findViewById(R.id.expandable_layout);
         button = itemView.findViewById(R.id.list_root);
+
+        if (showMenuItem)
+            optionMenu.setVisibility(View.VISIBLE);
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
