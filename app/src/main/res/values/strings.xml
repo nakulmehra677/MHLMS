@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MH lead management system dev</string>
+    <string name="app_name">MHLMS</string>
     <string name="passwords_not_matching">Passwords are not matching.</string>
     <string name="fill_all_fields">Fill all the fields.</string>
     <string name="no_internet">No Internet Connection.</string>

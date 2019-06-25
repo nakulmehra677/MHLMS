@@ -15,6 +15,9 @@ import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserTypeListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUserLoginListener;
 import com.development.mhleadmanagementsystemdev.R;
+import com.google.android.gms.auth.api.Auth;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends BaseActivity {
 
@@ -89,13 +92,23 @@ public class LoginActivity extends BaseActivity {
         };
     }
 
-    @Override
+    /*@Override
     public void onBackPressed() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
         Intent intent = new Intent();
-        intent.putExtra("MESSAGE", false);
+
+        if (currentUser == null) {
+            intent.putExtra("MESSAGE", false);
+            Log.i("MMMM", "false");
+        } else {
+            intent.putExtra("MESSAGE", true);
+            Log.i("MMMM", "true");
+        }
         setResult(1, intent);
         finish();
-    }
+    }*/
 
     private OnFetchUserTypeListener onFetchUserTypeListener() {
         return new OnFetchUserTypeListener() {
@@ -111,10 +124,7 @@ public class LoginActivity extends BaseActivity {
                 progress.dismiss();
                 showToastMessage(R.string.logged_in);
 
-                Intent intent = new Intent();
-                intent.putExtra("MESSAGE", true);
-                setResult(1, intent);
-                finish();
+                onBackPressed();
             }
         };
     }

@@ -100,6 +100,9 @@ public class CustomerDetails {
         this.status = status;
     }
 
+    public CustomerDetails() {
+    }
+
     public CustomerDetails(String name, String contactNumber, String propertyType,
                            String employement, String loanType, String location,
                            String loanAmount, String remarks, String date, String assignedTo, String status, String key) {

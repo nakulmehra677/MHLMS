@@ -63,11 +63,55 @@
                         android:id="@+id/salaried"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
+                        android:onClick="onEmployementRadioButtonClicked"
                         android:text="Salaried" />
 
                     <RadioButton
                         android:id="@+id/self_employed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="onEmployementRadioButtonClicked"
+                        android:text="Self employed" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:id="@+id/self_employement_layout"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Type of self employment" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/a"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="onEmployementTypeRadioButtonClicked"
+                        android:text="Salaried" />
+
+                    <RadioButton
+                        android:id="@+id/b"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="onEmployementTypeRadioButtonClicked"
+                        android:text="Self employed" />
+
+                    <RadioButton
+                        android:id="@+id/c"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:onClick="onRadioButtonClicked"
@@ -88,10 +132,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:text="Property Type" />
+                    android:text="Loan Type" />
 
                 <Spinner
-                    android:id="@+id/property_type"
+                    android:id="@+id/loan_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="8dp" />
@@ -102,16 +146,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:text="Loan Type" />
+                    android:text="Property Type" />
 
                 <Spinner
-                    android:id="@+id/loan_type"
+                    android:id="@+id/property_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="8dp" />
@@ -148,26 +193,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
-                    android:text="Remarks" />
-
-                <Spinner
-                    android:id="@+id/remarks"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
                     android:text="Assign to" />
 
                 <Spinner
@@ -178,25 +203,14 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <EditText
+                android:id="@+id/remarks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="8dp"
-                android:orientation="vertical">
+                android:layout_marginVertical="4dp"
+                android:hint="Remarks"
+                android:inputType="number" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:text="Status" />
-
-                <Spinner
-                    android:id="@+id/status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="8dp" />
-
-            </LinearLayout>
 
             <Button
                 android:id="@+id/upload_details"

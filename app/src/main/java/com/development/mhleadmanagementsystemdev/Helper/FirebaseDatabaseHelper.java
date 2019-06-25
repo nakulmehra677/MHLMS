@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserTypeListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnLastLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
@@ -14,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -49,6 +51,26 @@ public class FirebaseDatabaseHelper {
             }
         });
     }*/
+    public void getLastLead(final OnLastLeadListener listener) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("leadList");
+        Query getLastKey = databaseReference.orderByKey().limitToLast(1);
+
+        getLastKey.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                CustomerDetails c = new CustomerDetails();
+                for (DataSnapshot d : dataSnapshot.getChildren())
+                    c = d.getValue(CustomerDetails.class);
+
+                listener.onLastLeadFetched(c);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     public void uploadCustomerDetails(OnUploadCustomerDetailsListener onUploadCustomerdetails,
                                       CustomerDetails customerDetails) {
@@ -63,7 +85,8 @@ public class FirebaseDatabaseHelper {
         onUploadCustomerdetails.onDataUploaded();
     }
 
-    public void fetchSalesPersons(final OnFetchSalesPersonListListener onFetchSalesPersonListListener, String location) {
+    public void fetchSalesPersonsByLocation(
+            final OnFetchSalesPersonListListener onFetchSalesPersonListListener, String location) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("userList");
         Log.i("Users", "Fetching Users...");
@@ -82,6 +105,34 @@ public class FirebaseDatabaseHelper {
                                 Log.i("Users", userDetails.getUserName());
                                 salesPersonList.add(userDetails.getUserName());
                             }
+                        }
+                        onFetchSalesPersonListListener.onListFetched(salesPersonList);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    public void fetchAllSalesPersons(
+            final OnFetchSalesPersonListListener onFetchSalesPersonListListener) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("userList");
+        Log.i("Users", "Fetching Users...");
+
+        final List<String> salesPersonList = new ArrayList<>();
+        salesPersonList.add("None");
+
+        myRef.orderByChild("userType").equalTo("Salesman")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            UserDetails userDetails = snapshot.getValue(UserDetails.class);
+                            Log.i("Users", userDetails.getUserName());
+                            salesPersonList.add(userDetails.getUserName());
                         }
                         onFetchSalesPersonListListener.onListFetched(salesPersonList);
                     }

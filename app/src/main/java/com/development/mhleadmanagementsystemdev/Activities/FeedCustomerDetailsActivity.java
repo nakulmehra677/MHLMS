@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
@@ -27,17 +28,17 @@ import java.util.List;
 public class FeedCustomerDetailsActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText name, contactNumber, loanAmount, remarks;
-    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, remarksSpinner, assignedToSpinner, statusSpinner;
+    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedToSpinner, statusSpinner;
     ArrayAdapter<CharSequence> propertyTypeAdapter;
     ArrayAdapter<CharSequence> loanTypeAdapter;
     ArrayAdapter<CharSequence> locationAdapter;
-    ArrayAdapter<CharSequence> remarksAdapter;
     ArrayAdapter<CharSequence> assignedToAdapter;
     ArrayAdapter<CharSequence> statusAdapter;
-    private String strEmployment = null, strName, strContactNumber, strLoanAmount, strKey,
+    private String strEmployment = null, strSelfEmployement = "", strName, strContactNumber, strLoanAmount, strKey,
             strRemarks, strPropertyType, strLoanType, strLocation, strAssignTo, strStatus;
     private String date;
     private ProgressDialog progress;
+    private LinearLayout selfEmployementLayout;
 
     private CustomerDetails customerDetails;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
@@ -53,9 +54,10 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         loanTypeSpinner = findViewById(R.id.loan_type);
         locationSpinner = findViewById(R.id.location);
         loanAmount = findViewById(R.id.loan_amount);
-        remarksSpinner = findViewById(R.id.remarks);
+        remarks = findViewById(R.id.remarks);
         assignedToSpinner = findViewById(R.id.assign_to);
         statusSpinner = findViewById(R.id.status);
+        selfEmployementLayout = findViewById(R.id.self_employement_layout);
 
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
 
@@ -80,13 +82,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         locationSpinner.setAdapter(locationAdapter);
         locationSpinner.setOnItemSelectedListener(this);
 
-        // Remarks Spinner
-        remarksAdapter = ArrayAdapter.createFromResource(this,
-                R.array.remarks, android.R.layout.simple_spinner_item);
-        remarksAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        remarksSpinner.setAdapter(remarksAdapter);
-        remarksSpinner.setOnItemSelectedListener(this);
-
         // Status Spinner
         statusAdapter = ArrayAdapter.createFromResource(this,
                 R.array.status, android.R.layout.simple_spinner_item);
@@ -95,7 +90,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         statusSpinner.setOnItemSelectedListener(this);
     }
 
-    public void onRadioButtonClicked(View view) {
+    public void onEmployementRadioButtonClicked(View view) {
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
 
@@ -104,9 +99,36 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             case R.id.salaried:
                 if (checked) {
                     strEmployment = "Salaried";
+                    selfEmployementLayout.setVisibility(View.GONE);
                     break;
                 }
             case R.id.self_employed:
+                if (checked) {
+                    strEmployment = "Self Employed";
+                    selfEmployementLayout.setVisibility(View.VISIBLE);
+                    break;
+                }
+        }
+    }
+
+
+    public void onEmployementTypeRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch (view.getId()) {
+            case R.id.a:
+                if (checked) {
+                    strEmployment = "Salaried";
+                    break;
+                }
+            case R.id.b:
+                if (checked) {
+                    strEmployment = "Self Employed";
+                    break;
+                }
+            case R.id.c:
                 if (checked) {
                     strEmployment = "Self Employed";
                     break;
@@ -133,16 +155,13 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 assignedToSpinner.setClickable(false);
 
                 if (!strLocation.equals("None")) {
-                    firebaseDatabaseHelper.fetchSalesPersons(onFetchSalesPersonListListener(), strLocation);
+                    firebaseDatabaseHelper.fetchSalesPersonsByLocation(
+                            onFetchSalesPersonListListener(), strLocation);
                 }
                 break;
 
             case R.id.assign_to:
                 strAssignTo = parent.getItemAtPosition(position).toString();
-                break;
-
-            case R.id.remarks:
-                strRemarks = parent.getItemAtPosition(position).toString();
                 break;
 
             case R.id.status:
@@ -164,7 +183,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             getDetails();
 
             if (!strName.isEmpty() && !strContactNumber.isEmpty() && !strLoanAmount.isEmpty() &&
-                    !strRemarks.equals("None") && !strPropertyType.equals("None") &&
+                    !strRemarks.isEmpty() && !strPropertyType.equals("None") &&
                     !strLoanType.equals("None") && !strLocation.equals("None") &&
                     !strAssignTo.equals("None") && !strStatus.equals("None") && strEmployment != null) {
 
@@ -208,6 +227,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         strName = name.getText().toString();
         strContactNumber = contactNumber.getText().toString();
         strLoanAmount = loanAmount.getText().toString();
+        strRemarks = remarks.getText().toString();
     }
 
     private void getDate() {
