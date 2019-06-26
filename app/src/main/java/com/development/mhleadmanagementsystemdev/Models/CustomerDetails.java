@@ -1,7 +1,8 @@
 package com.development.mhleadmanagementsystemdev.Models;
 
 public class CustomerDetails {
-    String name, contactNumber, propertyType, employement, loanType, location, loanAmount, remarks, date, assignedTo, status, key;
+    String name, contactNumber, loanAmount, loanType, propertyType, employment,
+            employmentType, location, remarks, date, assignedTo, status, key, assigner;
 
     public String getName() {
         return name;
@@ -19,12 +20,32 @@ public class CustomerDetails {
         this.key = key;
     }
 
+    public void setEmployment(String employment) {
+        this.employment = employment;
+    }
+
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
+    public void setEmploymentType(String employmentType) {
+        this.employmentType = employmentType;
+    }
+
+    public String getAssigner() {
+        return assigner;
+    }
+
+    public void setAssigner(String assigner) {
+        this.assigner = assigner;
+    }
+
     public String getPropertyType() {
         return propertyType;
     }
 
-    public String getEmployement() {
-        return employement;
+    public String getEmployment() {
+        return employment;
     }
 
     public String getLoanType() {
@@ -64,7 +85,7 @@ public class CustomerDetails {
     }
 
     public void setEmployement(String employement) {
-        this.employement = employement;
+        this.employment = employment;
     }
 
     public void setLoanType(String loanType) {
@@ -103,13 +124,14 @@ public class CustomerDetails {
     public CustomerDetails() {
     }
 
-    public CustomerDetails(String name, String contactNumber, String propertyType,
-                           String employement, String loanType, String location,
-                           String loanAmount, String remarks, String date, String assignedTo, String status, String key) {
+    public CustomerDetails(String name, String contactNumber, String loanAmount, String employment,
+                           String employmentType, String loanType, String propertyType,
+                           String location, String remarks, String date, String assignedTo,
+                           String status, String assigner, String key) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.propertyType = propertyType;
-        this.employement = employement;
+        this.employment = employment;
         this.loanType = loanType;
         this.location = location;
         this.loanAmount = loanAmount;
@@ -118,5 +140,7 @@ public class CustomerDetails {
         this.assignedTo = assignedTo;
         this.status = status;
         this.key = key;
+        this.employmentType = employmentType;
+        this.assigner = assigner;
     }
 }

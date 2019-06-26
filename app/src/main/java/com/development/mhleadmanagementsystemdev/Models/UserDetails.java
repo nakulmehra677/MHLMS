@@ -1,17 +1,26 @@
 package com.development.mhleadmanagementsystemdev.Models;
 
 public class UserDetails {
-    private String uId, userName, mail, location, userType;
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    private String uId, userName, mail, location, userType, key;
 
     public UserDetails() {
     }
 
-    public UserDetails(String uId, String userName, String mail, String location, String userType) {
+    public UserDetails(String uId, String userName, String mail, String location, String userType, String key) {
         this.uId = uId;
         this.userName = userName;
         this.mail = mail;
         this.location = location;
         this.userType = userType;
+        this.key = key;
     }
 
     public String getUserType() {

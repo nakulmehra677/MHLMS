@@ -52,7 +52,7 @@ public class LeadsListActivity extends BaseActivity {
     //private ProgressBar progressBar;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
-    private long items = 0;
+    private String currentUserType, currentUserName;
 
     private CustomerDetails updateLead, lastLead;
     private String temporaryLastLeadKey;
@@ -60,6 +60,7 @@ public class LeadsListActivity extends BaseActivity {
     private String needSalesPersonListFor;
     private DatabaseReference database;
     private FirebaseRecyclerOptions<CustomerDetails> options;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,10 @@ public class LeadsListActivity extends BaseActivity {
 
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
+        sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
+
+        currentUserType = sharedPreferences.getString(sharedPreferenceUserType, "Salesman");
+        currentUserName = sharedPreferences.getString(sharedPreferenceUserName, "");
 
         /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -95,10 +100,7 @@ public class LeadsListActivity extends BaseActivity {
 
     @SuppressLint("RestrictedApi")
     private void intializeVariables() {
-
-        SharedPreferences sharedPreferences = getSharedPreferences("shared_preference", Activity.MODE_PRIVATE);
-        Log.i("UUUSER_TYPE", sharedPreferences.getString("shared_preference_user_type", "Salesman"));
-        if (sharedPreferences.getString("shared_preference_user_type", "salesman").equals("Telecaller"))
+        if (sharedPreferences.getString(sharedPreferenceUserType, "Salesman").equals("Telecaller"))
             fab.setVisibility(View.VISIBLE);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -129,25 +131,49 @@ public class LeadsListActivity extends BaseActivity {
 
     private void fetch() {
         Log.i("function", "fetch() function called");
+        database = FirebaseDatabase.getInstance().getReference("leadList");
+        Query query;
+
+        if (currentUserType.equals("Telecaller"))
+            query = database.orderByChild("assigner").equalTo(currentUserName);
+        else
+            query = database.orderByChild("assignedTo").equalTo(currentUserName);
 
         options =
                 new FirebaseRecyclerOptions.Builder<CustomerDetails>()
-                        .setQuery(database, new SnapshotParser<CustomerDetails>() {
+                        .setQuery(query, new SnapshotParser<CustomerDetails>() {
                             @NonNull
                             @Override
                             public CustomerDetails parseSnapshot(@NonNull DataSnapshot snapshot) {
                                 return new CustomerDetails(snapshot.child("name").getValue().toString(),
                                         snapshot.child("contactNumber").getValue().toString(),
-                                        snapshot.child("propertyType").getValue().toString(),
-                                        snapshot.child("employement").getValue().toString(),
-                                        snapshot.child("loanType").getValue().toString(),
-                                        snapshot.child("location").getValue().toString(),
                                         snapshot.child("loanAmount").getValue().toString(),
+                                        snapshot.child("employment").getValue().toString(),
+                                        snapshot.child("employmentType").getValue().toString(),
+                                        snapshot.child("loanType").getValue().toString(),
+                                        snapshot.child("propertyType").getValue().toString(),
+                                        snapshot.child("location").getValue().toString(),
                                         snapshot.child("remarks").getValue().toString(),
                                         snapshot.child("date").getValue().toString(),
                                         snapshot.child("assignedTo").getValue().toString(),
                                         snapshot.child("status").getValue().toString(),
+                                        snapshot.child("assigner").getValue().toString(),
                                         snapshot.child("key").getValue().toString());
+
+                                /*return new CustomerDetails("dsfvfdrv",
+                                        "sdsd",
+                                        "sdgfvs",
+                                        "setgbrgt",
+                                        "esrgve",
+                                        "esrgvergv",
+                                        "awerve",
+                                        "srfve",
+                                        "sevdefv",
+                                        "sdrfvedfv",
+                                        "seve",
+                                        "srdtgbrftgb",
+                                        "egvdfrvfgb",
+                                        "segvd");*/
                             }
                         })
                         .build();
@@ -162,16 +188,8 @@ public class LeadsListActivity extends BaseActivity {
             public LeadListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.lead_list_item, parent, false);
-                SharedPreferences sharedPreferences = getSharedPreferences("shared_preference", Activity.MODE_PRIVATE);
-                Log.i("UUUSER_TYPE", sharedPreferences.getString("shared_preference_user_type", "Salesman"));
 
-                boolean showItemMenu = false;
-                if (sharedPreferences.getString("shared_preference_user_type", "Salesman").equals("Telecaller"))
-                    showItemMenu = true;
-
-                items = getItemCount();
-
-                return new LeadListViewHolder(view, showItemMenu);
+                return new LeadListViewHolder(view, currentUserType);
             }
 
             @Override
@@ -190,7 +208,7 @@ public class LeadsListActivity extends BaseActivity {
                 holder.name.setText(model.getName());
                 holder.contact.setText(model.getContactNumber());
                 holder.propertyType.setText(model.getPropertyType());
-                holder.employment.setText(model.getEmployement());
+                holder.employment.setText(model.getEmployment());
                 holder.loanType.setText(model.getLoanType());
                 holder.location.setText(model.getLocation());
                 holder.loanAmount.setText(model.getLoanAmount());
@@ -209,10 +227,10 @@ public class LeadsListActivity extends BaseActivity {
                     }
                 });
 
-                holder.optionMenu.setOnClickListener(new View.OnClickListener() {
+                holder.telecallerOptionMenu.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        PopupMenu popupMenu = new PopupMenu(LeadsListActivity.this, holder.optionMenu);
+                        PopupMenu popupMenu = new PopupMenu(LeadsListActivity.this, holder.telecallerOptionMenu);
                         popupMenu.inflate(R.menu.lead_list_item_menu);
                         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override

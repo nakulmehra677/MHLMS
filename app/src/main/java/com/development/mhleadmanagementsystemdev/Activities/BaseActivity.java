@@ -9,6 +9,12 @@ import android.widget.Toast;
 public class BaseActivity extends AppCompatActivity {
 
     protected ProgressDialog progress;
+    protected String sharedPreferenceUserDetails = "shared_preference_user_details";
+    protected String sharedPreferenceUserName = "shared_preference_user_name";
+    protected String sharedPreferenceUserType = "shared_preference_user_type";
+    protected String sharedPreferenceUserLocation = "shared_preference_user_location";
+    protected String sharedPreferenceUserKey = "shared_preference_user_key";
+
     //protected boolean isAdmin = false;
 
     protected boolean isNetworkConnected() {

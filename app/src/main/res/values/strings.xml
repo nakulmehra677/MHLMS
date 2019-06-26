@@ -16,9 +16,21 @@
     <string name="lead_update">Lead updated.</string>
     <string name="logging_in">Logging in.</string>
 
+    <string name="home_loan">Home Loan</string>
+    <string name="business_loan">Business Loan</string>
+    <string name="personal_loan">Personal Loan</string>
+    <string name="loan_against_property">Loan Against Property</string>
+    <string name="over_draft">Over Draft</string>
+
+    <string name="active">Active</string>
+
+    <!--  Nature of employment -->
+    <string name="salaried">Salaried</string>
+    <string name="self_employed">Self Employed</string>
+
     <string-array name="property_type">
         <item>None</item>
-        <item>Self Occupied Resdential Property</item>
+        <item>Self Occupied Residential Property</item>
         <item>Self Occupied Commercial Property</item>
         <item>Rented</item>
         <item>Commercial</item>
@@ -28,11 +40,10 @@
     <string-array name="loan_type">
         <item>None</item>
         <item>Home Loan</item>
-        <item>Bussiness Loan</item>
+        <item>Business Loan</item>
         <item>Personal Loan</item>
         <item>Loan Against Property</item>
         <item>Over Draft</item>
-        <item>Credit Cash</item>
     </string-array>
 
     <string-array name="location">

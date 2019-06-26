@@ -53,7 +53,7 @@ public class LeadsListAdapter extends RecyclerView.Adapter<LeadsListAdapter.Lead
             status = itemView.findViewById(R.id.status);
             date = itemView.findViewById(R.id.date);
 
-            optionMenu = itemView.findViewById(R.id.menu_option);
+            optionMenu = itemView.findViewById(R.id.telecaller_menu_option);
             expandableLinearLayout = itemView.findViewById(R.id.expandable_layout);
             button = itemView.findViewById(R.id.list_root);
 
@@ -91,7 +91,7 @@ public class LeadsListAdapter extends RecyclerView.Adapter<LeadsListAdapter.Lead
         holder.name.setText(model.getName());
         holder.contact.setText(model.getContactNumber());
         holder.propertyType.setText(model.getPropertyType());
-        holder.employment.setText(model.getEmployement());
+        holder.employment.setText(model.getEmployment());
         holder.loanType.setText(model.getLoanType());
         holder.location.setText(model.getLocation());
         holder.loanAmount.setText(model.getLoanAmount());

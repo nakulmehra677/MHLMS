@@ -1,9 +1,11 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
@@ -28,20 +31,22 @@ import java.util.List;
 public class FeedCustomerDetailsActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText name, contactNumber, loanAmount, remarks;
-    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedToSpinner, statusSpinner;
+    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedToSpinner;
     ArrayAdapter<CharSequence> propertyTypeAdapter;
     ArrayAdapter<CharSequence> loanTypeAdapter;
     ArrayAdapter<CharSequence> locationAdapter;
     ArrayAdapter<CharSequence> assignedToAdapter;
-    ArrayAdapter<CharSequence> statusAdapter;
-    private String strEmployment = null, strSelfEmployement = "", strName, strContactNumber, strLoanAmount, strKey,
+    private String strEmployment = "", strEmploymentType = "", strName, strContactNumber, strLoanAmount, strKey,
             strRemarks, strPropertyType, strLoanType, strLocation, strAssignTo, strStatus;
     private String date;
     private ProgressDialog progress;
-    private LinearLayout selfEmployementLayout;
+    private LinearLayout selfEmployementLayout, propertyTypeLayout;
+    private RadioGroup radioGroup;
 
     private CustomerDetails customerDetails;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,17 +61,15 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         loanAmount = findViewById(R.id.loan_amount);
         remarks = findViewById(R.id.remarks);
         assignedToSpinner = findViewById(R.id.assign_to);
-        statusSpinner = findViewById(R.id.status);
         selfEmployementLayout = findViewById(R.id.self_employement_layout);
+        propertyTypeLayout = findViewById(R.id.property_type_layout);
+        radioGroup = findViewById(R.id.radio_group);
 
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
+        sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
 
-        // Property type Spinner
-        propertyTypeAdapter = ArrayAdapter.createFromResource(this,
-                R.array.property_type, android.R.layout.simple_spinner_item);
-        propertyTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        propertyTypeSpinner.setAdapter(propertyTypeAdapter);
-        propertyTypeSpinner.setOnItemSelectedListener(this);
+
+        initializePropertyTypeSpinner();
 
         // Loan type Spinner
         loanTypeAdapter = ArrayAdapter.createFromResource(this,
@@ -81,13 +84,15 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         locationSpinner.setAdapter(locationAdapter);
         locationSpinner.setOnItemSelectedListener(this);
+    }
 
-        // Status Spinner
-        statusAdapter = ArrayAdapter.createFromResource(this,
-                R.array.status, android.R.layout.simple_spinner_item);
-        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        statusSpinner.setAdapter(statusAdapter);
-        statusSpinner.setOnItemSelectedListener(this);
+    private void initializePropertyTypeSpinner() {
+        // Property type Spinner
+        propertyTypeAdapter = ArrayAdapter.createFromResource(this,
+                R.array.property_type, android.R.layout.simple_spinner_item);
+        propertyTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        propertyTypeSpinner.setAdapter(propertyTypeAdapter);
+        propertyTypeSpinner.setOnItemSelectedListener(this);
     }
 
     public void onEmployementRadioButtonClicked(View view) {
@@ -100,6 +105,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 if (checked) {
                     strEmployment = "Salaried";
                     selfEmployementLayout.setVisibility(View.GONE);
+                    radioGroup.clearCheck();
+                    strEmploymentType = "";
                     break;
                 }
             case R.id.self_employed:
@@ -111,26 +118,25 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         }
     }
 
-
     public void onEmployementTypeRadioButtonClicked(View view) {
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
 
         // Check which radio button was clicked
         switch (view.getId()) {
-            case R.id.a:
+            case R.id.partnership_firm:
                 if (checked) {
-                    strEmployment = "Salaried";
+                    strEmployment = "Partnership Firm";
                     break;
                 }
-            case R.id.b:
+            case R.id.private_limited_company:
                 if (checked) {
-                    strEmployment = "Self Employed";
+                    strEmployment = "Private Limited Company";
                     break;
                 }
-            case R.id.c:
+            case R.id.proprietorship_firm:
                 if (checked) {
-                    strEmployment = "Self Employed";
+                    strEmployment = "Proprietorship Firm";
                     break;
                 }
         }
@@ -139,12 +145,19 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
-            case R.id.property_type:
-                strPropertyType = parent.getItemAtPosition(position).toString();
-                break;
-
             case R.id.loan_type:
                 strLoanType = parent.getItemAtPosition(position).toString();
+                if (strLoanType.equals("Personal Loan") || strLoanType.equals("Loan Against Property"))
+                    propertyTypeLayout.setVisibility(View.VISIBLE);
+                else {
+                    propertyTypeLayout.setVisibility(View.GONE);
+                    initializePropertyTypeSpinner();
+                    strPropertyType = "None";
+                }
+                break;
+
+            case R.id.property_type:
+                strPropertyType = parent.getItemAtPosition(position).toString();
                 break;
 
             case R.id.location:
@@ -181,46 +194,73 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     public void onUploadDetailsButtonClicked(View view) {
         if (isNetworkConnected()) {
             getDetails();
-
-            if (!strName.isEmpty() && !strContactNumber.isEmpty() && !strLoanAmount.isEmpty() &&
-                    !strRemarks.isEmpty() && !strPropertyType.equals("None") &&
-                    !strLoanType.equals("None") && !strLocation.equals("None") &&
-                    !strAssignTo.equals("None") && !strStatus.equals("None") && strEmployment != null) {
-
-                AlertDialog alertDialog = new AlertDialog.Builder(this)
-                        .setMessage("Are you sure you want to upload the details?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.i("Fields filled", "All the fields are filled");
-
-                                getDate();
-                                makeObject();
-
-                                progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
-                                progress.setMessage("Uploading..");
-                                progress.setCancelable(false);
-                                progress.setCanceledOnTouchOutside(false);
-                                progress.show();
-
-                                firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), customerDetails);
-                                //firebaseDatabaseHelper.countNoOfNodes(onCountNoOfNodesInDatabase(), "leadsList");
-                            }
-                        })
-
-                        // A null listener allows the button to dismiss the dialog and take no further action.
-                        .setNegativeButton("No", null)
-                        .setCancelable(false)
-                        .show();
-
-                alertDialog.setCanceledOnTouchOutside(false);
-
-            } else {
+            if (checkEmpty()) {
+                uploadDetails();
+            } else
                 showToastMessage(R.string.fill_all_fields);
-                Log.i("Fields filled", "All the fields are not filled");
+        } else
+            showToastMessage(R.string.no_internet);
+    }
+
+    private boolean checkEmpty() {
+        if (strName.isEmpty() || strContactNumber.isEmpty() || strLoanAmount.isEmpty() ||
+                strRemarks.isEmpty() || strLoanType.equals("None") || strLocation.equals("None") ||
+                strAssignTo.equals("None") || strEmployment.isEmpty()) {
+            return false;
+        }
+        if (strEmployment.equals("Self Employed")) {
+            if (strEmploymentType.isEmpty())
+                return false;
+
+            if (strLoanType.equals("Personal Loan") || strLoanType.equals("Loan Against Property")) {
+                if (strPropertyType.equals("None")) {
+                    return false;
+                }
+                return true;
+            } else {
+                strPropertyType = "";
+                return true;
             }
         } else {
-            showToastMessage(R.string.no_internet);
+            strEmploymentType = "";
+            if (strLoanType.equals("Personal Loan") || strLoanType.equals("Loan Against Property")) {
+                if (strPropertyType.equals("None")) {
+                    return false;
+                }
+                return true;
+            } else {
+                strPropertyType = "";
+                return true;
+            }
         }
+    }
+
+    private void uploadDetails() {
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setMessage("Are you sure you want to upload the details?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.i("Fields filled", "All the fields are filled");
+
+                        getDate();
+                        makeObject();
+
+                        progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
+                        progress.setMessage("Uploading..");
+                        progress.setCancelable(false);
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
+                        firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), customerDetails);
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton("No", null)
+                .setCancelable(false)
+                .show();
+
+        alertDialog.setCanceledOnTouchOutside(false);
     }
 
     private void getDetails() {
@@ -237,8 +277,10 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     }
 
     private void makeObject() {
-        customerDetails = new CustomerDetails(strName, strContactNumber, strPropertyType,
-                strEmployment, strLoanType, strLocation, strLoanAmount, strRemarks, date, strAssignTo, strStatus, "null");
+        String assigner = sharedPreferences.getString(sharedPreferenceUserName, "");
+        customerDetails = new CustomerDetails(strName, strContactNumber, strLoanAmount,
+                strEmployment, strEmploymentType, strLoanType, strPropertyType,
+                strLocation, strRemarks, date, strAssignTo, "Active", assigner, "");
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {

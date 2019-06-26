@@ -10,9 +10,8 @@ import com.development.mhleadmanagementsystemdev.R;
 import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 
 public class LeadListViewHolder extends RecyclerView.ViewHolder {
-    public LinearLayout root;
     public TextView name, contact, propertyType, employment, loanType,
-            location, loanAmount, remarks, assignedTo, status, date, optionMenu;
+            location, loanAmount, remarks, assignedTo, status, date, telecallerOptionMenu, salesmanOptionMenu;
     public ItemClickListener itemClickListener;
     public ExpandableLinearLayout expandableLinearLayout;
     public LinearLayout button;
@@ -21,7 +20,7 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         this.itemClickListener = itemClickListener;
     }
 
-    public LeadListViewHolder(View itemView, boolean showMenuItem) {
+    public LeadListViewHolder(View itemView, String currentUserType) {
         super(itemView);
         name = itemView.findViewById(R.id.customer_name);
         contact = itemView.findViewById(R.id.customer_contact);
@@ -35,12 +34,16 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         status = itemView.findViewById(R.id.status);
         date = itemView.findViewById(R.id.date);
 
-        optionMenu = itemView.findViewById(R.id.menu_option);
+        telecallerOptionMenu = itemView.findViewById(R.id.telecaller_menu_option);
+        salesmanOptionMenu = itemView.findViewById(R.id.salesman_menu_option);
+
         expandableLinearLayout = itemView.findViewById(R.id.expandable_layout);
         button = itemView.findViewById(R.id.list_root);
 
-        if (showMenuItem)
-            optionMenu.setVisibility(View.VISIBLE);
+        if (currentUserType.equals("Telecaller"))
+            telecallerOptionMenu.setVisibility(View.VISIBLE);
+        else
+            salesmanOptionMenu.setVisibility(View.VISIBLE);
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override

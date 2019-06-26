@@ -64,25 +64,26 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:onClick="onEmployementRadioButtonClicked"
-                        android:text="Salaried" />
+                        android:text="@string/salaried" />
 
                     <RadioButton
                         android:id="@+id/self_employed"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:onClick="onEmployementRadioButtonClicked"
-                        android:text="Self employed" />
+                        android:text="@string/self_employed" />
 
                 </RadioGroup>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/self_employement_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
-                android:id="@+id/self_employement_layout"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -94,28 +95,29 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="8dp"
+                    android:id="@+id/radio_group"
                     android:orientation="vertical">
 
                     <RadioButton
-                        android:id="@+id/a"
+                        android:id="@+id/partnership_firm"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:onClick="onEmployementTypeRadioButtonClicked"
-                        android:text="Salaried" />
+                        android:text="Partnership Firm" />
 
                     <RadioButton
-                        android:id="@+id/b"
+                        android:id="@+id/private_limited_company"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:onClick="onEmployementTypeRadioButtonClicked"
-                        android:text="Self employed" />
+                        android:text="Private Limited Company" />
 
                     <RadioButton
-                        android:id="@+id/c"
+                        android:id="@+id/proprietorship_firm"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onRadioButtonClicked"
-                        android:text="Self employed" />
+                        android:onClick="onEmployementTypeRadioButtonClicked"
+                        android:text="Proprietorship Firm" />
 
                 </RadioGroup>
 
@@ -143,6 +145,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/property_type_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
@@ -209,7 +212,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="4dp"
                 android:hint="Remarks"
-                android:inputType="number" />
+                android:inputType="textCapSentences" />
 
 
             <Button

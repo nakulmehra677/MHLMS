@@ -12,8 +12,10 @@ import android.widget.EditText;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseAuthenticationHelper;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserTypeListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUserLoginListener;
+import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,7 +52,6 @@ public class LoginActivity extends BaseActivity {
                     getDetail();
 
                     if (!strMail.isEmpty() && !strPassword.isEmpty()) {
-
                         showProgressDialog("Logging in", LoginActivity.this);
 
                         firebaseAuthenticationHelper.loginUser(onUserLoginListener(), strMail, strPassword);
@@ -61,14 +62,6 @@ public class LoginActivity extends BaseActivity {
                     showToastMessage(R.string.no_internet);
             }
         });
-
-        /*signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, CreateUserActivity.class));
-                finish();
-            }
-        });*/
     }
 
     private void getDetail() {
@@ -80,8 +73,9 @@ public class LoginActivity extends BaseActivity {
         return new OnUserLoginListener() {
             @Override
             public void onSuccess(String uId) {
-                firebaseDatabaseHelper.getUserType(onFetchUserTypeListener(), uId);
-                //firebaseDatabaseHelper.checkAdmin(onCheckAdminListener(), strMail);
+                firebaseDatabaseHelper.getUserType(onFetchUserDetailsListener(), uId);
+                startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
+                finish();
             }
 
             @Override
@@ -110,16 +104,18 @@ public class LoginActivity extends BaseActivity {
         finish();
     }*/
 
-    private OnFetchUserTypeListener onFetchUserTypeListener() {
-        return new OnFetchUserTypeListener() {
+    private OnFetchUserDetailsListener onFetchUserDetailsListener() {
+        return new OnFetchUserDetailsListener() {
             @Override
-            public void onSuccess(String userType) {
-                SharedPreferences sharedPreferences = getSharedPreferences("shared_preference", Activity.MODE_PRIVATE);
+            public void onSuccess(UserDetails userDetails) {
+                SharedPreferences sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("shared_preference_user_type", userType);
-                editor.commit();
+                editor.putString(sharedPreferenceUserName, userDetails.getUserName());
+                editor.putString(sharedPreferenceUserType, userDetails.getUserType());
+                editor.putString(sharedPreferenceUserLocation, userDetails.getLocation());
+                editor.putString(sharedPreferenceUserKey, userDetails.getKey());
 
-                Log.i("USER_TYPE", userType);
+                editor.commit();
 
                 progress.dismiss();
                 showToastMessage(R.string.logged_in);
