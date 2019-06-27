@@ -13,23 +13,20 @@ import android.widget.EditText;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseAuthenticationHelper;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserTypeListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUserLoginListener;
+import com.development.mhleadmanagementsystemdev.Managers.ProfileManager;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
-import com.google.android.gms.auth.api.Auth;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends BaseActivity {
 
     private EditText mail, password;
     private Button loginButton;
     private String strMail, strPassword;
-    //private TextView signUp;
 
     private FirebaseAuthenticationHelper firebaseAuthenticationHelper;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private ProfileManager profileManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +37,6 @@ public class LoginActivity extends BaseActivity {
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
         loginButton = findViewById(R.id.login);
-        //signUp = findViewById(R.id.sign_up);
 
         firebaseAuthenticationHelper = new FirebaseAuthenticationHelper(this);
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
@@ -73,7 +69,9 @@ public class LoginActivity extends BaseActivity {
         return new OnUserLoginListener() {
             @Override
             public void onSuccess(String uId) {
-                firebaseDatabaseHelper.getUserType(onFetchUserDetailsListener(), uId);
+                profileManager = new ProfileManager();
+
+                firebaseDatabaseHelper.getUserDetails(onFetchUserDetailsListener(), uId);
                 startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
                 finish();
             }
@@ -124,19 +122,4 @@ public class LoginActivity extends BaseActivity {
             }
         };
     }
-
-    /*private OnCheckAdminListener onCheckAdminListener() {
-        return new OnCheckAdminListener() {
-            @Override
-            public void onSuccess(boolean a) {
-                progress.dismiss();
-                showToastMessage(R.string.logged_in);
-            }
-
-            @Override
-            public void onFailer() {
-                progress.dismiss();
-            }
-        };
-    }*/
 }

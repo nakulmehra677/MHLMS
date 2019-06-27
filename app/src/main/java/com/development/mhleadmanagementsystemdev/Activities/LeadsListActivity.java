@@ -2,7 +2,7 @@ package com.development.mhleadmanagementsystemdev.Activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -18,10 +18,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 
 import com.development.mhleadmanagementsystemdev.Fragments.EditLeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Fragments.FilterFragment;
+import com.development.mhleadmanagementsystemdev.Fragments.SalesmanEditLeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnLastLeadListener;
@@ -39,7 +39,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LeadsListActivity extends BaseActivity {
@@ -94,12 +93,12 @@ public class LeadsListActivity extends BaseActivity {
                 }
             }
         });*/
-        intializeVariables();
+        initializeVariables();
 
     }
 
     @SuppressLint("RestrictedApi")
-    private void intializeVariables() {
+    private void initializeVariables() {
         if (sharedPreferences.getString(sharedPreferenceUserType, "Salesman").equals("Telecaller"))
             fab.setVisibility(View.VISIBLE);
 
@@ -231,18 +230,30 @@ public class LeadsListActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
                         PopupMenu popupMenu = new PopupMenu(LeadsListActivity.this, holder.telecallerOptionMenu);
-                        popupMenu.inflate(R.menu.lead_list_item_menu);
+                        popupMenu.inflate(R.menu.telecaller_lead_list_item_menu);
                         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 switch (item.getItemId()) {
                                     case R.id.edit_details:
-                                        showProgressDialog("Loading..", LeadsListActivity.this);
+                                        if (currentUserType.equals("Telecaller")) {
+                                            showProgressDialog("Loading..", LeadsListActivity.this);
 
-                                        updateLead = model;
-                                        needSalesPersonListFor = "edit";
-                                        firebaseDatabaseHelper.fetchSalesPersonsByLocation(
-                                                onFetchSalesPersonListListener(), model.getLocation());
+                                            updateLead = model;
+                                            needSalesPersonListFor = "edit";
+                                            firebaseDatabaseHelper.fetchSalesPersonsByLocation(
+                                                    onFetchSalesPersonListListener(), model.getLocation());
+                                        } else {
+                                            SalesmanEditLeadDetailsFragment.newInstance(new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
+                                                @Override
+                                                public void onSubmitClicked(String dialogStatus) {
+                                                    Log.i("STRSTATUSSSSS", dialogStatus);
+                                                    updateLead = model;
+                                                    updateLead.setStatus(dialogStatus);
+                                                    firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
+                                                }
+                                            }).show(getSupportFragmentManager(), "promo");
+                                        }
                                         break;
                                 }
                                 return false;
@@ -316,8 +327,11 @@ public class LeadsListActivity extends BaseActivity {
             case R.id.logout:
                 if (isNetworkConnected()) {
                     mAuth.signOut();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.clear();
+
                     showToastMessage(R.string.logged_out);
-                    startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
+                    //startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
                     finish();
                 } else
                     showToastMessage(R.string.no_internet);

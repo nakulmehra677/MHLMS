@@ -34,16 +34,10 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         status = itemView.findViewById(R.id.status);
         date = itemView.findViewById(R.id.date);
 
-        telecallerOptionMenu = itemView.findViewById(R.id.telecaller_menu_option);
-        salesmanOptionMenu = itemView.findViewById(R.id.salesman_menu_option);
+        telecallerOptionMenu = itemView.findViewById(R.id.menu_option);
 
         expandableLinearLayout = itemView.findViewById(R.id.expandable_layout);
         button = itemView.findViewById(R.id.list_root);
-
-        if (currentUserType.equals("Telecaller"))
-            telecallerOptionMenu.setVisibility(View.VISIBLE);
-        else
-            salesmanOptionMenu.setVisibility(View.VISIBLE);
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override

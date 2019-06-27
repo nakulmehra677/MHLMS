@@ -27,6 +27,10 @@ public class FirebaseDatabaseHelper {
     private long nodes = 0;
     private boolean isAdmin = false;
 
+    public FirebaseDatabaseHelper() {
+
+    }
+
     public FirebaseDatabaseHelper(Context context) {
         this.context = context;
     }
@@ -152,5 +156,26 @@ public class FirebaseDatabaseHelper {
 
         onUpdateLeadListener.onLeadUpdated();
 
+    }
+
+    public void getUserDetails(final OnFetchUserDetailsListener listener, String uId) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("userList");
+
+        myRef.orderByChild("uId").equalTo(uId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            UserDetails userDetails = snapshot.getValue(UserDetails.class);
+                            listener.onSuccess(userDetails);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 }

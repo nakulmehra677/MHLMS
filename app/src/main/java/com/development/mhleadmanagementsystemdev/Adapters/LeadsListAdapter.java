@@ -30,7 +30,7 @@ public class LeadsListAdapter extends RecyclerView.Adapter<LeadsListAdapter.Lead
     public class LeadListViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout root;
         public TextView name, contact, propertyType, employment, loanType,
-                location, loanAmount, remarks, assignedTo, status, date, optionMenu;
+                location, loanAmount, remarks, assignedTo, status, date, telecallerOptionMenu;
         public ItemClickListener itemClickListener;
         public ExpandableLinearLayout expandableLinearLayout;
         public LinearLayout button;
@@ -53,12 +53,10 @@ public class LeadsListAdapter extends RecyclerView.Adapter<LeadsListAdapter.Lead
             status = itemView.findViewById(R.id.status);
             date = itemView.findViewById(R.id.date);
 
-            optionMenu = itemView.findViewById(R.id.telecaller_menu_option);
+            telecallerOptionMenu = itemView.findViewById(R.id.menu_option);
+
             expandableLinearLayout = itemView.findViewById(R.id.expandable_layout);
             button = itemView.findViewById(R.id.list_root);
-
-            if (showMenuItem)
-                optionMenu.setVisibility(View.VISIBLE);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -77,10 +75,9 @@ public class LeadsListAdapter extends RecyclerView.Adapter<LeadsListAdapter.Lead
         }
     }
 
-    public LeadsListAdapter(List<CustomerDetails> chapter, Context context, boolean showMenuItem) {
+    public LeadsListAdapter(List<CustomerDetails> chapter, Context context) {
         this.chapter = chapter;
         this.context = context;
-        this.showMenuItem = showMenuItem;
     }
 
     @Override
@@ -110,11 +107,11 @@ public class LeadsListAdapter extends RecyclerView.Adapter<LeadsListAdapter.Lead
             }
         });
 
-        holder.optionMenu.setOnClickListener(new View.OnClickListener() {
+        holder.telecallerOptionMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(context, holder.optionMenu);
-                popupMenu.inflate(R.menu.lead_list_item_menu);
+                PopupMenu popupMenu = new PopupMenu(context, holder.telecallerOptionMenu);
+                popupMenu.inflate(R.menu.telecaller_lead_list_item_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
