@@ -6,8 +6,6 @@ import android.util.Log;
 
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserTypeListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnLastLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
@@ -33,27 +31,6 @@ public class FirebaseDatabaseHelper {
 
     public FirebaseDatabaseHelper(Context context) {
         this.context = context;
-    }
-
-    public void getLastLead(final OnLastLeadListener listener) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("leadList");
-        Query getLastKey = databaseReference.orderByKey().limitToLast(1);
-
-        getLastKey.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                CustomerDetails c = new CustomerDetails();
-                for (DataSnapshot d : dataSnapshot.getChildren())
-                    c = d.getValue(CustomerDetails.class);
-
-                listener.onLastLeadFetched(c);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     public void uploadCustomerDetails(OnUploadCustomerDetailsListener onUploadCustomerdetails,
@@ -91,55 +68,6 @@ public class FirebaseDatabaseHelper {
                             }
                         }
                         onFetchSalesPersonListListener.onListFetched(salesPersonList);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-    }
-
-    public void fetchAllSalesPersons(
-            final OnFetchSalesPersonListListener onFetchSalesPersonListListener) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("userList");
-        Log.i("Users", "Fetching Users...");
-
-        final List<String> salesPersonList = new ArrayList<>();
-        salesPersonList.add("None");
-
-        myRef.orderByChild("userType").equalTo("Salesman")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            UserDetails userDetails = snapshot.getValue(UserDetails.class);
-                            Log.i("Users", userDetails.getUserName());
-                            salesPersonList.add(userDetails.getUserName());
-                        }
-                        onFetchSalesPersonListListener.onListFetched(salesPersonList);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-    }
-
-    public void getUserType(final OnFetchUserDetailsListener listener, String uId) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("userList");
-
-        myRef.orderByChild("uId").equalTo(uId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            UserDetails userDetails = snapshot.getValue(UserDetails.class);
-                            listener.onSuccess(userDetails);
-                        }
                     }
 
                     @Override

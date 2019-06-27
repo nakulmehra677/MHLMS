@@ -18,15 +18,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 
 import com.development.mhleadmanagementsystemdev.Fragments.EditLeadDetailsFragment;
-import com.development.mhleadmanagementsystemdev.Fragments.FilterFragment;
 import com.development.mhleadmanagementsystemdev.Fragments.SalesmanEditLeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnLastLeadListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
+import com.development.mhleadmanagementsystemdev.Managers.ProfileManager;
 import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
+import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -38,28 +40,32 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.shreyaspatil.firebase.recyclerpagination.DatabasePagingOptions;
+import com.shreyaspatil.firebase.recyclerpagination.FirebaseRecyclerPagingAdapter;
+import com.shreyaspatil.firebase.recyclerpagination.LoadingState;
 
 import java.util.List;
+
+import static com.google.firebase.firestore.FieldValue.delete;
 
 public class LeadsListActivity extends BaseActivity {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    private FirebaseRecyclerAdapter adapter;
     private FloatingActionButton fab;
-    private FirebaseAuth mAuth;
-    //private ProgressBar progressBar;
+    private ProgressBar progressBar;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
-    private String currentUserType, currentUserName;
+    private FirebaseRecyclerPagingAdapter adapter;
 
-    private CustomerDetails updateLead, lastLead;
-    private String temporaryLastLeadKey;
-    private boolean allListFetched = false;
-    private String needSalesPersonListFor;
     private DatabaseReference database;
-    private FirebaseRecyclerOptions<CustomerDetails> options;
+    private FirebaseAuth mAuth;
+
+    private String currentUserType;
+    private CustomerDetails updateLead;
+    private String needSalesPersonListFor;
     private SharedPreferences sharedPreferences;
+    private UserDetails currentUserdetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,46 +74,18 @@ public class LeadsListActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
         fab = findViewById(R.id.fab);
-        //progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
 
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
-        sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
 
-        currentUserType = sharedPreferences.getString(sharedPreferenceUserType, "Salesman");
-        currentUserName = sharedPreferences.getString(sharedPreferenceUserName, "");
+        showProgressDialog("Loading..", this);
+        firebaseDatabaseHelper.getUserDetails(onFetchUserDetailsListener(), mAuth.getUid());
 
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        //sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
 
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                if (!recyclerView.canScrollVertically(1)) {
-                    if (!allListFetched) {
-                        progressBar.setVisibility(View.VISIBLE);
-                        Log.i("SCROLL", "not all list fetched");
-                        fetch();
-                    }
-                    Log.i("SCROLL", "recuclerview is scrolling");
-                }
-            }
-        });*/
-        initializeVariables();
-
-    }
-
-    @SuppressLint("RestrictedApi")
-    private void initializeVariables() {
-        if (sharedPreferences.getString(sharedPreferenceUserType, "Salesman").equals("Telecaller"))
-            fab.setVisibility(View.VISIBLE);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(LeadsListActivity.this, FeedCustomerDetailsActivity.class));
-            }
-        });
+        //currentUserType = sharedPreferences.getString(sharedPreferenceUserType, "Salesman");
+        //currentUserName = sharedPreferences.getString(sharedPreferenceUserName, "");
 
         // Setting up the recyclerView //
         linearLayoutManager = new LinearLayoutManager(this);
@@ -118,87 +96,63 @@ public class LeadsListActivity extends BaseActivity {
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
-        fetchLastLead();
     }
 
-    private void fetchLastLead() {
-        showProgressDialog("Loading..", this);
+    @SuppressLint("RestrictedApi")
+    private void setLayoutByUser() {
+        //if (sharedPreferences.getString(sharedPreferenceUserType, "Salesman").equals("Telecaller"))
+        if (currentUserType.equals(telecallerUser))
+            fab.setVisibility(View.VISIBLE);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(LeadsListActivity.this, FeedCustomerDetailsActivity.class));
+            }
+        });
         fetch();
-        //firebaseDatabaseHelper.getLastLead(onLastLeadListener());
     }
 
     private void fetch() {
-        Log.i("function", "fetch() function called");
         database = FirebaseDatabase.getInstance().getReference("leadList");
         Query query;
 
-        if (currentUserType.equals("Telecaller"))
-            query = database.orderByChild("assigner").equalTo(currentUserName);
+        if (currentUserType.equals(telecallerUser))
+            query = database;//.orderByChild("assigner").equalTo(currentUserdetails.getUserName());
         else
-            query = database.orderByChild("assignedTo").equalTo(currentUserName);
+            query = database;//.orderByChild("assignedTo").equalTo(currentUserdetails.getUserName());
 
-        options =
-                new FirebaseRecyclerOptions.Builder<CustomerDetails>()
-                        .setQuery(query, new SnapshotParser<CustomerDetails>() {
-                            @NonNull
-                            @Override
-                            public CustomerDetails parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                return new CustomerDetails(snapshot.child("name").getValue().toString(),
-                                        snapshot.child("contactNumber").getValue().toString(),
-                                        snapshot.child("loanAmount").getValue().toString(),
-                                        snapshot.child("employment").getValue().toString(),
-                                        snapshot.child("employmentType").getValue().toString(),
-                                        snapshot.child("loanType").getValue().toString(),
-                                        snapshot.child("propertyType").getValue().toString(),
-                                        snapshot.child("location").getValue().toString(),
-                                        snapshot.child("remarks").getValue().toString(),
-                                        snapshot.child("date").getValue().toString(),
-                                        snapshot.child("assignedTo").getValue().toString(),
-                                        snapshot.child("status").getValue().toString(),
-                                        snapshot.child("assigner").getValue().toString(),
-                                        snapshot.child("key").getValue().toString());
 
-                                /*return new CustomerDetails("dsfvfdrv",
-                                        "sdsd",
-                                        "sdgfvs",
-                                        "setgbrgt",
-                                        "esrgve",
-                                        "esrgvergv",
-                                        "awerve",
-                                        "srfve",
-                                        "sevdefv",
-                                        "sdrfvedfv",
-                                        "seve",
-                                        "srdtgbrftgb",
-                                        "egvdfrvfgb",
-                                        "segvd");*/
-                            }
-                        })
-                        .build();
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPrefetchDistance(10)
+                .setPageSize(20)
+                .build();
 
-        adapter = new FirebaseRecyclerAdapter<CustomerDetails, LeadListViewHolder>(options) {
-            @Override
-            public int getItemViewType(int position) {
-                return 1;
-            }
+        DatabasePagingOptions<CustomerDetails> options = new DatabasePagingOptions.Builder<CustomerDetails>()
+                .setLifecycleOwner(this)
+                .setQuery(query, config, CustomerDetails.class)
+                .build();
 
+        adapter = new FirebaseRecyclerPagingAdapter<CustomerDetails, LeadListViewHolder>(options) {
+
+            @NonNull
             @Override
             public LeadListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.lead_list_item, parent, false);
 
-                return new LeadListViewHolder(view, currentUserType);
+                return new LeadListViewHolder(view);
             }
 
-            @Override
+            /*@Override
             public void onDataChanged() {
                 if (getItemCount() == 0) {
                     showToastMessage(R.string.no_leads);
                     progress.dismiss();
                 }
                 super.onDataChanged();
-            }
+            }*/
 
             @Override
             protected void onBindViewHolder(final LeadListViewHolder holder, final int position, final CustomerDetails model) {
@@ -226,28 +180,25 @@ public class LeadsListActivity extends BaseActivity {
                     }
                 });
 
-                holder.telecallerOptionMenu.setOnClickListener(new View.OnClickListener() {
+                holder.optionMenu.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        PopupMenu popupMenu = new PopupMenu(LeadsListActivity.this, holder.telecallerOptionMenu);
+                        PopupMenu popupMenu = new PopupMenu(LeadsListActivity.this, holder.optionMenu);
                         popupMenu.inflate(R.menu.telecaller_lead_list_item_menu);
                         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 switch (item.getItemId()) {
                                     case R.id.edit_details:
-                                        if (currentUserType.equals("Telecaller")) {
+                                        if (currentUserType.equals(telecallerUser)) {
                                             showProgressDialog("Loading..", LeadsListActivity.this);
-
                                             updateLead = model;
-                                            needSalesPersonListFor = "edit";
                                             firebaseDatabaseHelper.fetchSalesPersonsByLocation(
                                                     onFetchSalesPersonListListener(), model.getLocation());
                                         } else {
                                             SalesmanEditLeadDetailsFragment.newInstance(new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
                                                 @Override
                                                 public void onSubmitClicked(String dialogStatus) {
-                                                    Log.i("STRSTATUSSSSS", dialogStatus);
                                                     updateLead = model;
                                                     updateLead.setStatus(dialogStatus);
                                                     firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
@@ -263,18 +214,32 @@ public class LeadsListActivity extends BaseActivity {
                     }
                 });
 
-                /*temporaryLastLeadKey = model.getKey();
-
-                items++;
-                Log.i("itemNumber", String.valueOf(items));
-
-                if (model.getKey().equals(lastLead.getKey())) {
-                    Log.i("LastLeadfetched", "true");
-                    allListFetched = true;
-                }*/
-
-                //progressBar.setVisibility(View.INVISIBLE);
                 progress.dismiss();
+            }
+
+            @Override
+            protected void onLoadingStateChanged(@NonNull LoadingState state) {
+                switch (state) {
+                    case LOADING_INITIAL:
+                    case LOADING_MORE:
+                        // Do your loading animation
+                        progressBar.setVisibility(View.VISIBLE);
+                        break;
+
+                    case LOADED:
+                        // Stop Animation
+                        progressBar.setVisibility(View.GONE);
+                        break;
+
+                    case FINISHED:
+                        //Reached end of Data set
+                        progressBar.setVisibility(View.GONE);
+                        break;
+
+                    case ERROR:
+                        retry();
+                        break;
+                }
             }
         };
         adapter.startListening();
@@ -327,8 +292,8 @@ public class LeadsListActivity extends BaseActivity {
             case R.id.logout:
                 if (isNetworkConnected()) {
                     mAuth.signOut();
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.clear();
+                    //SharedPreferences.Editor editor = sharedPreferences.edit();
+                    //editor.clear();
 
                     showToastMessage(R.string.logged_out);
                     //startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
@@ -336,33 +301,18 @@ public class LeadsListActivity extends BaseActivity {
                 } else
                     showToastMessage(R.string.no_internet);
 
-            case R.id.name:
-                if (isNetworkConnected()) {
-                    showProgressDialog("Loading..", LeadsListActivity.this);
-                    needSalesPersonListFor = "filter";
-                    firebaseDatabaseHelper.fetchAllSalesPersons(onFetchSalesPersonListListener());
-                }
-
-            /*case R.id.user_list_menu:
-                if (isNetworkConnected()) {
-                    startActivity(new Intent(LeadsListActivity.this, UsersListActivity.class));
-                } else
-                    showToastMessage(R.string.no_internet);
-
-                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
-    private OnLastLeadListener onLastLeadListener() {
-        return new OnLastLeadListener() {
+    private OnFetchUserDetailsListener onFetchUserDetailsListener() {
+        return new OnFetchUserDetailsListener() {
             @Override
-            public void onLastLeadFetched(CustomerDetails lead) {
-                //lastLead = lead;
-                //Log.i("LASTLEAD", lastLead.getName());
-                //fetch();
+            public void onSuccess(UserDetails userDetails) {
+                currentUserdetails = userDetails;
+                currentUserType = userDetails.getUserType();
+                setLayoutByUser();
             }
         };
     }
@@ -372,27 +322,14 @@ public class LeadsListActivity extends BaseActivity {
             @Override
             public void onListFetched(List arrayList) {
                 progress.dismiss();
-
-                if (needSalesPersonListFor.equals("edit")) {
-                    EditLeadDetailsFragment.newInstance(arrayList, new EditLeadDetailsFragment.OnSubmitClickListener() {
-                        @Override
-                        public void onSubmitClicked(String dialogAssignedTo, String dialogStatus) {
-                            updateLead.setAssignedTo(dialogAssignedTo);
-                            updateLead.setStatus(dialogStatus);
-                            firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
-                        }
-                    }).show(getSupportFragmentManager(), "promo");
-
-                } else {
-                    FilterFragment.newInstance(arrayList, new FilterFragment.OnSubmitClickListener() {
-                        @Override
-                        public void onSubmitClicked(String dialogAssignedTo, String dialogStatus) {
-                            updateLead.setAssignedTo(dialogAssignedTo);
-                            updateLead.setStatus(dialogStatus);
-                            firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
-                        }
-                    }).show(getSupportFragmentManager(), "promo");
-                }
+                EditLeadDetailsFragment.newInstance(arrayList, new EditLeadDetailsFragment.OnSubmitClickListener() {
+                    @Override
+                    public void onSubmitClicked(String dialogAssignedTo, String dialogStatus) {
+                        updateLead.setAssignedTo(dialogAssignedTo);
+                        updateLead.setStatus(dialogStatus);
+                        firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
+                    }
+                }).show(getSupportFragmentManager(), "promo");
             }
         };
     }
@@ -403,10 +340,8 @@ public class LeadsListActivity extends BaseActivity {
             public void onLeadUpdated() {
                 adapter.stopListening();
                 showToastMessage(R.string.lead_update);
-
-                showProgressDialog("Loading..", LeadsListActivity.this);
-
-                adapter.startListening();
+                progress.dismiss();
+                fetch();
             }
         };
     }

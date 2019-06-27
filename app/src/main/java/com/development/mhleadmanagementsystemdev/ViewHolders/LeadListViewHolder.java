@@ -11,7 +11,7 @@ import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 
 public class LeadListViewHolder extends RecyclerView.ViewHolder {
     public TextView name, contact, propertyType, employment, loanType,
-            location, loanAmount, remarks, assignedTo, status, date, telecallerOptionMenu, salesmanOptionMenu;
+            location, loanAmount, remarks, assignedTo, status, date, optionMenu;
     public ItemClickListener itemClickListener;
     public ExpandableLinearLayout expandableLinearLayout;
     public LinearLayout button;
@@ -20,7 +20,7 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         this.itemClickListener = itemClickListener;
     }
 
-    public LeadListViewHolder(View itemView, String currentUserType) {
+    public LeadListViewHolder(View itemView) {
         super(itemView);
         name = itemView.findViewById(R.id.customer_name);
         contact = itemView.findViewById(R.id.customer_contact);
@@ -34,7 +34,7 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         status = itemView.findViewById(R.id.status);
         date = itemView.findViewById(R.id.date);
 
-        telecallerOptionMenu = itemView.findViewById(R.id.menu_option);
+        optionMenu = itemView.findViewById(R.id.menu_option);
 
         expandableLinearLayout = itemView.findViewById(R.id.expandable_layout);
         button = itemView.findViewById(R.id.list_root);

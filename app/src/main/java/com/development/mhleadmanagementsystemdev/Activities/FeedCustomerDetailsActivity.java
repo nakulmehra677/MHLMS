@@ -37,7 +37,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     ArrayAdapter<CharSequence> locationAdapter;
     ArrayAdapter<CharSequence> assignedToAdapter;
     private String strEmployment = "", strEmploymentType = "", strName, strContactNumber, strLoanAmount, strKey,
-            strRemarks, strPropertyType, strLoanType, strLocation, strAssignTo, strStatus;
+            strRemarks, strPropertyType, strLoanType, strLocation, strAssignTo;
     private String date;
     private ProgressDialog progress;
     private LinearLayout selfEmployementLayout, propertyTypeLayout;
@@ -177,10 +177,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 strAssignTo = parent.getItemAtPosition(position).toString();
                 break;
 
-            case R.id.status:
-                strStatus = parent.getItemAtPosition(position).toString();
-                break;
-
             default:
                 break;
         }
@@ -302,24 +298,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             }
         };
     }
-
-    /*private CountNoOfNodesInDatabaseListener onCountNoOfNodesInDatabase() {
-        return new CountNoOfNodesInDatabaseListener() {
-
-            @Override
-            public void onFetched(long nodes) {
-                Log.i("No of Nodes", "About to upload details");
-                customerDetails.setKey(nodes);
-                firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), customerDetails, nodes);
-            }
-
-            @Override
-            public void failedToFetch() {
-                progress.dismiss();
-                showToastMessage(R.string.failed_to_upload);
-            }
-        };
-    }*/
 
     private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
         return new OnFetchSalesPersonListListener() {

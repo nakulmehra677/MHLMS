@@ -3,26 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/filter"
-        android:enabled="true"
-        android:title="Filter"
-        android:visible="true"
-        app:showAsAction="always">
-
-        <menu>
-            <item
-                android:id="@+id/name"
-                android:title="Name" />
-
-            <item
-                android:id="@+id/status"
-                android:title="Status" />
-        </menu>
-    </item>
-
-    <item
         android:id="@+id/logout"
         android:title="Logout"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 
 </menu>

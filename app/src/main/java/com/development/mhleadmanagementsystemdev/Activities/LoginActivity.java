@@ -44,6 +44,8 @@ public class LoginActivity extends BaseActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                hideKeyboard(LoginActivity.this);
                 if (isNetworkConnected()) {
                     getDetail();
 
