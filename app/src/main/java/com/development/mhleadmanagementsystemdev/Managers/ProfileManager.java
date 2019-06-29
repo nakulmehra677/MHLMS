@@ -35,6 +35,7 @@ public class ProfileManager extends BaseActivity {
     }
 
     public boolean checkUserExist() {
+        currentUser = mAuth.getCurrentUser();
         if (currentUser == null)
             return false;
         else

@@ -46,9 +46,7 @@ public class LoginActivity extends BaseActivity {
             profileManager.checkUserExist();
 
             if (profileManager.checkUserExist()) {
-                intent = new Intent(LoginActivity.this, LeadsListActivity.class);
-                startActivity(intent);
-                finish();
+                startActivityForResult(new Intent(LoginActivity.this, LeadsListActivity.class), 101);
             }
         }
 
@@ -113,9 +111,20 @@ public class LoginActivity extends BaseActivity {
 
                 progress.dismiss();
                 showToastMessage(R.string.logged_in);
-                startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
-                finish();
+                startActivityForResult(new Intent(LoginActivity.this, LeadsListActivity.class), 101);
             }
         };
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+
+        Log.i("LOginlogin", String.valueOf(data.getBooleanExtra("loggedIn", true)));
+        if (requestCode == 101) {
+            if (data.getBooleanExtra("loggedIn", true))
+                finish();
+        }
     }
 }

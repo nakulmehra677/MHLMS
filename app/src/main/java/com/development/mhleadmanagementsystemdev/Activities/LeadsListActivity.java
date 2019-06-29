@@ -238,6 +238,15 @@ public class LeadsListActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        Log.i("login", String.valueOf(profileManager.checkUserExist()));
+        Intent intent = new Intent();
+        intent.putExtra("loggedIn", profileManager.checkUserExist());
+        setResult(101, intent);
+        finish();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.lead_list_menu, menu);
@@ -252,12 +261,13 @@ public class LeadsListActivity extends BaseActivity {
             case R.id.logout:
                 if (isNetworkConnected()) {
                     profileManager.signOut();
+                    profileManager.signOut();
                     //SharedPreferences.Editor editor = sharedPreferences.edit();
                     //editor.clear();
 
                     showToastMessage(R.string.logged_out);
                     //startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
-                    finish();
+                    onBackPressed();
                 } else
                     showToastMessage(R.string.no_internet);
 
