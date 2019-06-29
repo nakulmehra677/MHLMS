@@ -31,13 +31,17 @@ import java.util.List;
 public class FeedCustomerDetailsActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText name, contactNumber, loanAmount, remarks;
-    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedToSpinner;
+    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedToSpinner, propertySpinner;
     ArrayAdapter<CharSequence> propertyTypeAdapter;
     ArrayAdapter<CharSequence> loanTypeAdapter;
     ArrayAdapter<CharSequence> locationAdapter;
     ArrayAdapter<CharSequence> assignedToAdapter;
-    private String strEmployment = "", strEmploymentType = "", strName, strContactNumber, strLoanAmount, strKey,
-            strRemarks, strPropertyType, strLoanType, strLocation, strAssignTo;
+    ArrayAdapter<CharSequence> propertyAdapter;
+
+    private String strEmployment = "", strEmploymentType = "", strName, strContactNumber,
+            strLoanAmount, strKey, strRemarks, strPropertyType = "None",
+            strLoanType, strLocation, strAssignTo;
+
     private String date;
     private ProgressDialog progress;
     private LinearLayout selfEmployementLayout, propertyTypeLayout;
@@ -68,16 +72,20 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
         sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
 
+        initializeLoanTypeSpinner();
+        initializeLocationSpinner();
+    }
 
-        initializePropertyTypeSpinner();
-
+    private void initializeLoanTypeSpinner() {
         // Loan type Spinner
         loanTypeAdapter = ArrayAdapter.createFromResource(this,
                 R.array.loan_type, android.R.layout.simple_spinner_item);
         loanTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         loanTypeSpinner.setAdapter(loanTypeAdapter);
         loanTypeSpinner.setOnItemSelectedListener(this);
+    }
 
+    private void initializeLocationSpinner() {
         // Location Spinner
         locationAdapter = ArrayAdapter.createFromResource(this,
                 R.array.location, android.R.layout.simple_spinner_item);
@@ -88,8 +96,13 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private void initializePropertyTypeSpinner() {
         // Property type Spinner
-        propertyTypeAdapter = ArrayAdapter.createFromResource(this,
-                R.array.property_type, android.R.layout.simple_spinner_item);
+        if (strLoanType.equals("Home Loan"))
+            propertyTypeAdapter = ArrayAdapter.createFromResource(this,
+                    R.array.property, android.R.layout.simple_spinner_item);
+        else
+            propertyTypeAdapter = ArrayAdapter.createFromResource(this,
+                    R.array.property_type, android.R.layout.simple_spinner_item);
+
         propertyTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         propertyTypeSpinner.setAdapter(propertyTypeAdapter);
         propertyTypeSpinner.setOnItemSelectedListener(this);
@@ -147,20 +160,23 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         switch (parent.getId()) {
             case R.id.loan_type:
                 strLoanType = parent.getItemAtPosition(position).toString();
-                if (strLoanType.equals("Personal Loan") || strLoanType.equals("Loan Against Property"))
-                    propertyTypeLayout.setVisibility(View.VISIBLE);
-                else {
-                    propertyTypeLayout.setVisibility(View.GONE);
+                if (strLoanType.equals("Home Loan") || strLoanType.equals("Loan Against Property")) {
                     initializePropertyTypeSpinner();
+
+                    propertyTypeLayout.setVisibility(View.VISIBLE);
+                } else {
+                    propertyTypeLayout.setVisibility(View.GONE);
                     strPropertyType = "None";
                 }
                 break;
 
             case R.id.property_type:
+                Log.i("proptertytype", "mghcmh");
                 strPropertyType = parent.getItemAtPosition(position).toString();
                 break;
 
             case R.id.location:
+                Log.i("LOcations", "mghcmh");
                 strLocation = parent.getItemAtPosition(position).toString();
 
                 assignedToSpinner.setSelection(0);
@@ -168,8 +184,18 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 assignedToSpinner.setClickable(false);
 
                 if (!strLocation.equals("None")) {
-                    firebaseDatabaseHelper.fetchSalesPersonsByLocation(
-                            onFetchSalesPersonListListener(), strLocation);
+                    if (isNetworkConnected()) {
+                        progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
+                        progress.setMessage("Loading..");
+                        progress.setCancelable(false);
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+                        firebaseDatabaseHelper.fetchSalesPersonsByLocation(
+                                onFetchSalesPersonListListener(), strLocation);
+                    } else {
+                        showToastMessage(R.string.no_internet);
+                        initializeLocationSpinner();
+                    }
                 }
                 break;
 
@@ -208,24 +234,25 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             if (strEmploymentType.isEmpty())
                 return false;
 
-            if (strLoanType.equals("Personal Loan") || strLoanType.equals("Loan Against Property")) {
+            if (strLoanType.equals("Home Loan") || strLoanType.equals("Loan Against Property")) {
                 if (strPropertyType.equals("None")) {
                     return false;
                 }
                 return true;
             } else {
-                strPropertyType = "";
+                strPropertyType = "None";
                 return true;
             }
         } else {
             strEmploymentType = "";
-            if (strLoanType.equals("Personal Loan") || strLoanType.equals("Loan Against Property")) {
+            if (strLoanType.equals("Home Loan") || strLoanType.equals("Loan Against Property")) {
                 if (strPropertyType.equals("None")) {
                     return false;
                 }
                 return true;
             } else {
-                strPropertyType = "";
+                strPropertyType = "None";
+
                 return true;
             }
         }
@@ -260,10 +287,11 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     }
 
     private void getDetails() {
-        strName = name.getText().toString();
-        strContactNumber = contactNumber.getText().toString();
-        strLoanAmount = loanAmount.getText().toString();
-        strRemarks = remarks.getText().toString();
+
+        strName = name.getText().toString().trim();
+        strContactNumber = contactNumber.getText().toString().trim();
+        strLoanAmount = loanAmount.getText().toString().trim();
+        strRemarks = remarks.getText().toString().trim();
     }
 
     private void getDate() {
@@ -276,7 +304,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String assigner = sharedPreferences.getString(sharedPreferenceUserName, "");
         customerDetails = new CustomerDetails(strName, strContactNumber, strLoanAmount,
                 strEmployment, strEmploymentType, strLoanType, strPropertyType,
-                strLocation, strRemarks, date, strAssignTo, "Active", assigner, "");
+                strLocation, strRemarks, date, strAssignTo, "Active", assigner, "", "None");
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {
@@ -285,10 +313,11 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             public void onDataUploaded() {
                 Log.i("No of Nodes", "Uploaded");
                 progress.dismiss();
-                showToastMessage(R.string.data_uploaded);
+                finish();
+                /*showToastMessage(R.string.data_uploaded);
                 Intent intent = getIntent();
                 finish();
-                startActivity(intent);
+                startActivity(intent);*/
             }
 
             @Override
@@ -304,7 +333,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
             @Override
             public void onListFetched(List arrayList) {
-                Log.i("userList", String.valueOf(arrayList));
+                progress.dismiss();
 
                 // AssignedTo Spinner
                 assignedToAdapter = new ArrayAdapter<CharSequence>(

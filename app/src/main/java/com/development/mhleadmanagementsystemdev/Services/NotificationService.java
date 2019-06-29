@@ -1,8 +1,9 @@
-package com.development.mhleadmanagementsystemdev;
+package com.development.mhleadmanagementsystemdev.Services;
 
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
+import com.development.mhleadmanagementsystemdev.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

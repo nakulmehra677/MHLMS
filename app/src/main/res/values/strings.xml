@@ -37,6 +37,14 @@
         <item>Industrial</item>
     </string-array>
 
+    <string-array name="property">
+        <item>None</item>
+        <item>Flat</item>
+        <item>Bunglow</item>
+        <item>Open Land</item>
+        <item>Builder Floor</item>
+    </string-array>
+
     <string-array name="loan_type">
         <item>None</item>
         <item>Home Loan</item>

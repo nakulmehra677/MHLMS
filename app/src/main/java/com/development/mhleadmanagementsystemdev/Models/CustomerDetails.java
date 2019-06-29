@@ -2,7 +2,8 @@ package com.development.mhleadmanagementsystemdev.Models;
 
 public class CustomerDetails {
     String name, contactNumber, loanAmount, loanType, propertyType, employment,
-            employmentType, location, remarks, date, assignedTo, status, key, assigner;
+            employmentType, location, salesmanRemarks, date, assignedTo, status, key,
+            assigner, telecallerRemarks;
 
     public String getName() {
         return name;
@@ -14,6 +15,22 @@ public class CustomerDetails {
 
     public String getKey() {
         return key;
+    }
+
+    public String getSalesmanRemarks() {
+        return salesmanRemarks;
+    }
+
+    public void setSalesmanRemarks(String salesmanRemarks) {
+        this.salesmanRemarks = salesmanRemarks;
+    }
+
+    public String getTelecallerRemarks() {
+        return telecallerRemarks;
+    }
+
+    public void setTelecallerRemarks(String telecallerRemarks) {
+        this.telecallerRemarks = telecallerRemarks;
     }
 
     public void setKey(String key) {
@@ -60,10 +77,6 @@ public class CustomerDetails {
         return loanAmount;
     }
 
-    public String getRemarks() {
-        return remarks;
-    }
-
     public String getDate() {
         return date;
     }
@@ -100,10 +113,6 @@ public class CustomerDetails {
         this.loanAmount = loanAmount;
     }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
     public void setDate(String date) {
         this.date = date;
     }
@@ -126,8 +135,9 @@ public class CustomerDetails {
 
     public CustomerDetails(String name, String contactNumber, String loanAmount, String employment,
                            String employmentType, String loanType, String propertyType,
-                           String location, String remarks, String date, String assignedTo,
-                           String status, String assigner, String key) {
+                           String location, String telecallerRemarks,
+                           String date, String assignedTo, String status, String assigner,
+                           String key, String salesmanRemarks) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.propertyType = propertyType;
@@ -135,12 +145,13 @@ public class CustomerDetails {
         this.loanType = loanType;
         this.location = location;
         this.loanAmount = loanAmount;
-        this.remarks = remarks;
         this.date = date;
         this.assignedTo = assignedTo;
         this.status = status;
         this.key = key;
         this.employmentType = employmentType;
         this.assigner = assigner;
+        this.telecallerRemarks = telecallerRemarks;
+        this.salesmanRemarks = salesmanRemarks;
     }
 }

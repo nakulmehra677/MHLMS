@@ -18,10 +18,12 @@ public class ProfileManager extends BaseActivity {
     private FirebaseUser currentUser;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
     private UserDetails currentUserDetails;
+    private String uId;
 
     public ProfileManager() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+        uId = mAuth.getUid();
     }
 
     public UserDetails getCurrentUserDetails() {
@@ -39,7 +41,19 @@ public class ProfileManager extends BaseActivity {
             return true;
     }
 
+    public FirebaseUser getCurrentUser() {
+        return currentUser;
+    }
+
     public String getCurrentUserType() {
         return currentUserDetails.getUserType();
+    }
+
+    public String getuId() {
+        return uId;
+    }
+
+    public void signOut() {
+        mAuth.signOut();
     }
 }

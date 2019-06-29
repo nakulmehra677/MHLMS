@@ -11,7 +11,9 @@ import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 
 public class LeadListViewHolder extends RecyclerView.ViewHolder {
     public TextView name, contact, propertyType, employment, loanType,
-            location, loanAmount, remarks, assignedTo, status, date, optionMenu;
+            location, loanAmount, telecallerRemarks, salesmanRemarks, assignedTo, status, date, optionMenu;
+    public TextView tassign;
+    public LinearLayout tpropertyType, tproperty;
     public ItemClickListener itemClickListener;
     public ExpandableLinearLayout expandableLinearLayout;
     public LinearLayout button;
@@ -24,15 +26,19 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         name = itemView.findViewById(R.id.customer_name);
         contact = itemView.findViewById(R.id.customer_contact);
-        propertyType = itemView.findViewById(R.id.customer_property);
+        propertyType = itemView.findViewById(R.id.customer_property_type);
         employment = itemView.findViewById(R.id.employment);
         loanType = itemView.findViewById(R.id.customer_loan_type);
         location = itemView.findViewById(R.id.customer_location);
         loanAmount = itemView.findViewById(R.id.customer_loan_amount);
-        remarks = itemView.findViewById(R.id.customer_remarks);
+        telecallerRemarks = itemView.findViewById(R.id.telecaller_remarks);
+        salesmanRemarks = itemView.findViewById(R.id.salesman_remarks);
         assignedTo = itemView.findViewById(R.id.assigned_to);
         status = itemView.findViewById(R.id.status);
         date = itemView.findViewById(R.id.date);
+
+        tassign = itemView.findViewById(R.id.tassign);
+        tpropertyType = itemView.findViewById(R.id.tpropertyType);
 
         optionMenu = itemView.findViewById(R.id.menu_option);
 

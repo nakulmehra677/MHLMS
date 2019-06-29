@@ -27,6 +27,7 @@ public class LoginActivity extends BaseActivity {
     private FirebaseAuthenticationHelper firebaseAuthenticationHelper;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
     private ProfileManager profileManager;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,19 @@ public class LoginActivity extends BaseActivity {
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
         loginButton = findViewById(R.id.login);
+
+
+        if (isNetworkConnected()) {
+
+            profileManager = new ProfileManager();
+            profileManager.checkUserExist();
+
+            if (profileManager.checkUserExist()) {
+                intent = new Intent(LoginActivity.this, LeadsListActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
 
         firebaseAuthenticationHelper = new FirebaseAuthenticationHelper(this);
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
@@ -74,8 +88,6 @@ public class LoginActivity extends BaseActivity {
                 profileManager = new ProfileManager();
 
                 firebaseDatabaseHelper.getUserDetails(onFetchUserDetailsListener(), uId);
-                startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
-                finish();
             }
 
             @Override
@@ -85,24 +97,6 @@ public class LoginActivity extends BaseActivity {
             }
         };
     }
-
-    /*@Override
-    public void onBackPressed() {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        Intent intent = new Intent();
-
-        if (currentUser == null) {
-            intent.putExtra("MESSAGE", false);
-            Log.i("MMMM", "false");
-        } else {
-            intent.putExtra("MESSAGE", true);
-            Log.i("MMMM", "true");
-        }
-        setResult(1, intent);
-        finish();
-    }*/
 
     private OnFetchUserDetailsListener onFetchUserDetailsListener() {
         return new OnFetchUserDetailsListener() {
@@ -119,8 +113,8 @@ public class LoginActivity extends BaseActivity {
 
                 progress.dismiss();
                 showToastMessage(R.string.logged_in);
-
-                onBackPressed();
+                startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
+                finish();
             }
         };
     }

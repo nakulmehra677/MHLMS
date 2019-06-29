@@ -14,15 +14,13 @@ import android.widget.Spinner;
 
 import com.development.mhleadmanagementsystemdev.R;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressLint("ValidFragment")
 public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
-    private String strStatus;
+    private String strRemarks;
     private OnSalesmanSubmitClickListener listener;
-    private ArrayAdapter<CharSequence> statusAdapter;
-    private Spinner statusSpinner;
+    private ArrayAdapter<CharSequence> remarksAdapter;
+    private Spinner remarksSpinner;
 
     public SalesmanEditLeadDetailsFragment(OnSalesmanSubmitClickListener listener) {
         this.listener = listener;
@@ -39,17 +37,16 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_salesman_edit_lead_details, null);
 
-        statusSpinner = v.findViewById(R.id.status);
+        remarksSpinner = v.findViewById(R.id.salesman_remarks);
 
-        statusAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.status, android.R.layout.simple_spinner_item);
-        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        statusSpinner.setAdapter(statusAdapter);
-        statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        remarksAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.remarks, android.R.layout.simple_spinner_item);
+        remarksAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        remarksSpinner.setAdapter(remarksAdapter);
+        remarksSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                strStatus = parent.getItemAtPosition(position).toString();
-                Log.i("STRSTATUS", strStatus);
+                strRemarks = parent.getItemAtPosition(position).toString();
             }
 
             @Override
@@ -63,8 +60,8 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!strStatus.equals("None"))
-                            listener.onSubmitClicked(strStatus);
+                        if (!strRemarks.equals("None"))
+                            listener.onSubmitClicked(strRemarks);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -14,16 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Activities.LeadsListActivity"/>
-        <activity
-            android:name=".Activities.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.LeadsListActivity" />
         <activity
             android:name=".Activities.FeedCustomerDetailsActivity"
             android:label="Feed Customer Details" />
         <activity
-            android:name=".Activities.MainEmptyActivity"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:name=".Activities.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +31,7 @@
         </activity>
 
         <service
-            android:name=".NotificationService"
+            android:name=".Services.NotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

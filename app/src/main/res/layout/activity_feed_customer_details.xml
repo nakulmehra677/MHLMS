@@ -23,7 +23,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="4dp"
                 android:hint="Name"
-                android:inputType="textCapSentences" />
+                android:inputType="textCapWords"
+                android:maxLength="16" />
 
             <EditText
                 android:id="@+id/contact_number"
@@ -31,7 +32,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="4dp"
                 android:hint="Contact number"
-                android:inputType="phone" />
+                android:inputType="phone"
+                android:maxLength="10" />
 
             <EditText
                 android:id="@+id/loan_amount"
@@ -92,10 +94,10 @@
                     android:text="Type of self employment" />
 
                 <RadioGroup
+                    android:id="@+id/radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="8dp"
-                    android:id="@+id/radio_group"
                     android:orientation="vertical">
 
                     <RadioButton
@@ -122,7 +124,6 @@
                 </RadioGroup>
 
             </LinearLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -212,7 +213,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="4dp"
                 android:hint="Remarks"
-                android:inputType="textCapSentences" />
+                android:inputType="textCapSentences"
+                android:maxLength="140" />
 
 
             <Button
