@@ -9,7 +9,7 @@ import com.development.mhleadmanagementsystemdev.Interfaces.ItemClickListener;
 import com.development.mhleadmanagementsystemdev.R;
 import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 
-public class LeadListViewHolder extends RecyclerView.ViewHolder {
+public class LeadListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     public TextView name, contact, propertyType, employment, loanType,
             location, loanAmount, telecallerRemarks, salesmanRemarks, assignedTo, status, date, optionMenu;
     public TextView tassign;
@@ -43,14 +43,16 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         optionMenu = itemView.findViewById(R.id.menu_option);
 
         expandableLinearLayout = itemView.findViewById(R.id.expandable_layout);
-        button = itemView.findViewById(R.id.list_root);
+        button = itemView.findViewById(R.id.contact_layout);
 
-        itemView.setOnClickListener(new View.OnClickListener() {
+        itemView.setOnClickListener(this);
+
+        /*itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 itemClickListener.onClick(view, getAdapterPosition());
             }
-        });
+        });*/
     }
 
     public void setName(String string) {
@@ -59,5 +61,10 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
 
     public void setContact(String string) {
         contact.setText(string);
+    }
+
+    @Override
+    public void onClick(View v) {
+        expandableLinearLayout.toggle();
     }
 }

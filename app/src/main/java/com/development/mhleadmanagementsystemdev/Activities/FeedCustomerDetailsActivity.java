@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,10 +19,12 @@ import android.widget.Spinner;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
-import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
+import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
+import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,25 +32,26 @@ import java.util.List;
 public class FeedCustomerDetailsActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
     private EditText name, contactNumber, loanAmount, remarks;
-    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedToSpinner, propertySpinner;
+    private Spinner propertyTypeSpinner, loanTypeSpinner, locationSpinner, assignedToSpinner;
     ArrayAdapter<CharSequence> propertyTypeAdapter;
     ArrayAdapter<CharSequence> loanTypeAdapter;
     ArrayAdapter<CharSequence> locationAdapter;
     ArrayAdapter<CharSequence> assignedToAdapter;
-    ArrayAdapter<CharSequence> propertyAdapter;
 
     private String strEmployment = "", strEmploymentType = "", strName, strContactNumber,
             strLoanAmount, strKey, strRemarks, strPropertyType = "None",
-            strLoanType, strLocation, strAssignTo;
+            strLoanType, strLocation, strAssignTo, strAssignToUId;
 
     private String date;
     private ProgressDialog progress;
     private LinearLayout selfEmployementLayout, propertyTypeLayout;
     private RadioGroup radioGroup;
 
-    private CustomerDetails customerDetails;
+    private LeadDetails leadDetails;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
     private SharedPreferences sharedPreferences;
+
+    private List<UserDetails> salesPersonList;
 
 
     @Override
@@ -201,6 +203,11 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
             case R.id.assign_to:
                 strAssignTo = parent.getItemAtPosition(position).toString();
+                for (UserDetails user : salesPersonList) {
+                    if (user.getUserName().equals(strAssignTo))
+                        strAssignToUId = user.getuId();
+                }
+                Log.i("UIIDD", strAssignToUId);
                 break;
 
             default:
@@ -274,7 +281,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
 
-                        firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), customerDetails);
+                        firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), leadDetails);
                     }
                 })
 
@@ -302,9 +309,11 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private void makeObject() {
         String assigner = sharedPreferences.getString(sharedPreferenceUserName, "");
-        customerDetails = new CustomerDetails(strName, strContactNumber, strLoanAmount,
+        String assignerUId = sharedPreferences.getString(sharedPreferenceUserUId, "");
+
+        leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount,
                 strEmployment, strEmploymentType, strLoanType, strPropertyType,
-                strLocation, strRemarks, date, strAssignTo, "Active", assigner, "", "None");
+                strLocation, strRemarks, date, strAssignTo, "Active", assigner, "", "None", strAssignToUId, assignerUId);
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {
@@ -330,21 +339,23 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
         return new OnFetchSalesPersonListListener() {
-
             @Override
-            public void onListFetched(List arrayList) {
+            public void onListFetched(List arrayList, List userName) {
                 progress.dismiss();
 
                 // AssignedTo Spinner
                 assignedToAdapter = new ArrayAdapter<CharSequence>(
                         FeedCustomerDetailsActivity.this,
-                        android.R.layout.simple_spinner_item, arrayList);
+                        android.R.layout.simple_spinner_item, userName);
                 assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 assignedToSpinner.setAdapter(assignedToAdapter);
                 assignedToSpinner.setOnItemSelectedListener(FeedCustomerDetailsActivity.this);
 
                 assignedToSpinner.setEnabled(true);
                 assignedToSpinner.setClickable(true);
+
+                salesPersonList = new ArrayList<>();
+                salesPersonList = arrayList;
             }
         };
     }

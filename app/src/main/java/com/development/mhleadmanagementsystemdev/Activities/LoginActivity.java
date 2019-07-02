@@ -106,6 +106,7 @@ public class LoginActivity extends BaseActivity {
                 editor.putString(sharedPreferenceUserType, userDetails.getUserType());
                 editor.putString(sharedPreferenceUserLocation, userDetails.getLocation());
                 editor.putString(sharedPreferenceUserKey, userDetails.getKey());
+                editor.putString(sharedPreferenceUserUId, userDetails.getuId());
 
                 editor.commit();
 

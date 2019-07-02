@@ -1,15 +1,15 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.arch.paging.PagedList;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 
 import com.development.mhleadmanagementsystemdev.Fragments.EditLeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Fragments.SalesmanEditLeadDetailsFragment;
@@ -27,7 +26,7 @@ import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonLi
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Managers.ProfileManager;
-import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
+import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
@@ -37,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LeadsListActivity extends BaseActivity {
@@ -51,10 +51,12 @@ public class LeadsListActivity extends BaseActivity {
     private DatabaseReference database;
 
     private String currentUserType;
-    private CustomerDetails updateLead;
+    private LeadDetails updateLead;
     private SharedPreferences sharedPreferences;
     private UserDetails currentUserdetails;
     private ProfileManager profileManager;
+
+    private List<UserDetails> userDetailsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,25 @@ public class LeadsListActivity extends BaseActivity {
         //currentUserName = sharedPreferences.getString(sharedPreferenceUserName, "");
 
         // Setting up the recyclerView //
-        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager = new LinearLayoutManager(this) {
+
+            @Override
+            public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
+                LinearSmoothScroller smoothScroller = new LinearSmoothScroller(LeadsListActivity.this) {
+
+                    private static final float SPEED = 1000f;// Change this value (default=25f)
+
+                    @Override
+                    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                        return SPEED / displayMetrics.densityDpi;
+                    }
+
+                };
+                smoothScroller.setTargetPosition(position);
+                startSmoothScroll(smoothScroller);
+            }
+
+        };
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
 
@@ -84,7 +104,7 @@ public class LeadsListActivity extends BaseActivity {
         recyclerView.setHasFixedSize(true);
         //recyclerView.setNestedScrollingEnabled(false);
 
-        //recyclerView.setItemViewCacheSize(20);
+        recyclerView.setItemViewCacheSize(20);
         //recyclerView.setDrawingCacheEnabled(true);
 
         ///recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
@@ -114,12 +134,12 @@ public class LeadsListActivity extends BaseActivity {
         else
             query = database.orderByChild("assignedTo").equalTo(currentUserdetails.getUserName());
 
-        FirebaseRecyclerOptions<CustomerDetails> options = new FirebaseRecyclerOptions.Builder<CustomerDetails>()
+        FirebaseRecyclerOptions<LeadDetails> options = new FirebaseRecyclerOptions.Builder<LeadDetails>()
                 .setLifecycleOwner(this)
-                .setQuery(query, CustomerDetails.class)
+                .setQuery(query, LeadDetails.class)
                 .build();
 
-        adapter = new FirebaseRecyclerAdapter<CustomerDetails, LeadListViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<LeadDetails, LeadListViewHolder>(options) {
 
             @NonNull
             @Override
@@ -140,7 +160,14 @@ public class LeadsListActivity extends BaseActivity {
             }
 
             @Override
-            protected void onBindViewHolder(final LeadListViewHolder holder, final int position, final CustomerDetails model) {
+            public long getItemId(int position) {
+                return super.getItemId(position);
+                // return items[position].id.hashCode().toLong();
+
+            }
+
+            @Override
+            protected void onBindViewHolder(final LeadListViewHolder holder, final int position, final LeadDetails model) {
                 holder.setIsRecyclable(false);
 
                 holder.name.setText(model.getName());
@@ -291,13 +318,24 @@ public class LeadsListActivity extends BaseActivity {
     private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
         return new OnFetchSalesPersonListListener() {
             @Override
-            public void onListFetched(List arrayList) {
+            public void onListFetched(final List arrayList, List userName) {
                 progress.dismiss();
-                EditLeadDetailsFragment.newInstance(arrayList, new EditLeadDetailsFragment.OnSubmitClickListener() {
+                EditLeadDetailsFragment.newInstance(userName, new EditLeadDetailsFragment.OnSubmitClickListener() {
                     @Override
                     public void onSubmitClicked(String dialogAssignedTo, String dialogStatus) {
                         updateLead.setAssignedTo(dialogAssignedTo);
                         updateLead.setStatus(dialogStatus);
+
+                        userDetailsList = new ArrayList<>();
+                        userDetailsList = arrayList;
+
+                        String strAssignedToUId = null;
+                        for (UserDetails userDetails : userDetailsList) {
+                            if (userDetails.getUserName().equals(dialogAssignedTo)){
+                               strAssignedToUId = userDetails.getuId();
+                            }
+                        }
+                        updateLead.setAssignedToUId(strAssignedToUId);
                         firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
                     }
                 }).show(getSupportFragmentManager(), "promo");

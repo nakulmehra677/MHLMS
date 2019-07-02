@@ -8,14 +8,14 @@ import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonLi
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
-import com.development.mhleadmanagementsystemdev.Models.CustomerDetails;
+import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +34,15 @@ public class FirebaseDatabaseHelper {
     }
 
     public void uploadCustomerDetails(OnUploadCustomerDetailsListener onUploadCustomerdetails,
-                                      CustomerDetails customerDetails) {
+                                      LeadDetails leadDetails) {
 
         Log.i("No of Nodes", "Uploading");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("leadList").push();
 
         String key = myRef.getKey();
-        customerDetails.setKey(key);
-        myRef.setValue(customerDetails);
+        leadDetails.setKey(key);
+        myRef.setValue(leadDetails);
         onUploadCustomerdetails.onDataUploaded();
     }
 
@@ -52,8 +52,8 @@ public class FirebaseDatabaseHelper {
         DatabaseReference myRef = database.getReference("userList");
         Log.i("Users", "Fetching Users...");
 
-        final List<String> salesPersonList = new ArrayList<>();
-        salesPersonList.add("None");
+        final List<UserDetails> salesPersonList = new ArrayList<>();
+        final List<String> salesPersonNameList = new ArrayList<>();
 
         myRef.orderByChild("location").equalTo(location)
                 .addValueEventListener(new ValueEventListener() {
@@ -63,11 +63,11 @@ public class FirebaseDatabaseHelper {
                             UserDetails userDetails = snapshot.getValue(UserDetails.class);
 
                             if (userDetails.getUserType().equals("Salesman")) {
-                                Log.i("Users", userDetails.getUserName());
-                                salesPersonList.add(userDetails.getUserName());
+                                salesPersonList.add(userDetails);
+                                salesPersonNameList.add(userDetails.getUserName());
                             }
                         }
-                        onFetchSalesPersonListListener.onListFetched(salesPersonList);
+                        onFetchSalesPersonListListener.onListFetched(salesPersonList, salesPersonNameList);
                     }
 
                     @Override
@@ -77,7 +77,7 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void updateLeadDetails(OnUpdateLeadListener onUpdateLeadListener, CustomerDetails updateLead) {
+    public void updateLeadDetails(OnUpdateLeadListener onUpdateLeadListener, LeadDetails updateLead) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("leadList").child(updateLead.getKey());
         myRef.setValue(updateLead);

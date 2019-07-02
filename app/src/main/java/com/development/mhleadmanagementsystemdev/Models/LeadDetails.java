@@ -1,9 +1,9 @@
 package com.development.mhleadmanagementsystemdev.Models;
 
-public class CustomerDetails {
+public class LeadDetails {
     String name, contactNumber, loanAmount, loanType, propertyType, employment,
             employmentType, location, salesmanRemarks, date, assignedTo, status, key,
-            assigner, telecallerRemarks;
+            assigner, telecallerRemarks, assignedToUId, assignerUId;
 
     public String getName() {
         return name;
@@ -130,14 +130,30 @@ public class CustomerDetails {
         this.status = status;
     }
 
-    public CustomerDetails() {
+    public LeadDetails() {
     }
 
-    public CustomerDetails(String name, String contactNumber, String loanAmount, String employment,
-                           String employmentType, String loanType, String propertyType,
-                           String location, String telecallerRemarks,
-                           String date, String assignedTo, String status, String assigner,
-                           String key, String salesmanRemarks) {
+    public String getAssignedToUId() {
+        return assignedToUId;
+    }
+
+    public void setAssignedToUId(String assignedToUId) {
+        this.assignedToUId = assignedToUId;
+    }
+
+    public String getAssignerUId() {
+        return assignerUId;
+    }
+
+    public void setAssignerUId(String assignerUId) {
+        this.assignerUId = assignerUId;
+    }
+
+    public LeadDetails(String name, String contactNumber, String loanAmount, String employment,
+                       String employmentType, String loanType, String propertyType,
+                       String location, String telecallerRemarks,
+                       String date, String assignedTo, String status, String assigner,
+                       String key, String salesmanRemarks, String assignedToUId, String assignerUId) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.propertyType = propertyType;
@@ -153,5 +169,7 @@ public class CustomerDetails {
         this.assigner = assigner;
         this.telecallerRemarks = telecallerRemarks;
         this.salesmanRemarks = salesmanRemarks;
+        this.assignedToUId = assignedToUId;
+        this.assignerUId = assignerUId;
     }
 }
