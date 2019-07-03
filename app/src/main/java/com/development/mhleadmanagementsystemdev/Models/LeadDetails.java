@@ -3,7 +3,7 @@ package com.development.mhleadmanagementsystemdev.Models;
 public class LeadDetails {
     String name, contactNumber, loanAmount, loanType, propertyType, employment,
             employmentType, location, salesmanRemarks, date, assignedTo, status, key,
-            assigner, telecallerRemarks, assignedToUId, assignerUId;
+            assigner, telecallerRemarks, assignedToUId, assignerUId, salesmanReason;
 
     public String getName() {
         return name;
@@ -149,11 +149,19 @@ public class LeadDetails {
         this.assignerUId = assignerUId;
     }
 
+    public String getSalesmanReason() {
+        return salesmanReason;
+    }
+
+    public void setSalesmanReason(String salesmanReason) {
+        this.salesmanReason = salesmanReason;
+    }
+
     public LeadDetails(String name, String contactNumber, String loanAmount, String employment,
                        String employmentType, String loanType, String propertyType,
-                       String location, String telecallerRemarks,
-                       String date, String assignedTo, String status, String assigner,
-                       String key, String salesmanRemarks, String assignedToUId, String assignerUId) {
+                       String location, String telecallerRemarks, String date, String assignedTo,
+                       String status, String assigner, String key, String salesmanRemarks,
+                       String assignedToUId, String assignerUId, String salesmanReason) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.propertyType = propertyType;
@@ -169,6 +177,7 @@ public class LeadDetails {
         this.assigner = assigner;
         this.telecallerRemarks = telecallerRemarks;
         this.salesmanRemarks = salesmanRemarks;
+        this.salesmanReason = salesmanReason;
         this.assignedToUId = assignedToUId;
         this.assignerUId = assignerUId;
     }

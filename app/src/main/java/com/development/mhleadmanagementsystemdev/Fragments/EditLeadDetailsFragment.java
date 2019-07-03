@@ -27,10 +27,10 @@ import java.util.List;
 
 @SuppressLint("ValidFragment")
 public class EditLeadDetailsFragment extends AppCompatDialogFragment {
-    private String strAssignedTo, strStatus;
+    private String strAssignedTo;
     private OnSubmitClickListener listener;
-    private ArrayAdapter<CharSequence> statusAdapter, assignedToAdapter;
-    private Spinner assignedToSpinner, statusSpinner;
+    private ArrayAdapter<CharSequence> assignedToAdapter;
+    private Spinner assignedToSpinner;
     List arrayList = new ArrayList();
 
     public EditLeadDetailsFragment(List arrayList, OnSubmitClickListener listener) {
@@ -50,7 +50,6 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_lead_details_, null);
 
         assignedToSpinner = v.findViewById(R.id.assign_to);
-        statusSpinner = v.findViewById(R.id.status);
 
         // AssignedTo Spinner
         assignedToAdapter = new ArrayAdapter<CharSequence>(
@@ -70,29 +69,13 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
             }
         });
 
-        statusAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.status, android.R.layout.simple_spinner_item);
-        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        statusSpinner.setAdapter(statusAdapter);
-        statusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                strStatus = parent.getItemAtPosition(position).toString();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
         builder.setView(v)
                 .setTitle("Edit details")
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!strAssignedTo.equals("None") && !strStatus.equals("None"))
-                            listener.onSubmitClicked(strAssignedTo, strStatus);
+                        if (!strAssignedTo.equals("None"))
+                            listener.onSubmitClicked(strAssignedTo);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -106,6 +89,6 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
     }
 
     public interface OnSubmitClickListener {
-        void onSubmitClicked(String dialogAssignedTo, String dialogStatus);
+        void onSubmitClicked(String dialogAssignedTo);
     }
 }

@@ -177,9 +177,21 @@ public class LeadsListActivity extends BaseActivity {
                 holder.location.setText(model.getLocation());
                 holder.loanAmount.setText("\u20B9" + model.getLoanAmount());
                 holder.telecallerRemarks.setText(model.getTelecallerRemarks());
-                holder.salesmanRemarks.setText(model.getSalesmanRemarks());
                 holder.status.setText(model.getStatus());
                 holder.date.setText(model.getDate());
+
+                if (model.getEmployment().equals("Self Employed"))
+                    holder.employementType.setText(model.getEmploymentType());
+                else
+                    holder.employementTypeLayout.setVisibility(View.GONE);
+
+                if (model.getSalesmanRemarks().equals("None")) {
+                    holder.salesmanRemarksLayout.setVisibility(View.GONE);
+                    holder.salesmanReasonLayout.setVisibility(View.GONE);
+                } else {
+                    holder.salesmanRemarks.setText(model.getSalesmanRemarks());
+                    holder.salesmanReason.setText(model.getSalesmanReason());
+                }
 
                 if (model.getLoanType().equals("Home Loan") || model.getLoanType().equals("Loan Against Property")) {
                     holder.propertyType.setText(model.getPropertyType());
@@ -223,14 +235,7 @@ public class LeadsListActivity extends BaseActivity {
                                                 firebaseDatabaseHelper.fetchSalesPersonsByLocation(
                                                         onFetchSalesPersonListListener(), model.getLocation());
                                             } else {
-                                                SalesmanEditLeadDetailsFragment.newInstance(new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
-                                                    @Override
-                                                    public void onSubmitClicked(String dialogSalesmanRemarks) {
-                                                        updateLead = model;
-                                                        updateLead.setSalesmanRemarks(dialogSalesmanRemarks);
-                                                        firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
-                                                    }
-                                                }).show(getSupportFragmentManager(), "promo");
+                                                openSalesmanFragment(model);
                                             }
                                             break;
                                     }
@@ -318,27 +323,9 @@ public class LeadsListActivity extends BaseActivity {
     private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
         return new OnFetchSalesPersonListListener() {
             @Override
-            public void onListFetched(final List arrayList, List userName) {
+            public void onListFetched(final List userDetailList, List userName) {
                 progress.dismiss();
-                EditLeadDetailsFragment.newInstance(userName, new EditLeadDetailsFragment.OnSubmitClickListener() {
-                    @Override
-                    public void onSubmitClicked(String dialogAssignedTo, String dialogStatus) {
-                        updateLead.setAssignedTo(dialogAssignedTo);
-                        updateLead.setStatus(dialogStatus);
-
-                        userDetailsList = new ArrayList<>();
-                        userDetailsList = arrayList;
-
-                        String strAssignedToUId = null;
-                        for (UserDetails userDetails : userDetailsList) {
-                            if (userDetails.getUserName().equals(dialogAssignedTo)){
-                               strAssignedToUId = userDetails.getuId();
-                            }
-                        }
-                        updateLead.setAssignedToUId(strAssignedToUId);
-                        firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
-                    }
-                }).show(getSupportFragmentManager(), "promo");
+                openTelecallerFragment(userDetailList, userName);
             }
         };
     }
@@ -353,5 +340,53 @@ public class LeadsListActivity extends BaseActivity {
                 fetch();
             }
         };
+    }
+
+    private void openSalesmanFragment(final LeadDetails model) {
+        SalesmanEditLeadDetailsFragment.newInstance(new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
+            @Override
+            public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason) {
+                updateLead = model;
+
+                updateLead.setSalesmanRemarks(dialogSalesmanRemarks);
+                updateLead.setSalesmanReason(dialogSalesmanReason);
+
+                if (dialogSalesmanRemarks.equals(customerNotInterested))
+                    updateLead.setStatus("Inactive");
+                else if (dialogSalesmanRemarks.equals(documentPicked))
+                    updateLead.setStatus("Closed");
+                else if (dialogSalesmanRemarks.equals(customerFollowUp))
+                    updateLead.setStatus("Follow Up");
+                else if (dialogSalesmanRemarks.equals(customerNotContactable))
+                    updateLead.setStatus("Inactive");
+                else if (dialogSalesmanRemarks.equals(customerInterestedButDocumentPending))
+                    updateLead.setStatus("Work in Progress");
+                else
+                    updateLead.setStatus("Active");
+
+                firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
+            }
+        }).show(getSupportFragmentManager(), "promo");
+    }
+
+    private void openTelecallerFragment(final List arrayList, List userName) {
+        EditLeadDetailsFragment.newInstance(userName, new EditLeadDetailsFragment.OnSubmitClickListener() {
+            @Override
+            public void onSubmitClicked(String dialogAssignedTo) {
+                updateLead.setAssignedTo(dialogAssignedTo);
+
+                userDetailsList = new ArrayList<>();
+                userDetailsList = arrayList;
+
+                String strAssignedToUId = null;
+                for (UserDetails userDetails : userDetailsList) {
+                    if (userDetails.getUserName().equals(dialogAssignedTo)) {
+                        strAssignedToUId = userDetails.getuId();
+                    }
+                }
+                updateLead.setAssignedToUId(strAssignedToUId);
+                firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
+            }
+        }).show(getSupportFragmentManager(), "promo");
     }
 }

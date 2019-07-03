@@ -141,17 +141,17 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         switch (view.getId()) {
             case R.id.partnership_firm:
                 if (checked) {
-                    strEmployment = "Partnership Firm";
+                    strEmploymentType = "Partnership Firm";
                     break;
                 }
             case R.id.private_limited_company:
                 if (checked) {
-                    strEmployment = "Private Limited Company";
+                    strEmploymentType = "Private Limited Company";
                     break;
                 }
             case R.id.proprietorship_firm:
                 if (checked) {
-                    strEmployment = "Proprietorship Firm";
+                    strEmploymentType = "Proprietorship Firm";
                     break;
                 }
         }
@@ -311,9 +311,10 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String assigner = sharedPreferences.getString(sharedPreferenceUserName, "");
         String assignerUId = sharedPreferences.getString(sharedPreferenceUserUId, "");
 
-        leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount,
-                strEmployment, strEmploymentType, strLoanType, strPropertyType,
-                strLocation, strRemarks, date, strAssignTo, "Active", assigner, "", "None", strAssignToUId, assignerUId);
+        leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount, strEmployment,
+                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks, date,
+                strAssignTo, "Active", assigner, "", "None",
+                strAssignToUId, assignerUId, "None");
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {

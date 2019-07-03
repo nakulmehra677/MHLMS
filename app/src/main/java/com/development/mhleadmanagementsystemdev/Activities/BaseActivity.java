@@ -22,6 +22,12 @@ public class BaseActivity extends AppCompatActivity {
     protected String telecallerUser = "Telecaller";
     protected String salesmanUser = "Salesman";
 
+    public String customerNotInterested = "Customer Not Interested";
+    public String documentPicked = "Document Picked";
+    public String customerFollowUp = "Customer follow Up";
+    public String customerNotContactable = "Customer Not Contactable";
+    public String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
+
     //protected boolean isAdmin = false;
 
     protected boolean isNetworkConnected() {

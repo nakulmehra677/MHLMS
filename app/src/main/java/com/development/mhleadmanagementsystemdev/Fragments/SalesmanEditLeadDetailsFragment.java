@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.development.mhleadmanagementsystemdev.R;
@@ -21,6 +22,7 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
     private OnSalesmanSubmitClickListener listener;
     private ArrayAdapter<CharSequence> remarksAdapter;
     private Spinner remarksSpinner;
+    private EditText salesmanReason;
 
     public SalesmanEditLeadDetailsFragment(OnSalesmanSubmitClickListener listener) {
         this.listener = listener;
@@ -38,6 +40,7 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_salesman_edit_lead_details, null);
 
         remarksSpinner = v.findViewById(R.id.salesman_remarks);
+        salesmanReason = v.findViewById(R.id.salesman_reason);
 
         remarksAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.remarks, android.R.layout.simple_spinner_item);
@@ -60,8 +63,8 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!strRemarks.equals("None"))
-                            listener.onSubmitClicked(strRemarks);
+                        if (!strRemarks.equals("None") && !salesmanReason.getText().toString().isEmpty())
+                            listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString());
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -75,6 +78,6 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
     }
 
     public interface OnSalesmanSubmitClickListener {
-        void onSubmitClicked(String dialogStatus);
+        void onSubmitClicked(String dialogStatus, String dialogSalesmanReason);
     }
 }

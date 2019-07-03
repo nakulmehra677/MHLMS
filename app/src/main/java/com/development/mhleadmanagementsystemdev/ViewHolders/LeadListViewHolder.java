@@ -10,10 +10,10 @@ import com.development.mhleadmanagementsystemdev.R;
 import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 
 public class LeadListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    public TextView name, contact, propertyType, employment, loanType,
-            location, loanAmount, telecallerRemarks, salesmanRemarks, assignedTo, status, date, optionMenu;
+    public TextView name, contact, propertyType, employment, employementType, loanType,
+            location, loanAmount, telecallerRemarks, salesmanRemarks, salesmanReason, assignedTo, status, date, optionMenu;
     public TextView tassign;
-    public LinearLayout tpropertyType, tproperty;
+    public LinearLayout tpropertyType, salesmanRemarksLayout, salesmanReasonLayout, employementTypeLayout;
     public ItemClickListener itemClickListener;
     public ExpandableLinearLayout expandableLinearLayout;
     public LinearLayout button;
@@ -28,17 +28,23 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder implements View.
         contact = itemView.findViewById(R.id.customer_contact);
         propertyType = itemView.findViewById(R.id.customer_property_type);
         employment = itemView.findViewById(R.id.employment);
+        employementType = itemView.findViewById(R.id.employment_type);
         loanType = itemView.findViewById(R.id.customer_loan_type);
         location = itemView.findViewById(R.id.customer_location);
         loanAmount = itemView.findViewById(R.id.customer_loan_amount);
         telecallerRemarks = itemView.findViewById(R.id.telecaller_remarks);
         salesmanRemarks = itemView.findViewById(R.id.salesman_remarks);
+        salesmanReason = itemView.findViewById(R.id.salesman_reason);
         assignedTo = itemView.findViewById(R.id.assigned_to);
         status = itemView.findViewById(R.id.status);
         date = itemView.findViewById(R.id.date);
 
         tassign = itemView.findViewById(R.id.tassign);
         tpropertyType = itemView.findViewById(R.id.tpropertyType);
+        salesmanRemarksLayout = itemView.findViewById(R.id.salesman_remarks_layout);
+        salesmanReasonLayout = itemView.findViewById(R.id.salesman_reason_layout);
+        employementTypeLayout = itemView.findViewById(R.id.employement_type_layout);
+
 
         optionMenu = itemView.findViewById(R.id.menu_option);
 
