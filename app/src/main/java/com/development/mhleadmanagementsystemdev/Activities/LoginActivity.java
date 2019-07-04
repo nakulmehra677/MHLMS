@@ -122,7 +122,6 @@ public class LoginActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // check if the request code is same as what is passed  here it is 2
 
-        Log.i("LOginlogin", String.valueOf(data.getBooleanExtra("loggedIn", true)));
         if (requestCode == 101) {
             if (data.getBooleanExtra("loggedIn", true))
                 finish();

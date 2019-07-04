@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
@@ -14,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -104,5 +106,29 @@ public class FirebaseDatabaseHelper {
 
                     }
                 });
+    }
+
+    public void getLeadList(final OnFetchLeadListListener listener, int i) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("leadList");
+        Query query = databaseReference.orderByKey().startAt(String.valueOf(i)).limitToFirst(20);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChildren()) {
+                    List<LeadDetails> list = new ArrayList<>();
+                    for (DataSnapshot d : dataSnapshot.getChildren())
+                        list.add(d.getValue(LeadDetails.class));
+
+                    listener.onSuccess(list);
+                }
+                listener.onFailer();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("ERROR", "getChapterList(), onCancelled", new Exception(databaseError.getMessage()));
+            }
+        });
     }
 }

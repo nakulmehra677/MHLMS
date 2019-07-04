@@ -18,10 +18,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 
+import com.development.mhleadmanagementsystemdev.Adapters.LeadListItemAdapter;
 import com.development.mhleadmanagementsystemdev.Fragments.EditLeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Fragments.SalesmanEditLeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
@@ -46,17 +49,20 @@ public class LeadsListActivity extends BaseActivity {
     private FloatingActionButton fab;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
-    private FirebaseRecyclerAdapter adapter;
+    //private FirebaseRecyclerAdapter adapter;
 
     private DatabaseReference database;
 
-    private String currentUserType;
+    public static String currentUserType;
     private LeadDetails updateLead;
     private SharedPreferences sharedPreferences;
     private UserDetails currentUserdetails;
     private ProfileManager profileManager;
+    private ProgressBar progressBar;
 
     private List<UserDetails> userDetailsList;
+    private List<LeadDetails> leadDetails = new ArrayList<>();
+    private LeadListItemAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,7 @@ public class LeadsListActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
         fab = findViewById(R.id.fab);
+        progressBar = findViewById(R.id.progressBar);
 
         profileManager = new ProfileManager();
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
@@ -97,17 +104,33 @@ public class LeadsListActivity extends BaseActivity {
             }
 
         };
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (!recyclerView.canScrollVertically(1)) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    /*if (!lastChapter.equals(lastFetechedChapter) && newLastChapterFeteched) {
+                        scrollProgressBar.setVisibility(View.VISIBLE);
+                        newLastChapterFeteched = false;
+                        getData();
+                    }*/
+                    fetch();
+                }
+            }
+        });
 
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         //recyclerView.setNestedScrollingEnabled(false);
 
         recyclerView.setItemViewCacheSize(20);
-        //recyclerView.setDrawingCacheEnabled(true);
-
-        ///recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        adapter = new LeadListItemAdapter(leadDetails);
+        recyclerView.setAdapter(adapter);
+        fetch();
     }
 
     @SuppressLint("RestrictedApi")
@@ -126,7 +149,8 @@ public class LeadsListActivity extends BaseActivity {
     }
 
     private void fetch() {
-        database = FirebaseDatabase.getInstance().getReference("leadList");
+        firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(), leadDetails.size());
+        /*database = FirebaseDatabase.getInstance().getReference("leadList");
         Query query;
 
         if (currentUserType.equals(telecallerUser))
@@ -252,22 +276,22 @@ public class LeadsListActivity extends BaseActivity {
             }
         };
         adapter.startListening();
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(adapter);*/
     }
 
-    @Override
+    /*@Override
     protected void onStart() {
         if (!progress.isShowing())
             showProgressDialog("Loading..", this);
         super.onStart();
-    }
+    }*/
 
-    @Override
+    /*@Override
     protected void onDestroy() {
         if (profileManager.getCurrentUser() != null)
             adapter.stopListening();
         super.onDestroy();
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -320,6 +344,23 @@ public class LeadsListActivity extends BaseActivity {
         };
     }
 
+    private OnFetchLeadListListener onFetchLeadListListener() {
+        return new OnFetchLeadListListener() {
+            @Override
+            public void onSuccess(List<LeadDetails> list) {
+                leadDetails.addAll(list);
+                adapter.notifyDataSetChanged();
+                progress.dismiss();
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailer() {
+                showToastMessage(R.string.no_internet);
+            }
+        };
+    }
+
     private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
         return new OnFetchSalesPersonListListener() {
             @Override
@@ -334,7 +375,7 @@ public class LeadsListActivity extends BaseActivity {
         return new OnUpdateLeadListener() {
             @Override
             public void onLeadUpdated() {
-                adapter.stopListening();
+                //adapter.stopListening();
                 showToastMessage(R.string.lead_update);
                 progress.dismiss();
                 fetch();
