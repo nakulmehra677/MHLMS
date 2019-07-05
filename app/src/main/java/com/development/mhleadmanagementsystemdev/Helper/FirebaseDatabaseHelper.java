@@ -110,18 +110,15 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void getLeadList(final OnFetchLeadListListener listener, int i) {
+    public void getLeadList(final OnFetchLeadListListener listener) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("leadList");
-        Query query = databaseReference.orderByKey().startAt(String.valueOf(i)).limitToLast(20);
+       // Query query = databaseReference.orderByKey().startAt(key).limitToLast(20);
 
-        query.addChildEventListener(new ChildEventListener() {
+        databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if (dataSnapshot.exists()) {
-                    LeadDetails leadDetails = dataSnapshot.getValue(LeadDetails.class);
-                    listener.onSuccess(leadDetails);
-                } else
-                    listener.onFailer();
+                LeadDetails leadDetails = dataSnapshot.getValue(LeadDetails.class);
+                listener.onSuccess(leadDetails);
             }
 
             @Override

@@ -100,7 +100,7 @@ public class LeadsListActivity extends BaseActivity {
             }
         };
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -112,18 +112,18 @@ public class LeadsListActivity extends BaseActivity {
                         scrollProgressBar.setVisibility(View.VISIBLE);
                         newLastChapterFeteched = false;
                         getData();
-                    }*/
+                    }
                     fetch();
                 }
             }
-        });
+        });*/
 
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         //recyclerView.setNestedScrollingEnabled(false);
 
         recyclerView.setItemViewCacheSize(20);
-        adapter = new LeadListItemAdapter(leadDetails);
+        adapter = new LeadListItemAdapter(leadDetails, this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -143,7 +143,7 @@ public class LeadsListActivity extends BaseActivity {
     }
 
     private void fetch() {
-        firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(), leadDetails.size());
+        firebaseDatabaseHelper.getLeadList(onFetchLeadListListener());
     }
 
     @Override

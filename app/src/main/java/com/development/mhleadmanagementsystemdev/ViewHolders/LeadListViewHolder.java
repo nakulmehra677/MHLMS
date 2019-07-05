@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.development.mhleadmanagementsystemdev.Activities.LeadsListActivity;
+import com.development.mhleadmanagementsystemdev.Fragments.LeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Interfaces.ItemClickListener;
 import com.development.mhleadmanagementsystemdev.R;
 import com.github.aakira.expandablelayout.ExpandableLinearLayout;

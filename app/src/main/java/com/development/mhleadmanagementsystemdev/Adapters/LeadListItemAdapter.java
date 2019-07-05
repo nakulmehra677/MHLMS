@@ -2,6 +2,7 @@ package com.development.mhleadmanagementsystemdev.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.development.mhleadmanagementsystemdev.Activities.LeadsListActivity;
+import com.development.mhleadmanagementsystemdev.Fragments.LeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
@@ -21,9 +23,11 @@ import java.util.List;
 
 public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder> {
     private List<LeadDetails> leads;
+    private Context context;
 
-    public LeadListItemAdapter(List<LeadDetails> leadDetails) {
+    public LeadListItemAdapter(List<LeadDetails> leadDetails, Context context) {
         this.leads = leadDetails;
+        this.context = context;
     }
 
     @NonNull
@@ -35,7 +39,7 @@ public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull final LeadListViewHolder holder, int i) {
-        LeadDetails model = leads.get(i);
+        final LeadDetails model = leads.get(i);
 
         holder.name.setText(model.getName());
         holder.loanAmount.setText("\u20B9" + model.getLoanAmount());
@@ -48,6 +52,14 @@ public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder
             holder.tassign.setText("Assginer");
             holder.assignedTo.setText(model.getAssigner());
         }*/
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model);
+                leadDetailsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "f");
+            }
+        });
     }
 
     @Override

@@ -302,9 +302,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     }
 
     private void getDate() {
-        Date c = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-        date = df.format(c);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        date = formatter.format(new Date());
     }
 
     private void makeObject() {
@@ -312,9 +311,9 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String assignerUId = sharedPreferences.getString(sharedPreferenceUserUId, "");
 
         leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount, strEmployment,
-                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks, date,
+                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks, date.substring(0, 10),
                 strAssignTo, "Active", assigner, "", "None",
-                strAssignToUId, assignerUId, "None");
+                strAssignToUId, assignerUId, "None", date.substring(11, 19));
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {
