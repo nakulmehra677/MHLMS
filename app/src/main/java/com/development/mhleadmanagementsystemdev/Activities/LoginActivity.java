@@ -34,11 +34,9 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
         loginButton = findViewById(R.id.login);
-
 
         if (isNetworkConnected()) {
 
@@ -46,32 +44,36 @@ public class LoginActivity extends BaseActivity {
             profileManager.checkUserExist();
 
             if (profileManager.checkUserExist()) {
-                startActivityForResult(new Intent(LoginActivity.this, LeadsListActivity.class), 101);
+                startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
+                finish();
             }
-        }
 
-        firebaseAuthenticationHelper = new FirebaseAuthenticationHelper(this);
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
+            firebaseAuthenticationHelper = new FirebaseAuthenticationHelper(this);
+            firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            loginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                hideKeyboard(LoginActivity.this);
-                if (isNetworkConnected()) {
-                    getDetail();
+                    hideKeyboard(LoginActivity.this);
+                    if (isNetworkConnected()) {
+                        getDetail();
 
-                    if (!strMail.isEmpty() && !strPassword.isEmpty()) {
-                        showProgressDialog("Logging in", LoginActivity.this);
+                        if (!strMail.isEmpty() && !strPassword.isEmpty()) {
+                            showProgressDialog("Logging in", LoginActivity.this);
 
-                        firebaseAuthenticationHelper.loginUser(onUserLoginListener(), strMail, strPassword);
+                            firebaseAuthenticationHelper.loginUser(onUserLoginListener(), strMail, strPassword);
+                        } else
+                            showToastMessage(R.string.fill_all_fields);
+
                     } else
-                        showToastMessage(R.string.fill_all_fields);
-
-                } else
-                    showToastMessage(R.string.no_internet);
-            }
-        });
+                        showToastMessage(R.string.no_internet);
+                }
+            });
+        } else {
+            showToastMessage(R.string.no_internet);
+            finish();
+        }
     }
 
     private void getDetail() {
@@ -117,14 +119,12 @@ public class LoginActivity extends BaseActivity {
         };
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // check if the request code is same as what is passed  here it is 2
-
-        if (requestCode == 101) {
+        if (requestCode == 101)
             if (data.getBooleanExtra("loggedIn", true))
                 finish();
-        }
-    }
+    }*/
 }

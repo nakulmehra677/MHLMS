@@ -1,13 +1,1 @@
 /build
-
-# Keystore files
-*.jks
-
-#private key
-*.pepk
-
-/src/google-services.json
-
-*.aab
-*.apk
-*.json

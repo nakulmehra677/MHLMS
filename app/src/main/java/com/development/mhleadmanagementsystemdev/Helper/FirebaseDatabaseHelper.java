@@ -2,6 +2,7 @@ package com.development.mhleadmanagementsystemdev.Helper;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
@@ -11,6 +12,7 @@ import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -110,19 +112,31 @@ public class FirebaseDatabaseHelper {
 
     public void getLeadList(final OnFetchLeadListListener listener, int i) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("leadList");
-        Query query = databaseReference.orderByKey().startAt(String.valueOf(i)).limitToFirst(20);
+        Query query = databaseReference.orderByKey().startAt(String.valueOf(i)).limitToLast(20);
 
-        query.addValueEventListener(new ValueEventListener() {
+        query.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    List<LeadDetails> list = new ArrayList<>();
-                    for (DataSnapshot d : dataSnapshot.getChildren())
-                        list.add(d.getValue(LeadDetails.class));
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.exists()) {
+                    LeadDetails leadDetails = dataSnapshot.getValue(LeadDetails.class);
+                    listener.onSuccess(leadDetails);
+                } else
+                    listener.onFailer();
+            }
 
-                    listener.onSuccess(list);
-                }
-                listener.onFailer();
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override

@@ -19,8 +19,8 @@ public class BaseActivity extends AppCompatActivity {
     public String sharedPreferenceUserKey = "shared_preference_user_key";
     public String sharedPreferenceUserUId = "shared_preference_user_uid";
 
-    public static String telecallerUser = "Telecaller";
-    public static String salesmanUser = "Salesman";
+    public String telecallerUser = "Telecaller";
+    public String salesmanUser = "Salesman";
 
     public String customerNotInterested = "Customer Not Interested";
     public String documentPicked = "Document Picked";

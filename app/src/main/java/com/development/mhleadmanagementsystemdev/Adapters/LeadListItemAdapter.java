@@ -16,8 +16,8 @@ import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
 
 import java.util.List;
 
-import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
-import static com.development.mhleadmanagementsystemdev.Activities.LeadsListActivity.currentUserType;
+//import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
+//import static com.development.mhleadmanagementsystemdev.Activities.LeadsListActivity.currentUserType;
 
 public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder> {
     private List<LeadDetails> leads;
@@ -38,44 +38,16 @@ public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder
         LeadDetails model = leads.get(i);
 
         holder.name.setText(model.getName());
-        holder.contact.setText(model.getContactNumber());
-        holder.employment.setText(model.getEmployment());
-        holder.loanType.setText(model.getLoanType());
-        holder.location.setText(model.getLocation());
         holder.loanAmount.setText("\u20B9" + model.getLoanAmount());
-        holder.telecallerRemarks.setText(model.getTelecallerRemarks());
         holder.status.setText(model.getStatus());
         holder.date.setText(model.getDate());
 
-        if (model.getEmployment().equals("Self Employed"))
-            holder.employementType.setText(model.getEmploymentType());
-        else
-            holder.employementTypeLayout.setVisibility(View.GONE);
-
-        if (model.getSalesmanRemarks().equals("None")) {
-            holder.salesmanRemarksLayout.setVisibility(View.GONE);
-            holder.salesmanReasonLayout.setVisibility(View.GONE);
-        } else {
-            holder.salesmanRemarks.setText(model.getSalesmanRemarks());
-            holder.salesmanReason.setText(model.getSalesmanReason());
-        }
-
-        if (model.getLoanType().equals("Home Loan") || model.getLoanType().equals("Loan Against Property")) {
-            holder.propertyType.setText(model.getPropertyType());
-        } else {
-            holder.tpropertyType.setVisibility(View.GONE);
-        }
-        if (currentUserType.equals(telecallerUser))
+        /*if (currentUserType.equals(telecallerUser))
             holder.assignedTo.setText(model.getAssignedTo());
         else {
             holder.tassign.setText("Assginer");
             holder.assignedTo.setText(model.getAssigner());
-        }
-
-        holder.expandableLinearLayout.setInRecyclerView(true);
-        holder.expandableLinearLayout.setExpanded(false);
-
-        holder.setIsRecyclable(false);
+        }*/
     }
 
     @Override

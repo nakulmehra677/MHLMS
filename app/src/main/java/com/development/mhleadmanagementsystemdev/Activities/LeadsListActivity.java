@@ -47,18 +47,13 @@ public class LeadsListActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton fab;
+    private ProgressBar progressBar;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
-    //private FirebaseRecyclerAdapter adapter;
 
-    private DatabaseReference database;
-
-    public static String currentUserType;
     private LeadDetails updateLead;
     private SharedPreferences sharedPreferences;
-    private UserDetails currentUserdetails;
     private ProfileManager profileManager;
-    private ProgressBar progressBar;
 
     private List<UserDetails> userDetailsList;
     private List<LeadDetails> leadDetails = new ArrayList<>();
@@ -73,10 +68,11 @@ public class LeadsListActivity extends BaseActivity {
         fab = findViewById(R.id.fab);
         progressBar = findViewById(R.id.progressBar);
 
+        //showProgressDialog("Loading..", this);
+
         profileManager = new ProfileManager();
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
 
-        showProgressDialog("Loading..", this);
         firebaseDatabaseHelper.getUserDetails(onFetchUserDetailsListener(), profileManager.getuId());
 
         //sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
@@ -102,7 +98,6 @@ public class LeadsListActivity extends BaseActivity {
                 smoothScroller.setTargetPosition(position);
                 startSmoothScroll(smoothScroller);
             }
-
         };
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -130,13 +125,12 @@ public class LeadsListActivity extends BaseActivity {
         recyclerView.setItemViewCacheSize(20);
         adapter = new LeadListItemAdapter(leadDetails);
         recyclerView.setAdapter(adapter);
-        fetch();
     }
 
     @SuppressLint("RestrictedApi")
     private void setLayoutByUser() {
         //if (sharedPreferences.getString(sharedPreferenceUserType, "Salesman").equals("Telecaller"))
-        if (currentUserType.equals(telecallerUser))
+        if (profileManager.getCurrentUserType().equals(telecallerUser))
             fab.setVisibility(View.VISIBLE);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -150,156 +144,14 @@ public class LeadsListActivity extends BaseActivity {
 
     private void fetch() {
         firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(), leadDetails.size());
-        /*database = FirebaseDatabase.getInstance().getReference("leadList");
-        Query query;
-
-        if (currentUserType.equals(telecallerUser))
-            query = database.orderByChild("assigner").equalTo(currentUserdetails.getUserName());
-        else
-            query = database.orderByChild("assignedTo").equalTo(currentUserdetails.getUserName());
-
-        FirebaseRecyclerOptions<LeadDetails> options = new FirebaseRecyclerOptions.Builder<LeadDetails>()
-                .setLifecycleOwner(this)
-                .setQuery(query, LeadDetails.class)
-                .build();
-
-        adapter = new FirebaseRecyclerAdapter<LeadDetails, LeadListViewHolder>(options) {
-
-            @NonNull
-            @Override
-            public LeadListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.lead_list_item, parent, false);
-
-                return new LeadListViewHolder(view);
-            }
-
-            @Override
-            public void onDataChanged() {
-                if (getItemCount() == 0) {
-                    showToastMessage(R.string.no_leads);
-                    progress.dismiss();
-                }
-                super.onDataChanged();
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return super.getItemId(position);
-                // return items[position].id.hashCode().toLong();
-
-            }
-
-            @Override
-            protected void onBindViewHolder(final LeadListViewHolder holder, final int position, final LeadDetails model) {
-                holder.setIsRecyclable(false);
-
-                holder.name.setText(model.getName());
-                holder.contact.setText(model.getContactNumber());
-                holder.employment.setText(model.getEmployment());
-                holder.loanType.setText(model.getLoanType());
-                holder.location.setText(model.getLocation());
-                holder.loanAmount.setText("\u20B9" + model.getLoanAmount());
-                holder.telecallerRemarks.setText(model.getTelecallerRemarks());
-                holder.status.setText(model.getStatus());
-                holder.date.setText(model.getDate());
-
-                if (model.getEmployment().equals("Self Employed"))
-                    holder.employementType.setText(model.getEmploymentType());
-                else
-                    holder.employementTypeLayout.setVisibility(View.GONE);
-
-                if (model.getSalesmanRemarks().equals("None")) {
-                    holder.salesmanRemarksLayout.setVisibility(View.GONE);
-                    holder.salesmanReasonLayout.setVisibility(View.GONE);
-                } else {
-                    holder.salesmanRemarks.setText(model.getSalesmanRemarks());
-                    holder.salesmanReason.setText(model.getSalesmanReason());
-                }
-
-                if (model.getLoanType().equals("Home Loan") || model.getLoanType().equals("Loan Against Property")) {
-                    holder.propertyType.setText(model.getPropertyType());
-                } else {
-                    holder.tpropertyType.setVisibility(View.GONE);
-                }
-                if (currentUserType.equals(telecallerUser))
-                    holder.assignedTo.setText(model.getAssignedTo());
-                else {
-                    holder.tassign.setText("Assginer");
-                    holder.assignedTo.setText(model.getAssigner());
-                }
-
-                holder.expandableLinearLayout.setInRecyclerView(true);
-                holder.expandableLinearLayout.setExpanded(false);
-
-                holder.button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        holder.expandableLinearLayout.toggle();
-                    }
-                });
-
-                holder.setIsRecyclable(false);
-
-
-                holder.optionMenu.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (isNetworkConnected()) {
-                            PopupMenu popupMenu = new PopupMenu(LeadsListActivity.this, holder.optionMenu);
-                            popupMenu.inflate(R.menu.telecaller_lead_list_item_menu);
-                            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    switch (item.getItemId()) {
-                                        case R.id.edit_details:
-                                            if (currentUserType.equals(telecallerUser)) {
-                                                showProgressDialog("Loading..", LeadsListActivity.this);
-                                                updateLead = model;
-                                                firebaseDatabaseHelper.fetchSalesPersonsByLocation(
-                                                        onFetchSalesPersonListListener(), model.getLocation());
-                                            } else {
-                                                openSalesmanFragment(model);
-                                            }
-                                            break;
-                                    }
-                                    return false;
-                                }
-                            });
-                            popupMenu.show();
-                        } else
-                            showToastMessage(R.string.no_internet);
-                    }
-                });
-
-                progress.dismiss();
-            }
-        };
-        adapter.startListening();
-        recyclerView.setAdapter(adapter);*/
     }
-
-    /*@Override
-    protected void onStart() {
-        if (!progress.isShowing())
-            showProgressDialog("Loading..", this);
-        super.onStart();
-    }*/
-
-    /*@Override
-    protected void onDestroy() {
-        if (profileManager.getCurrentUser() != null)
-            adapter.stopListening();
-        super.onDestroy();
-    }*/
 
     @Override
     public void onBackPressed() {
-        Log.i("login", String.valueOf(profileManager.checkUserExist()));
-        Intent intent = new Intent();
-        intent.putExtra("loggedIn", profileManager.checkUserExist());
-        setResult(101, intent);
-        finish();
+        super.onBackPressed();
+        //Intent intent = new Intent();
+        //setResult(101, intent);
+        //finish();
     }
 
     @Override
@@ -316,7 +168,6 @@ public class LeadsListActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.logout:
                 if (isNetworkConnected()) {
-                    profileManager.signOut();
                     profileManager.signOut();
                     //SharedPreferences.Editor editor = sharedPreferences.edit();
                     //editor.clear();
@@ -337,8 +188,7 @@ public class LeadsListActivity extends BaseActivity {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 profileManager.setCurrentUserDetails(userDetails);
-                currentUserdetails = userDetails;
-                currentUserType = userDetails.getUserType();
+                Log.i("UserDetails", userDetails.getUserType());
                 setLayoutByUser();
             }
         };
@@ -347,16 +197,18 @@ public class LeadsListActivity extends BaseActivity {
     private OnFetchLeadListListener onFetchLeadListListener() {
         return new OnFetchLeadListListener() {
             @Override
-            public void onSuccess(List<LeadDetails> list) {
-                leadDetails.addAll(list);
+            public void onSuccess(LeadDetails l) {
+                leadDetails.add(l);
                 adapter.notifyDataSetChanged();
-                progress.dismiss();
+                //progress.dismiss();
                 progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailer() {
                 showToastMessage(R.string.no_internet);
+                //progress.dismiss();
+                progressBar.setVisibility(View.GONE);
             }
         };
     }

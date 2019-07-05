@@ -5,7 +5,7 @@ import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import java.util.List;
 
 public interface OnFetchLeadListListener {
-    void onSuccess(List<LeadDetails> list);
+    void onSuccess(LeadDetails l);
 
     void onFailer();
 }
