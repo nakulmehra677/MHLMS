@@ -16,12 +16,9 @@ import com.github.aakira.expandablelayout.ExpandableLinearLayout;
 
 //import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
 
-public class LeadListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    public TextView name, contact, propertyType, employment, employementType, loanType,
-            location, loanAmount, telecallerRemarks, salesmanRemarks, salesmanReason, assignedTo, status, date, optionMenu;
-    public LinearLayout tpropertyType, salesmanRemarksLayout, salesmanReasonLayout, employementTypeLayout;
+public class LeadListViewHolder extends RecyclerView.ViewHolder {
+    public TextView name, contact, loanAmount, assignedTo, status, date, assignText;
     public ItemClickListener itemClickListener;
-    public ExpandableLinearLayout expandableLinearLayout;
 
     public void setItemClickListener(ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
@@ -34,6 +31,8 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder implements View.
         assignedTo = itemView.findViewById(R.id.assigned_to);
         status = itemView.findViewById(R.id.status);
         date = itemView.findViewById(R.id.date);
+
+        assignText = itemView.findViewById(R.id.assign_text);
     }
 
     public void setName(String string) {
@@ -42,10 +41,5 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder implements View.
 
     public void setContact(String string) {
         contact.setText(string);
-    }
-
-    @Override
-    public void onClick(View v) {
-        expandableLinearLayout.toggle();
     }
 }

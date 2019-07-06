@@ -29,7 +29,6 @@
     <string name="self_employed">Self Employed</string>
 
     <string-array name="property_type">
-        <item>None</item>
         <item>Self Occupied Residential Property</item>
         <item>Self Occupied Commercial Property</item>
         <item>Rented</item>
@@ -38,7 +37,6 @@
     </string-array>
 
     <string-array name="property">
-        <item>None</item>
         <item>Flat</item>
         <item>Bunglow</item>
         <item>Open Land</item>
@@ -46,7 +44,6 @@
     </string-array>
 
     <string-array name="loan_type">
-        <item>None</item>
         <item>Home Loan</item>
         <item>Business Loan</item>
         <item>Personal Loan</item>
@@ -55,15 +52,14 @@
     </string-array>
 
     <string-array name="location">
-        <item>None</item>
         <item>Delhi</item>
         <item>Indore</item>
         <item>Jaipur</item>
         <item>Gwalior</item>
+        <item>Ahemdabad</item>
     </string-array>
 
     <string-array name="status">
-        <item>None</item>
         <item>Active</item>
         <item>Non Active</item>
         <item>Work in Progress</item>
@@ -72,7 +68,6 @@
     </string-array>
 
     <string-array name="remarks">
-        <item>None</item>
         <item>Customer Not Interested</item>
         <item>Document Picked</item>
         <item>Customer follow Up</item>

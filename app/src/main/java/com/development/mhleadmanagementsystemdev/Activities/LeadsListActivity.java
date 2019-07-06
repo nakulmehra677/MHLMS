@@ -123,8 +123,6 @@ public class LeadsListActivity extends BaseActivity {
         //recyclerView.setNestedScrollingEnabled(false);
 
         recyclerView.setItemViewCacheSize(20);
-        adapter = new LeadListItemAdapter(leadDetails, this);
-        recyclerView.setAdapter(adapter);
     }
 
     @SuppressLint("RestrictedApi")
@@ -143,7 +141,13 @@ public class LeadsListActivity extends BaseActivity {
     }
 
     private void fetch() {
-        firebaseDatabaseHelper.getLeadList(onFetchLeadListListener());
+        String s;
+        if (profileManager.getCurrentUserType().equals(telecallerUser))
+            s = "assigner";
+        else
+            s = "assignedTo";
+        firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
+                s, profileManager.getCurrentUserDetails().getUserName());
     }
 
     @Override
@@ -189,6 +193,8 @@ public class LeadsListActivity extends BaseActivity {
             public void onSuccess(UserDetails userDetails) {
                 profileManager.setCurrentUserDetails(userDetails);
                 Log.i("UserDetails", userDetails.getUserType());
+                adapter = new LeadListItemAdapter(leadDetails, LeadsListActivity.this, profileManager.getCurrentUserType());
+                recyclerView.setAdapter(adapter);
                 setLayoutByUser();
             }
         };

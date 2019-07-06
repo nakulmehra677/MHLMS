@@ -18,16 +18,20 @@ import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
 
 import java.util.List;
 
+import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
+
 //import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
 //import static com.development.mhleadmanagementsystemdev.Activities.LeadsListActivity.currentUserType;
 
 public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder> {
     private List<LeadDetails> leads;
     private Context context;
+    private String currentUserType;
 
-    public LeadListItemAdapter(List<LeadDetails> leadDetails, Context context) {
+    public LeadListItemAdapter(List<LeadDetails> leadDetails, Context context, String currentUserType) {
         this.leads = leadDetails;
         this.context = context;
+        this.currentUserType = currentUserType;
     }
 
     @NonNull
@@ -46,12 +50,12 @@ public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder
         holder.status.setText(model.getStatus());
         holder.date.setText(model.getDate());
 
-        /*if (currentUserType.equals(telecallerUser))
+        if (currentUserType.equals(telecallerUser))
             holder.assignedTo.setText(model.getAssignedTo());
         else {
-            holder.tassign.setText("Assginer");
+            holder.assignText.setText("Assginer");
             holder.assignedTo.setText(model.getAssigner());
-        }*/
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

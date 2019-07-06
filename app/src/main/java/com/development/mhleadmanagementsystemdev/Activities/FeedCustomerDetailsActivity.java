@@ -38,14 +38,14 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     ArrayAdapter<CharSequence> locationAdapter;
     ArrayAdapter<CharSequence> assignedToAdapter;
 
-    private String strEmployment = "", strEmploymentType = "", strName, strContactNumber,
-            strLoanAmount, strKey, strRemarks, strPropertyType = "None",
-            strLoanType, strLocation, strAssignTo, strAssignToUId;
+    private String strName, strContactNumber, strLoanAmount, strRemarks,
+            strEmployment = "", strEmploymentType = "None",
+            strLoanType, strPropertyType = "None", strLocation = "Delhi", strAssignTo, strAssignToUId;
 
     private String date;
     private ProgressDialog progress;
     private LinearLayout selfEmployementLayout, propertyTypeLayout;
-    private RadioGroup radioGroup;
+    private RadioGroup selfEmploymentTypeRadioGroup;
 
     private LeadDetails leadDetails;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
@@ -69,13 +69,15 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         assignedToSpinner = findViewById(R.id.assign_to);
         selfEmployementLayout = findViewById(R.id.self_employement_layout);
         propertyTypeLayout = findViewById(R.id.property_type_layout);
-        radioGroup = findViewById(R.id.radio_group);
+        selfEmploymentTypeRadioGroup = findViewById(R.id.self_employment_type_radio_group);
 
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
         sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
 
         initializeLoanTypeSpinner();
         initializeLocationSpinner();
+
+        getSalesmanListByLocation();
     }
 
     private void initializeLoanTypeSpinner() {
@@ -120,8 +122,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 if (checked) {
                     strEmployment = "Salaried";
                     selfEmployementLayout.setVisibility(View.GONE);
-                    radioGroup.clearCheck();
-                    strEmploymentType = "";
+                    selfEmploymentTypeRadioGroup.clearCheck();
+                    strEmploymentType = "None";
                     break;
                 }
             case R.id.self_employed:
@@ -173,31 +175,21 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 break;
 
             case R.id.property_type:
-                Log.i("proptertytype", "mghcmh");
                 strPropertyType = parent.getItemAtPosition(position).toString();
                 break;
 
             case R.id.location:
-                Log.i("LOcations", "mghcmh");
                 strLocation = parent.getItemAtPosition(position).toString();
 
                 assignedToSpinner.setSelection(0);
-                assignedToSpinner.setEnabled(false);
-                assignedToSpinner.setClickable(false);
+                //assignedToSpinner.setEnabled(false);
+                //assignedToSpinner.setClickable(false);
 
-                if (!strLocation.equals("None")) {
-                    if (isNetworkConnected()) {
-                        progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
-                        progress.setMessage("Loading..");
-                        progress.setCancelable(false);
-                        progress.setCanceledOnTouchOutside(false);
-                        progress.show();
-                        firebaseDatabaseHelper.fetchSalesPersonsByLocation(
-                                onFetchSalesPersonListListener(), strLocation);
-                    } else {
-                        showToastMessage(R.string.no_internet);
-                        initializeLocationSpinner();
-                    }
+                if (isNetworkConnected()) {
+                    getSalesmanListByLocation();
+                } else {
+                    showToastMessage(R.string.no_internet);
+                    initializeLocationSpinner();
                 }
                 break;
 
@@ -207,7 +199,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                     if (user.getUserName().equals(strAssignTo))
                         strAssignToUId = user.getuId();
                 }
-                Log.i("UIIDD", strAssignToUId);
                 break;
 
             default:
@@ -229,6 +220,17 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 showToastMessage(R.string.fill_all_fields);
         } else
             showToastMessage(R.string.no_internet);
+    }
+
+    private void getSalesmanListByLocation() {
+        /*progress = new ProgressDialog(this);
+        progress.setMessage("Loading..");
+        progress.setCancelable(false);
+        progress.setCanceledOnTouchOutside(false);
+        progress.show();*/
+
+        firebaseDatabaseHelper.fetchSalesPersonsByLocation(
+                onFetchSalesPersonListListener(), strLocation);
     }
 
     private boolean checkEmpty() {
@@ -341,7 +343,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         return new OnFetchSalesPersonListListener() {
             @Override
             public void onListFetched(List arrayList, List userName) {
-                progress.dismiss();
 
                 // AssignedTo Spinner
                 assignedToAdapter = new ArrayAdapter<CharSequence>(
@@ -356,6 +357,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
                 salesPersonList = new ArrayList<>();
                 salesPersonList = arrayList;
+
+                //progress.dismiss();
             }
         };
     }
