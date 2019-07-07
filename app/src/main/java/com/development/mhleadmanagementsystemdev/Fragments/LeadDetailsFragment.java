@@ -1,24 +1,38 @@
 package com.development.mhleadmanagementsystemdev.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
+import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
+import com.development.mhleadmanagementsystemdev.StringClass;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.sharedPreferenceUserDetails;
+import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.sharedPreferenceUserType;
+import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
@@ -27,12 +41,26 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView name, loan, number, employment, employmentType, loanType, propertyType, location,
             assignedTo, assigner, callerRemarks, salesmanRemarks, status, assignedOn, assignedAt;
 
-    private FloatingActionButton button;
+    private Button button;
+    private SharedPreferences sharedPreferences;
+    private LinearLayout assignedToLayout, assignerLayout;
+    private ProgressDialog progress;
+    private Context context;
 
     private LeadDetails leadDetails;
+    private String currentUserType;
+    private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private List<UserDetails> userDetailsList;
 
-    public LeadDetailsFragment(LeadDetails leadDetails) {
+    private String customerNotInterested = "Customer Not Interested";
+    private String documentPicked = "Document Picked";
+    private String customerFollowUp = "Customer follow Up";
+    private String customerNotContactable = "Customer Not Contactable";
+    private String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
+
+    public LeadDetailsFragment(LeadDetails leadDetails, Context context) {
         this.leadDetails = leadDetails;
+        this.context = context;
     }
 
     @NonNull
@@ -41,6 +69,11 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
 
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
+
+        sharedPreferences = this.getActivity().getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
+        currentUserType = sharedPreferences.getString(sharedPreferenceUserType, "Salesman");
+
+        firebaseDatabaseHelper = new FirebaseDatabaseHelper();
 
         name = view.findViewById(R.id.customer_name);
         loan = view.findViewById(R.id.loan_amount);
@@ -58,7 +91,40 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedOn = view.findViewById(R.id.date);
         assignedAt = view.findViewById(R.id.time);
 
-        button = view.findViewById(R.id.fab);
+        assignedToLayout = view.findViewById(R.id.assigned_to_layout);
+        assignerLayout = view.findViewById(R.id.assigner_layout);
+        button = view.findViewById(R.id.edit_lead_details);
+
+        setLayoutFields();
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentUserType.equals(telecallerUser)) {
+                    progress = new ProgressDialog(context);
+                    progress.setMessage("Loading..");
+                    progress.setCancelable(false);
+                    progress.setCanceledOnTouchOutside(false);
+                    progress.show();
+
+                    firebaseDatabaseHelper.fetchSalesPersonsByLocation(
+                            onFetchSalesPersonListListener(), leadDetails.getLocation());
+                } else {
+                    openSalesmanFragment();
+                }
+            }
+        });
+
+        dialog.setContentView(view);
+        mBehavior = BottomSheetBehavior.from((View) view.getParent());
+        return dialog;
+    }
+
+    private void setLayoutFields() {
+        if (currentUserType.equals(telecallerUser))
+            assignerLayout.setVisibility(View.GONE);
+        else
+            assignedToLayout.setVisibility(View.GONE);
 
         name.setText(leadDetails.getName());
         loan.setText(leadDetails.getLoanAmount());
@@ -75,15 +141,89 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         status.setText(leadDetails.getStatus());
         assignedOn.setText(leadDetails.getDate());
         assignedAt.setText(leadDetails.getTime());
-
-        dialog.setContentView(view);
-        mBehavior = BottomSheetBehavior.from((View) view.getParent());
-        return dialog;
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
+        return new OnFetchSalesPersonListListener() {
+            @Override
+            public void onListFetched(final List userDetailList, List userName) {
+                progress.dismiss();
+                if (userName.size() > 0)
+                    openTelecallerFragment(userDetailList, userName);
+                else
+                    Toast.makeText(context, "No Salesmen are present for " +
+                            leadDetails.getLocation() + ".", Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
+
+    private void openTelecallerFragment(final List arrayList, List userName) {
+        EditLeadDetailsFragment.newInstance(userName, new EditLeadDetailsFragment.OnSubmitClickListener() {
+            @Override
+            public void onSubmitClicked(String dialogAssignedTo) {
+                leadDetails.setAssignedTo(dialogAssignedTo);
+
+                userDetailsList = new ArrayList<>();
+                userDetailsList = arrayList;
+
+                String strAssignedToUId = null;
+                for (UserDetails userDetails : userDetailsList) {
+                    if (userDetails.getUserName().equals(dialogAssignedTo)) {
+                        strAssignedToUId = userDetails.getuId();
+                    }
+                }
+                leadDetails.setAssignedToUId(strAssignedToUId);
+                firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), leadDetails);
+            }
+        }).show(getFragmentManager(), "promo");
+    }
+
+    private void openSalesmanFragment() {
+        SalesmanEditLeadDetailsFragment.newInstance(new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
+            @Override
+            public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason) {
+
+                leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
+                leadDetails.setSalesmanReason(dialogSalesmanReason);
+
+                if (dialogSalesmanRemarks.equals(customerNotInterested))
+                    leadDetails.setStatus("Inactive");
+                else if (dialogSalesmanRemarks.equals(documentPicked))
+                    leadDetails.setStatus("Closed");
+                else if (dialogSalesmanRemarks.equals(customerFollowUp))
+                    leadDetails.setStatus("Follow Up");
+                else if (dialogSalesmanRemarks.equals(customerNotContactable))
+                    leadDetails.setStatus("Inactive");
+                else if (dialogSalesmanRemarks.equals(customerInterestedButDocumentPending))
+                    leadDetails.setStatus("Work in Progress");
+                else
+                    leadDetails.setStatus("Active");
+
+                progress = new ProgressDialog(context);
+                progress.setMessage("Loading..");
+                progress.setCancelable(false);
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
+
+                firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), leadDetails);
+            }
+        }).show(getFragmentManager(), "promo");
+    }
+
+    private OnUpdateLeadListener onUpdateLeadListener() {
+        return new OnUpdateLeadListener() {
+            @Override
+            public void onLeadUpdated() {
+                Toast.makeText(context, R.string.lead_update, Toast.LENGTH_SHORT).show();
+                setLayoutFields();
+                progress.dismiss();
+            }
+        };
     }
 }

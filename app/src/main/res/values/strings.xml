@@ -2,6 +2,7 @@
     <string name="app_name">MHLMS</string>
     <string name="passwords_not_matching">Passwords are not matching.</string>
     <string name="fill_all_fields">Fill all the fields.</string>
+    <string name="fill_details_correctly">Fill details correctly.</string>
     <string name="no_internet">No Internet Connection.</string>
     <string name="authentication_failed">Authentication failed.</string>
     <string name="user_created">User created.</string>

@@ -51,6 +51,8 @@
             android:id="@+id/contact_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:autoLink="phone"
+            android:linksClickable="true"
             android:textColor="@color/coloBlack" />
 
     </LinearLayout>
@@ -156,6 +158,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/assigned_to_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -176,6 +179,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/assigner_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

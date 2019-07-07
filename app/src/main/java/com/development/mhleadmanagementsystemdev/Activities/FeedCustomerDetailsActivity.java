@@ -39,12 +39,12 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     ArrayAdapter<CharSequence> assignedToAdapter;
 
     private String strName, strContactNumber, strLoanAmount, strRemarks,
-            strEmployment = "", strEmploymentType = "None",
-            strLoanType, strPropertyType = "None", strLocation = "Delhi", strAssignTo, strAssignToUId;
+            strEmployment = "None", strEmploymentType = "None",
+            strLoanType, strPropertyType = "None", strLocation, strAssignTo = "None", strAssignToUId;
 
     private String date;
     private ProgressDialog progress;
-    private LinearLayout selfEmployementLayout, propertyTypeLayout;
+    private LinearLayout selfEmploymentLayout, propertyTypeLayout;
     private RadioGroup selfEmploymentTypeRadioGroup;
 
     private LeadDetails leadDetails;
@@ -67,7 +67,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         loanAmount = findViewById(R.id.loan_amount);
         remarks = findViewById(R.id.remarks);
         assignedToSpinner = findViewById(R.id.assign_to);
-        selfEmployementLayout = findViewById(R.id.self_employement_layout);
+        selfEmploymentLayout = findViewById(R.id.self_employement_layout);
         propertyTypeLayout = findViewById(R.id.property_type_layout);
         selfEmploymentTypeRadioGroup = findViewById(R.id.self_employment_type_radio_group);
 
@@ -76,8 +76,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
         initializeLoanTypeSpinner();
         initializeLocationSpinner();
-
-        getSalesmanListByLocation();
     }
 
     private void initializeLoanTypeSpinner() {
@@ -121,7 +119,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             case R.id.salaried:
                 if (checked) {
                     strEmployment = "Salaried";
-                    selfEmployementLayout.setVisibility(View.GONE);
+                    selfEmploymentLayout.setVisibility(View.GONE);
                     selfEmploymentTypeRadioGroup.clearCheck();
                     strEmploymentType = "None";
                     break;
@@ -129,7 +127,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             case R.id.self_employed:
                 if (checked) {
                     strEmployment = "Self Employed";
-                    selfEmployementLayout.setVisibility(View.VISIBLE);
+                    selfEmploymentLayout.setVisibility(View.VISIBLE);
                     break;
                 }
         }
@@ -163,6 +161,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
             case R.id.loan_type:
+                Log.i("TAGG", "Loan type called" + parent.getItemAtPosition(position).toString());
                 strLoanType = parent.getItemAtPosition(position).toString();
                 if (strLoanType.equals("Home Loan") || strLoanType.equals("Loan Against Property")) {
                     initializePropertyTypeSpinner();
@@ -175,13 +174,14 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 break;
 
             case R.id.property_type:
+                Log.i("TAGG", "Property type called" + parent.getItemAtPosition(position).toString());
                 strPropertyType = parent.getItemAtPosition(position).toString();
                 break;
 
             case R.id.location:
+                Log.i("TAGG", "Location called" + parent.getItemAtPosition(position).toString());
                 strLocation = parent.getItemAtPosition(position).toString();
 
-                assignedToSpinner.setSelection(0);
                 //assignedToSpinner.setEnabled(false);
                 //assignedToSpinner.setClickable(false);
 
@@ -194,6 +194,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 break;
 
             case R.id.assign_to:
+                Log.i("TAGG", "Assignto called" + parent.getItemAtPosition(position).toString());
                 strAssignTo = parent.getItemAtPosition(position).toString();
                 for (UserDetails user : salesPersonList) {
                     if (user.getUserName().equals(strAssignTo))
@@ -217,7 +218,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             if (checkEmpty()) {
                 uploadDetails();
             } else
-                showToastMessage(R.string.fill_all_fields);
+                showToastMessage(R.string.fill_details_correctly);
         } else
             showToastMessage(R.string.no_internet);
     }
@@ -234,37 +235,17 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     }
 
     private boolean checkEmpty() {
-        if (strName.isEmpty() || strContactNumber.isEmpty() || strLoanAmount.isEmpty() ||
-                strRemarks.isEmpty() || strLoanType.equals("None") || strLocation.equals("None") ||
-                strAssignTo.equals("None") || strEmployment.isEmpty()) {
+        if (strName.isEmpty() || strContactNumber.length() != 10 || strLoanAmount.isEmpty() ||
+                strRemarks.isEmpty() || strAssignTo.equals("None") || strEmployment.equals("None")) {
             return false;
         }
         if (strEmployment.equals("Self Employed")) {
-            if (strEmploymentType.isEmpty())
+            if (strEmploymentType.equals("None"))
                 return false;
-
-            if (strLoanType.equals("Home Loan") || strLoanType.equals("Loan Against Property")) {
-                if (strPropertyType.equals("None")) {
-                    return false;
-                }
-                return true;
-            } else {
-                strPropertyType = "None";
-                return true;
-            }
-        } else {
-            strEmploymentType = "";
-            if (strLoanType.equals("Home Loan") || strLoanType.equals("Loan Against Property")) {
-                if (strPropertyType.equals("None")) {
-                    return false;
-                }
-                return true;
-            } else {
-                strPropertyType = "None";
-
-                return true;
-            }
         }
+        if (strAssignTo.equals("None"))
+            return false;
+        return true;
     }
 
     private void uploadDetails() {
@@ -343,22 +324,29 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         return new OnFetchSalesPersonListListener() {
             @Override
             public void onListFetched(List arrayList, List userName) {
+                Log.i("TAGGG", String.valueOf(userName.size()));
 
-                // AssignedTo Spinner
-                assignedToAdapter = new ArrayAdapter<CharSequence>(
-                        FeedCustomerDetailsActivity.this,
-                        android.R.layout.simple_spinner_item, userName);
-                assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                assignedToSpinner.setAdapter(assignedToAdapter);
-                assignedToSpinner.setOnItemSelectedListener(FeedCustomerDetailsActivity.this);
+                if (userName.size() != 0) {
+                    // AssignedTo Spinner
+                    assignedToAdapter = new ArrayAdapter<CharSequence>(
+                            FeedCustomerDetailsActivity.this,
+                            android.R.layout.simple_spinner_item, userName);
+                    assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    assignedToSpinner.setAdapter(assignedToAdapter);
+                    assignedToSpinner.setOnItemSelectedListener(FeedCustomerDetailsActivity.this);
 
-                assignedToSpinner.setEnabled(true);
-                assignedToSpinner.setClickable(true);
+                    assignedToSpinner.setEnabled(true);
+                    assignedToSpinner.setClickable(true);
 
-                salesPersonList = new ArrayList<>();
-                salesPersonList = arrayList;
+                    salesPersonList = new ArrayList<>();
+                    salesPersonList = arrayList;
 
-                //progress.dismiss();
+                    //progress.dismiss();
+                } else {
+                    strAssignTo = "None";
+                    assignedToSpinner.setEnabled(false);
+                    assignedToSpinner.setClickable(false);
+                }
             }
         };
     }

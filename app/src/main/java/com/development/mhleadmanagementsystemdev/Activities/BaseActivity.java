@@ -12,21 +12,15 @@ import android.widget.Toast;
 public class BaseActivity extends AppCompatActivity {
 
     protected ProgressDialog progress;
-    public String sharedPreferenceUserDetails = "shared_preference_user_details";
-    public String sharedPreferenceUserName = "shared_preference_user_name";
-    public String sharedPreferenceUserType = "shared_preference_user_type";
-    public String sharedPreferenceUserLocation = "shared_preference_user_location";
-    public String sharedPreferenceUserKey = "shared_preference_user_key";
-    public String sharedPreferenceUserUId = "shared_preference_user_uid";
+    public static String sharedPreferenceUserDetails = "shared_preference_user_details";
+    public static String sharedPreferenceUserName = "shared_preference_user_name";
+    public static String sharedPreferenceUserType = "shared_preference_user_type";
+    public static String sharedPreferenceUserLocation = "shared_preference_user_location";
+    public static String sharedPreferenceUserKey = "shared_preference_user_key";
+    public static String sharedPreferenceUserUId = "shared_preference_user_uid";
 
     public static String telecallerUser = "Telecaller";
-    public String salesmanUser = "Salesman";
-
-    public String customerNotInterested = "Customer Not Interested";
-    public String documentPicked = "Document Picked";
-    public String customerFollowUp = "Customer follow Up";
-    public String customerNotContactable = "Customer Not Contactable";
-    public String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
+    public static String salesmanUser = "Salesman";
 
     //protected boolean isAdmin = false;
 

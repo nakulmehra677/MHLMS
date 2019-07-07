@@ -20,9 +20,6 @@ import java.util.List;
 
 import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
 
-//import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
-//import static com.development.mhleadmanagementsystemdev.Activities.LeadsListActivity.currentUserType;
-
 public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder> {
     private List<LeadDetails> leads;
     private Context context;
@@ -60,7 +57,7 @@ public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model);
+                LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context);
                 leadDetailsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "f");
             }
         });

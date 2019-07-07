@@ -27,7 +27,6 @@ public class LoginActivity extends BaseActivity {
     private FirebaseAuthenticationHelper firebaseAuthenticationHelper;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
     private ProfileManager profileManager;
-    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +43,7 @@ public class LoginActivity extends BaseActivity {
             profileManager.checkUserExist();
 
             if (profileManager.checkUserExist()) {
-                startActivity(new Intent(LoginActivity.this, LeadsListActivity.class));
-                finish();
+                startActivityForResult(new Intent(LoginActivity.this, LeadsListActivity.class), 101);
             }
 
             firebaseAuthenticationHelper = new FirebaseAuthenticationHelper(this);
@@ -119,12 +117,13 @@ public class LoginActivity extends BaseActivity {
         };
     }
 
-    /*@Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.i("TAGGGG", String.valueOf(requestCode));
         // check if the request code is same as what is passed  here it is 2
         if (requestCode == 101)
             if (data.getBooleanExtra("loggedIn", true))
                 finish();
-    }*/
+    }
 }

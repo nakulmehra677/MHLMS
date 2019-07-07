@@ -3,7 +3,6 @@ package com.development.mhleadmanagementsystemdev.Activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,33 +10,21 @@ import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 
 import com.development.mhleadmanagementsystemdev.Adapters.LeadListItemAdapter;
-import com.development.mhleadmanagementsystemdev.Fragments.EditLeadDetailsFragment;
-import com.development.mhleadmanagementsystemdev.Fragments.SalesmanEditLeadDetailsFragment;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Managers.ProfileManager;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
-import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,11 +38,9 @@ public class LeadsListActivity extends BaseActivity {
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
-    private LeadDetails updateLead;
     private SharedPreferences sharedPreferences;
     private ProfileManager profileManager;
 
-    private List<UserDetails> userDetailsList;
     private List<LeadDetails> leadDetails = new ArrayList<>();
     private LeadListItemAdapter adapter;
 
@@ -152,10 +137,11 @@ public class LeadsListActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        //Intent intent = new Intent();
-        //setResult(101, intent);
-        //finish();
+        //super.onBackPressed();
+        Intent intent = new Intent();
+        intent.putExtra("loggedIn", profileManager.checkUserExist());
+        setResult(101, intent);
+        finish();
     }
 
     @Override
@@ -217,75 +203,5 @@ public class LeadsListActivity extends BaseActivity {
                 progressBar.setVisibility(View.GONE);
             }
         };
-    }
-
-    private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
-        return new OnFetchSalesPersonListListener() {
-            @Override
-            public void onListFetched(final List userDetailList, List userName) {
-                progress.dismiss();
-                openTelecallerFragment(userDetailList, userName);
-            }
-        };
-    }
-
-    private OnUpdateLeadListener onUpdateLeadListener() {
-        return new OnUpdateLeadListener() {
-            @Override
-            public void onLeadUpdated() {
-                //adapter.stopListening();
-                showToastMessage(R.string.lead_update);
-                progress.dismiss();
-                fetch();
-            }
-        };
-    }
-
-    private void openSalesmanFragment(final LeadDetails model) {
-        SalesmanEditLeadDetailsFragment.newInstance(new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
-            @Override
-            public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason) {
-                updateLead = model;
-
-                updateLead.setSalesmanRemarks(dialogSalesmanRemarks);
-                updateLead.setSalesmanReason(dialogSalesmanReason);
-
-                if (dialogSalesmanRemarks.equals(customerNotInterested))
-                    updateLead.setStatus("Inactive");
-                else if (dialogSalesmanRemarks.equals(documentPicked))
-                    updateLead.setStatus("Closed");
-                else if (dialogSalesmanRemarks.equals(customerFollowUp))
-                    updateLead.setStatus("Follow Up");
-                else if (dialogSalesmanRemarks.equals(customerNotContactable))
-                    updateLead.setStatus("Inactive");
-                else if (dialogSalesmanRemarks.equals(customerInterestedButDocumentPending))
-                    updateLead.setStatus("Work in Progress");
-                else
-                    updateLead.setStatus("Active");
-
-                firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
-            }
-        }).show(getSupportFragmentManager(), "promo");
-    }
-
-    private void openTelecallerFragment(final List arrayList, List userName) {
-        EditLeadDetailsFragment.newInstance(userName, new EditLeadDetailsFragment.OnSubmitClickListener() {
-            @Override
-            public void onSubmitClicked(String dialogAssignedTo) {
-                updateLead.setAssignedTo(dialogAssignedTo);
-
-                userDetailsList = new ArrayList<>();
-                userDetailsList = arrayList;
-
-                String strAssignedToUId = null;
-                for (UserDetails userDetails : userDetailsList) {
-                    if (userDetails.getUserName().equals(dialogAssignedTo)) {
-                        strAssignedToUId = userDetails.getuId();
-                    }
-                }
-                updateLead.setAssignedToUId(strAssignedToUId);
-                firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), updateLead);
-            }
-        }).show(getSupportFragmentManager(), "promo");
     }
 }

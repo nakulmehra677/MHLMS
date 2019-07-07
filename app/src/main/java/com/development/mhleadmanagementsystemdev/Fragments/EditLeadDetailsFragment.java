@@ -5,21 +5,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatDialogFragment;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.development.mhleadmanagementsystemdev.Activities.FeedCustomerDetailsActivity;
 import com.development.mhleadmanagementsystemdev.R;
 
 import java.util.ArrayList;
@@ -47,7 +38,7 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_edit_lead_details_, null);
+        View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_telecaller_edit_lead_details_, null);
 
         assignedToSpinner = v.findViewById(R.id.assign_to);
 
@@ -74,8 +65,7 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!strAssignedTo.equals("None"))
-                            listener.onSubmitClicked(strAssignedTo);
+                        listener.onSubmitClicked(strAssignedTo);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
