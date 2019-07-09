@@ -12,7 +12,7 @@
         android:padding="8dp"
         android:text="Customer Name"
         android:textColor="@color/coloBlack"
-        android:textSize="24dp"
+        android:textSize="22dp"
         android:textStyle="bold" />
 
     <LinearLayout

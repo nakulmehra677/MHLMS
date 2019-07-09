@@ -42,7 +42,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
             strEmployment = "None", strEmploymentType = "None",
             strLoanType, strPropertyType = "None", strLocation, strAssignTo = "None", strAssignToUId;
 
-    private String date;
+    private String strDate, strTime;
     private ProgressDialog progress;
     private LinearLayout selfEmploymentLayout, propertyTypeLayout;
     private RadioGroup selfEmploymentTypeRadioGroup;
@@ -285,8 +285,11 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     }
 
     private void getDate() {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        date = formatter.format(new Date());
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MMM-yy");
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
+
+        strDate = dateFormatter.format(new Date());
+        strTime = timeFormatter.format(new Date());
     }
 
     private void makeObject() {
@@ -294,9 +297,9 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String assignerUId = sharedPreferences.getString(sharedPreferenceUserUId, "");
 
         leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount, strEmployment,
-                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks, date.substring(0, 10),
+                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks, strDate,
                 strAssignTo, "Active", assigner, "", "None",
-                strAssignToUId, assignerUId, "None", date.substring(11, 19));
+                strAssignToUId, assignerUId, "None", strTime);
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {

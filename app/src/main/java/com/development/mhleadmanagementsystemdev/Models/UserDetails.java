@@ -9,18 +9,28 @@ public class UserDetails {
         this.key = key;
     }
 
-    private String uId, userName, mail, location, userType, key;
+    private String uId, userName, mail, location, userType, key, deviceToken;
 
     public UserDetails() {
     }
 
-    public UserDetails(String uId, String userName, String mail, String location, String userType, String key) {
+    public UserDetails(String uId, String userName, String mail, String location,
+                       String userType, String key, String deviceToken) {
         this.uId = uId;
         this.userName = userName;
         this.mail = mail;
         this.location = location;
         this.userType = userType;
         this.key = key;
+        this.deviceToken = deviceToken;
+    }
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 
     public String getUserType() {

@@ -18,6 +18,7 @@ import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
 
 import java.util.List;
 
+import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.salesmanUser;
 import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
 
 public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder> {
@@ -49,10 +50,11 @@ public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder
 
         if (currentUserType.equals(telecallerUser))
             holder.assignedTo.setText(model.getAssignedTo());
-        else {
+        else if (currentUserType.equals(salesmanUser)) {
             holder.assignText.setText("Assginer");
             holder.assignedTo.setText(model.getAssigner());
-        }
+        } else
+            holder.assignLayout.setVisibility(View.GONE);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -30,6 +31,7 @@ import com.development.mhleadmanagementsystemdev.StringClass;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.salesmanUser;
 import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.sharedPreferenceUserDetails;
 import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.sharedPreferenceUserType;
 import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
@@ -100,18 +102,24 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (currentUserType.equals(telecallerUser)) {
-                    progress = new ProgressDialog(context);
-                    progress.setMessage("Loading..");
-                    progress.setCancelable(false);
-                    progress.setCanceledOnTouchOutside(false);
-                    progress.show();
+                ConnectivityManager cm = (ConnectivityManager) getActivity()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-                    firebaseDatabaseHelper.fetchSalesPersonsByLocation(
-                            onFetchSalesPersonListListener(), leadDetails.getLocation());
-                } else {
-                    openSalesmanFragment();
-                }
+                if (cm.getActiveNetworkInfo() != null) {
+                    if (currentUserType.equals(telecallerUser)) {
+                        progress = new ProgressDialog(context);
+                        progress.setMessage("Loading..");
+                        progress.setCancelable(false);
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
+
+                        firebaseDatabaseHelper.fetchSalesPersonsByLocation(
+                                onFetchSalesPersonListListener(), leadDetails.getLocation());
+                    } else {
+                        openSalesmanFragment();
+                    }
+                } else
+                    Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -123,8 +131,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private void setLayoutFields() {
         if (currentUserType.equals(telecallerUser))
             assignerLayout.setVisibility(View.GONE);
-        else
+        else if (currentUserType.equals(salesmanUser))
             assignedToLayout.setVisibility(View.GONE);
+        else
+            button.setVisibility(View.GONE);
 
         name.setText(leadDetails.getName());
         loan.setText(leadDetails.getLoanAmount());

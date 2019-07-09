@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchDeviceTokenListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
@@ -111,23 +112,28 @@ public class FirebaseDatabaseHelper {
     }
 
     public void getLeadList(final OnFetchLeadListListener listener, String key, String value) {
-        Log.i("key",key);
-        Log.i("key",value);
+
         DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                 .getReference("leadList");
-        Query query = databaseReference.orderByChild(key).equalTo(value);
+
+        Query query;
+        if (!key.equals("Admin"))
+            query = databaseReference.orderByChild(key).equalTo(value);
+        else
+            query = databaseReference;
         // Query query = databaseReference.orderByKey().startAt(key).limitToLast(20);
 
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 LeadDetails leadDetails = dataSnapshot.getValue(LeadDetails.class);
-                listener.onSuccess(leadDetails);
+                listener.onLeadAdded(leadDetails);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                LeadDetails leadDetails = dataSnapshot.getValue(LeadDetails.class);
+                listener.onLeadChanged(leadDetails);
             }
 
             @Override

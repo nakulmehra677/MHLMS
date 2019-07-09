@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
@@ -34,14 +35,15 @@ public class LeadsListActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton fab;
-    private ProgressBar progressBar;
+    private SwipeRefreshLayout mySwipeRefreshLayout;
+    //private ProgressBar progressBar;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
     private SharedPreferences sharedPreferences;
     private ProfileManager profileManager;
 
-    private List<LeadDetails> leadDetails = new ArrayList<>();
+    private List<LeadDetails> leadDetailsList = new ArrayList<>();
     private LeadListItemAdapter adapter;
 
     @Override
@@ -51,7 +53,8 @@ public class LeadsListActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.recycler_view);
         fab = findViewById(R.id.fab);
-        progressBar = findViewById(R.id.progressBar);
+        mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
+        //progressBar = findViewById(R.id.progressBar);
 
         //showProgressDialog("Loading..", this);
 
@@ -103,6 +106,18 @@ public class LeadsListActivity extends BaseActivity {
             }
         });*/
 
+        mySwipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+
+                    @Override
+                    public void onRefresh() {
+                        leadDetailsList.clear();
+                        adapter.notifyDataSetChanged();
+                        fetch();
+                    }
+                }
+        );
+
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         //recyclerView.setNestedScrollingEnabled(false);
@@ -129,8 +144,10 @@ public class LeadsListActivity extends BaseActivity {
         String s;
         if (profileManager.getCurrentUserType().equals(telecallerUser))
             s = "assigner";
-        else
+        else if(profileManager.getCurrentUserType().equals(salesmanUser))
             s = "assignedTo";
+        else
+            s = "Admin";
         firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
                 s, profileManager.getCurrentUserDetails().getUserName());
     }
@@ -179,7 +196,7 @@ public class LeadsListActivity extends BaseActivity {
             public void onSuccess(UserDetails userDetails) {
                 profileManager.setCurrentUserDetails(userDetails);
                 Log.i("UserDetails", userDetails.getUserType());
-                adapter = new LeadListItemAdapter(leadDetails, LeadsListActivity.this, profileManager.getCurrentUserType());
+                adapter = new LeadListItemAdapter(leadDetailsList, LeadsListActivity.this, profileManager.getCurrentUserType());
                 recyclerView.setAdapter(adapter);
                 setLayoutByUser();
             }
@@ -189,18 +206,35 @@ public class LeadsListActivity extends BaseActivity {
     private OnFetchLeadListListener onFetchLeadListListener() {
         return new OnFetchLeadListListener() {
             @Override
-            public void onSuccess(LeadDetails l) {
-                leadDetails.add(l);
+            public void onLeadAdded(LeadDetails l) {
+                leadDetailsList.add(l);
                 adapter.notifyDataSetChanged();
-                //progress.dismiss();
-                progressBar.setVisibility(View.GONE);
+
+                //if (progress.isShowing())
+                  //  progress.dismiss();
+                mySwipeRefreshLayout.setRefreshing(false);
+                //progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onLeadChanged(LeadDetails l) {
+                for (int i = 0; i < leadDetailsList.size(); i++) {
+                    if (l.getKey().equals(leadDetailsList.get(i).getKey())) {
+                        leadDetailsList.set(i, l);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+
             }
 
             @Override
             public void onFailer() {
                 showToastMessage(R.string.no_internet);
-                //progress.dismiss();
-                progressBar.setVisibility(View.GONE);
+
+                //if (progress.isShowing())
+                  //  progress.dismiss();
+                mySwipeRefreshLayout.setRefreshing(false);
+                //progressBar.setVisibility(View.GONE);
             }
         };
     }

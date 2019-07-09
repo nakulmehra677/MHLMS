@@ -21,6 +21,7 @@ public class BaseActivity extends AppCompatActivity {
 
     public static String telecallerUser = "Telecaller";
     public static String salesmanUser = "Salesman";
+    public static String adminUser = "Admin";
 
     //protected boolean isAdmin = false;
 
