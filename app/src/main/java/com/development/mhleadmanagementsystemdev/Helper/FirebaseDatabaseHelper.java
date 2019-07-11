@@ -8,7 +8,9 @@ import android.util.Log;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchDeviceTokenListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsByUId;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnSetCurrentDeviceTokenListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
@@ -151,5 +153,39 @@ public class FirebaseDatabaseHelper {
                 Log.e("ERROR", "getChapterList(), onCancelled", new Exception(databaseError.getMessage()));
             }
         });
+    }
+
+    public void getUsersByUId(final OnFetchUserDetailsByUId onFetchUserDetailsByUId, String uId) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("userList");
+
+        myRef.child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserDetails userDetails = dataSnapshot.getValue(UserDetails.class);
+                onFetchUserDetailsByUId.onSuccess(userDetails);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                onFetchUserDetailsByUId.fail();
+            }
+        });
+    }
+
+    public void setCurrentDeviceToken(String deviceToken, String key) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("userList");
+
+        myRef.child(key).child("deviceToken").setValue(deviceToken);
+    }
+
+    public void makeNewNodeOfUserDetails(UserDetails userDetails) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("userList");
+
+        myRef.child(userDetails.getuId()).setValue(userDetails);
+
+        myRef.child(userDetails.getKey()).removeValue();
     }
 }

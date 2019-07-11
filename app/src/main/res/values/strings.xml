@@ -16,6 +16,7 @@
     <string name="no_salesmen">No Salesmen are present yet.</string>
     <string name="lead_update">Lead updated.</string>
     <string name="logging_in">Logging in.</string>
+    <string name="something_wrong">Something went wrong.</string>
 
     <string name="home_loan">Home Loan</string>
     <string name="business_loan">Business Loan</string>
