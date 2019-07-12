@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.support.v7.widget.SearchView;
 
 import com.development.mhleadmanagementsystemdev.Adapters.LeadListItemAdapter;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
@@ -144,7 +146,7 @@ public class LeadsListActivity extends BaseActivity {
         String s;
         if (profileManager.getCurrentUserType().equals(telecallerUser))
             s = "assigner";
-        else if(profileManager.getCurrentUserType().equals(salesmanUser))
+        else if (profileManager.getCurrentUserType().equals(salesmanUser))
             s = "assignedTo";
         else
             s = "Admin";
@@ -166,6 +168,26 @@ public class LeadsListActivity extends BaseActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.lead_list_menu, menu);
 
+        MenuItem item = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                /*for (int i = 0; i < leadDetailsList.size(); i++) {
+                    if (!leadDetailsList.get(i).getName().toLowerCase().contains(newText))
+                        leadDetailsList.remove(i);
+                }
+                adapter.notifyDataSetChanged();*/
+                return false;
+            }
+        });
         return true;
     }
 
@@ -211,7 +233,7 @@ public class LeadsListActivity extends BaseActivity {
                 adapter.notifyDataSetChanged();
 
                 //if (progress.isShowing())
-                  //  progress.dismiss();
+                //  progress.dismiss();
                 mySwipeRefreshLayout.setRefreshing(false);
                 //progressBar.setVisibility(View.GONE);
             }
@@ -232,7 +254,7 @@ public class LeadsListActivity extends BaseActivity {
                 showToastMessage(R.string.no_internet);
 
                 //if (progress.isShowing())
-                  //  progress.dismiss();
+                //  progress.dismiss();
                 mySwipeRefreshLayout.setRefreshing(false);
                 //progressBar.setVisibility(View.GONE);
             }
