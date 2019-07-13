@@ -176,8 +176,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private void openTelecallerFragment(final List arrayList, List userName) {
         EditLeadDetailsFragment.newInstance(userName, new EditLeadDetailsFragment.OnSubmitClickListener() {
             @Override
-            public void onSubmitClicked(String dialogAssignedTo) {
+            public void onSubmitClicked(String dialogAssignedTo, String telecallerReason) {
                 leadDetails.setAssignedTo(dialogAssignedTo);
+                leadDetails.setTelecallerRemarks(telecallerReason);
 
                 userDetailsList = new ArrayList<>();
                 userDetailsList = arrayList;

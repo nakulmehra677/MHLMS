@@ -63,7 +63,7 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!strRemarks.equals("None") && !salesmanReason.getText().toString().isEmpty())
+                        if (!salesmanReason.getText().toString().isEmpty())
                             listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString());
                     }
                 })

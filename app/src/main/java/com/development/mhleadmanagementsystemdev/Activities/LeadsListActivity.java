@@ -1,6 +1,8 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
@@ -175,6 +177,8 @@ public class LeadsListActivity extends BaseActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 adapter.getFilter().filter(query);
+                mySwipeRefreshLayout.setEnabled(false);
+                mySwipeRefreshLayout.setRefreshing(false);
                 return false;
             }
 
@@ -188,6 +192,17 @@ public class LeadsListActivity extends BaseActivity {
                 return false;
             }
         });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                mySwipeRefreshLayout.setEnabled(true);
+                leadDetailsList.clear();
+                fetch();
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -197,13 +212,27 @@ public class LeadsListActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.logout:
                 if (isNetworkConnected()) {
-                    profileManager.signOut();
-                    //SharedPreferences.Editor editor = sharedPreferences.edit();
-                    //editor.clear();
 
-                    showToastMessage(R.string.logged_out);
-                    //startActivity(new Intent(LeadsListActivity.this, LoginActivity.class));
-                    onBackPressed();
+                    AlertDialog.Builder build = new AlertDialog.Builder(LeadsListActivity.this);
+                    build.setMessage("Are you sure you want to logout?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int u) {
+                                    profileManager.signOut();
+                                    showToastMessage(R.string.logged_out);
+                                    //SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    //editor.clear();
+                                    onBackPressed();
+                                }
+                            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int u) {
+
+                        }
+                    });
+                    AlertDialog alert = build.create();
+                    alert.show();
+
                 } else
                     showToastMessage(R.string.no_internet);
 

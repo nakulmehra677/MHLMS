@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.development.mhleadmanagementsystemdev.R;
@@ -23,6 +24,8 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
     private ArrayAdapter<CharSequence> assignedToAdapter;
     private Spinner assignedToSpinner;
     List arrayList = new ArrayList();
+    private EditText telecallerReason;
+
 
     public EditLeadDetailsFragment(List arrayList, OnSubmitClickListener listener) {
         this.listener = listener;
@@ -41,6 +44,7 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_telecaller_edit_lead_details_, null);
 
         assignedToSpinner = v.findViewById(R.id.assign_to);
+        telecallerReason = v.findViewById(R.id.telecaller_reason);
 
         // AssignedTo Spinner
         assignedToAdapter = new ArrayAdapter<CharSequence>(
@@ -65,7 +69,8 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listener.onSubmitClicked(strAssignedTo);
+                        if (!telecallerReason.getText().toString().isEmpty())
+                            listener.onSubmitClicked(strAssignedTo, telecallerReason.getText().toString());
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -79,6 +84,6 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
     }
 
     public interface OnSubmitClickListener {
-        void onSubmitClicked(String dialogAssignedTo);
+        void onSubmitClicked(String dialogAssignedTo, String telecallerReason);
     }
 }

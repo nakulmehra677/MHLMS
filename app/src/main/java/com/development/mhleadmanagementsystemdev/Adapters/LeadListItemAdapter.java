@@ -92,7 +92,11 @@ public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (LeadDetails item : leads) {
-                    if (item.getName().toLowerCase().contains(filterPattern)) {
+                    if (item.getName().toLowerCase().contains(filterPattern) ||
+                            item.getAssignedTo().toLowerCase().contains(filterPattern) ||
+                            item.getAssigner().toLowerCase().contains(filterPattern) ||
+                            item.getLocation().toLowerCase().contains(filterPattern) ||
+                            item.getStatus().toLowerCase().contains(filterPattern)) {
                         filterList.add(item);
                     }
                 }
