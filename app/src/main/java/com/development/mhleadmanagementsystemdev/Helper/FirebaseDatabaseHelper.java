@@ -15,16 +15,26 @@ import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FirebaseDatabaseHelper {
     Context context;
@@ -42,13 +52,30 @@ public class FirebaseDatabaseHelper {
     public void uploadCustomerDetails(OnUploadCustomerDetailsListener onUploadCustomerdetails,
                                       LeadDetails leadDetails) {
 
-        Log.i("No of Nodes", "Uploading");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("leadList")
+                .add(leadDetails)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("TAG", "Error adding document", e);
+                    }
+                });
+
+        /*Log.i("No of Nodes", "Uploading");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("leadList").push();
 
         String key = myRef.getKey();
         leadDetails.setKey(key);
-        myRef.setValue(leadDetails);
+        myRef.setValue(leadDetails);*/
         onUploadCustomerdetails.onDataUploaded();
     }
 
@@ -113,9 +140,34 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void getLeadList(final OnFetchLeadListListener listener, String key, String value) {
+    public void getLeadList(final OnFetchLeadListListener listener, String key, String value, long lastLead) {
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("leadList")
+                .orderBy("date", Query.Direction.ASCENDING)
+                .startAfter(lastLead)
+                .limit(6)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<LeadDetails> leads = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                LeadDetails l = document.toObject(LeadDetails.class);
+                                leads.add(l);
+
+                            }
+                            listener.onLeadAdded(leads);
+
+                        } else {
+                            Log.w("TAG", "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+
+        /*DatabaseReference databaseReference = FirebaseDatabase.getInstance()
                 .getReference("leadList");
 
         Query query;
@@ -152,7 +204,7 @@ public class FirebaseDatabaseHelper {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e("ERROR", "getChapterList(), onCancelled", new Exception(databaseError.getMessage()));
             }
-        });
+        });*/
     }
 
     public void getUsersByUId(final OnFetchUserDetailsByUId onFetchUserDetailsByUId, String uId) {

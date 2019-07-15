@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -18,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ProgressBar;
 import android.support.v7.widget.SearchView;
 
@@ -40,7 +42,7 @@ public class LeadsListActivity extends BaseActivity {
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton fab;
     private SwipeRefreshLayout mySwipeRefreshLayout;
-    //private ProgressBar progressBar;
+    private ProgressBar progressBar;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
@@ -49,6 +51,8 @@ public class LeadsListActivity extends BaseActivity {
 
     private List<LeadDetails> leadDetailsList = new ArrayList<>();
     private LeadListItemAdapter adapter;
+    private boolean isSrolling;
+    private boolean isLastItemFetched;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +62,7 @@ public class LeadsListActivity extends BaseActivity {
         recyclerView = findViewById(R.id.recycler_view);
         fab = findViewById(R.id.fab);
         mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
-        //progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
 
         //showProgressDialog("Loading..", this);
 
@@ -92,23 +96,32 @@ public class LeadsListActivity extends BaseActivity {
             }
         };
 
-        /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
 
-                if (!recyclerView.canScrollVertically(1)) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    /*if (!lastChapter.equals(lastFetechedChapter) && newLastChapterFeteched) {
-                        scrollProgressBar.setVisibility(View.VISIBLE);
-                        newLastChapterFeteched = false;
-                        getData();
-                    }
-                    fetch();
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isSrolling = true;
                 }
             }
-        });*/
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                long firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+                long visibleItemCount = linearLayoutManager.getChildCount();
+                long totalItemCount = linearLayoutManager.getItemCount();
+
+                if (isSrolling && (firstVisibleItem + visibleItemCount == totalItemCount) && !isLastItemFetched) {
+                    isSrolling = false;
+                    progressBar.setVisibility(View.VISIBLE);
+                    Log.i("TAGGGG",String.valueOf(leadDetailsList.size() - 1));
+                    fetch(leadDetailsList.size() - 1);
+                }
+            }
+        });
 
         mySwipeRefreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
@@ -117,7 +130,7 @@ public class LeadsListActivity extends BaseActivity {
                     public void onRefresh() {
                         leadDetailsList.clear();
                         adapter.notifyDataSetChanged();
-                        fetch();
+                        fetch(0);
                     }
                 }
         );
@@ -141,10 +154,11 @@ public class LeadsListActivity extends BaseActivity {
                 startActivity(new Intent(LeadsListActivity.this, FeedCustomerDetailsActivity.class));
             }
         });
-        fetch();
+        leadDetailsList.clear();
+        fetch(0);
     }
 
-    private void fetch() {
+    private void fetch(long lastLead) {
         String s;
         if (profileManager.getCurrentUserType().equals(telecallerUser))
             s = "assigner";
@@ -153,7 +167,7 @@ public class LeadsListActivity extends BaseActivity {
         else
             s = "Admin";
         firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
-                s, profileManager.getCurrentUserDetails().getUserName());
+                s, profileManager.getCurrentUserDetails().getUserName(), lastLead);
     }
 
     @Override
@@ -198,7 +212,7 @@ public class LeadsListActivity extends BaseActivity {
             public boolean onClose() {
                 mySwipeRefreshLayout.setEnabled(true);
                 leadDetailsList.clear();
-                fetch();
+                fetch(0);
                 return false;
             }
         });
@@ -257,14 +271,14 @@ public class LeadsListActivity extends BaseActivity {
     private OnFetchLeadListListener onFetchLeadListListener() {
         return new OnFetchLeadListListener() {
             @Override
-            public void onLeadAdded(LeadDetails l) {
-                leadDetailsList.add(l);
+            public void onLeadAdded(List<LeadDetails> l) {
+                leadDetailsList.addAll(l);
                 adapter.notifyDataSetChanged();
 
                 //if (progress.isShowing())
                 //  progress.dismiss();
                 mySwipeRefreshLayout.setRefreshing(false);
-                //progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
