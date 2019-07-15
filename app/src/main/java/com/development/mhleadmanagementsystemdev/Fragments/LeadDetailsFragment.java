@@ -59,6 +59,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String customerFollowUp = "Customer follow Up";
     private String customerNotContactable = "Customer Not Contactable";
     private String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
+    private String notDoable = "Not Doable";
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context) {
         this.leadDetails = leadDetails;
@@ -213,6 +214,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                     leadDetails.setStatus("Inactive");
                 else if (dialogSalesmanRemarks.equals(customerInterestedButDocumentPending))
                     leadDetails.setStatus("Work in Progress");
+                else if (dialogSalesmanRemarks.equals(notDoable))
+                    leadDetails.setStatus("Not Doable");
                 else
                     leadDetails.setStatus("Active");
 

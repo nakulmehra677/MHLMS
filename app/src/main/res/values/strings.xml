@@ -67,6 +67,7 @@
         <item>Work in Progress</item>
         <item>Closed</item>
         <item>Follow Up</item>
+        <item>Not Doable</item>
     </string-array>
 
     <string-array name="remarks">
@@ -75,6 +76,7 @@
         <item>Customer follow Up</item>
         <item>Customer Not Contactable</item>
         <item>Customer Interested but Document Pending</item>
+        <item>Not Doable</item>
     </string-array>
 
 </resources>

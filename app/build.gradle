@@ -7,8 +7,8 @@ android {
         applicationId "com.development.mhleadmanagementsystemdev"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 8
-        versionName "1.6"
+        versionCode 9
+        versionName "1.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -36,4 +36,5 @@ dependencies {
 
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.google.firebase:firebase-core:16.0.9'
+
 }
