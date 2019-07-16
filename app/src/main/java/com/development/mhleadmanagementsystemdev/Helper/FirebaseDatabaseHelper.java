@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -116,7 +117,6 @@ public class FirebaseDatabaseHelper {
         myRef.setValue(updateLead);
 
         onUpdateLeadListener.onLeadUpdated();
-
     }
 
     public void getUserDetails(final OnFetchUserDetailsListener listener, String uId) {
@@ -140,71 +140,39 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void getLeadList(final OnFetchLeadListListener listener, String key, String value, long lastLead) {
+    public void getLeadList(final OnFetchLeadListListener listener, String key, String value, DocumentSnapshot lastLead) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("leadList")
-                .orderBy("date", Query.Direction.ASCENDING)
-                .startAfter(lastLead)
-                .limit(6)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            List<LeadDetails> leads = new ArrayList<>();
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                LeadDetails l = document.toObject(LeadDetails.class);
-                                leads.add(l);
-
-                            }
-                            listener.onLeadAdded(leads);
-
-                        } else {
-                            Log.w("TAG", "Error getting documents.", task.getException());
-                        }
-                    }
-                });
-
-        /*DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                .getReference("leadList");
-
         Query query;
-        if (!key.equals("Admin"))
-            query = databaseReference.orderByChild(key).equalTo(value);
+        if (lastLead == null)
+            query = db.collection("leadList")
+                    .orderBy("date", Query.Direction.DESCENDING)
+                    .limit(6);
         else
-            query = databaseReference;
-        // Query query = databaseReference.orderByKey().startAt(key).limitToLast(20);
+            query = db.collection("leadList")
+                    .orderBy("date", Query.Direction.DESCENDING)
+                    .startAfter(lastLead)
+                    .limit(6);
 
-        query.addChildEventListener(new ChildEventListener() {
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                LeadDetails leadDetails = dataSnapshot.getValue(LeadDetails.class);
-                listener.onLeadAdded(leadDetails);
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+
+                List<LeadDetails> leads = new ArrayList<>();
+                for (QueryDocumentSnapshot document : documentSnapshots) {
+                    LeadDetails l = document.toObject(LeadDetails.class);
+                    leads.add(l);
+                }
+
+                DocumentSnapshot lastVisible = null;
+                if (documentSnapshots.size() > 0)
+                    lastVisible = documentSnapshots.getDocuments()
+                            .get(documentSnapshots.size() - 1);
+
+                listener.onLeadAdded(leads, lastVisible);
             }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                LeadDetails leadDetails = dataSnapshot.getValue(LeadDetails.class);
-                listener.onLeadChanged(leadDetails);
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("ERROR", "getChapterList(), onCancelled", new Exception(databaseError.getMessage()));
-            }
-        });*/
+        });
     }
 
     public void getUsersByUId(final OnFetchUserDetailsByUId onFetchUserDetailsByUId, String uId) {

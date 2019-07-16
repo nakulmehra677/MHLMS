@@ -11,9 +11,7 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,11 +25,11 @@ import com.development.mhleadmanagementsystemdev.Adapters.LeadListItemAdapter;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Managers.ProfileManager;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +51,7 @@ public class LeadsListActivity extends BaseActivity {
     private LeadListItemAdapter adapter;
     private boolean isSrolling;
     private boolean isLastItemFetched;
+    private DocumentSnapshot bottomVisibleItem = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,24 +76,7 @@ public class LeadsListActivity extends BaseActivity {
         //currentUserName = sharedPreferences.getString(sharedPreferenceUserName, "");
 
         // Setting up the recyclerView //
-        linearLayoutManager = new LinearLayoutManager(this) {
-
-            @Override
-            public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
-                LinearSmoothScroller smoothScroller = new LinearSmoothScroller(LeadsListActivity.this) {
-
-                    private static final float SPEED = 1000f;// Change this value (default=25f)
-
-                    @Override
-                    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                        return SPEED / displayMetrics.densityDpi;
-                    }
-
-                };
-                smoothScroller.setTargetPosition(position);
-                startSmoothScroll(smoothScroller);
-            }
-        };
+        linearLayoutManager = new LinearLayoutManager(this);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -110,15 +92,17 @@ public class LeadsListActivity extends BaseActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                long firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
-                long visibleItemCount = linearLayoutManager.getChildCount();
-                long totalItemCount = linearLayoutManager.getItemCount();
+                if (!recyclerView.canScrollVertically(1)) {
 
-                if (isSrolling && (firstVisibleItem + visibleItemCount == totalItemCount) && !isLastItemFetched) {
-                    isSrolling = false;
-                    progressBar.setVisibility(View.VISIBLE);
-                    Log.i("TAGGGG",String.valueOf(leadDetailsList.size() - 1));
-                    fetch(leadDetailsList.size() - 1);
+                    long firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+                    long visibleItemCount = linearLayoutManager.getChildCount();
+                    long totalItemCount = linearLayoutManager.getItemCount();
+
+                    if (isSrolling && (firstVisibleItem + visibleItemCount == totalItemCount) && !isLastItemFetched) {
+                        isSrolling = false;
+                        progressBar.setVisibility(View.VISIBLE);
+                        fetchLeads();
+                    }
                 }
             }
         });
@@ -130,15 +114,16 @@ public class LeadsListActivity extends BaseActivity {
                     public void onRefresh() {
                         leadDetailsList.clear();
                         adapter.notifyDataSetChanged();
-                        fetch(0);
+                        isLastItemFetched = false;
+                        bottomVisibleItem = null;
+                        //linearLayoutManager = new LinearLayoutManager(LeadsListActivity.this);
+                        fetchLeads();
                     }
                 }
         );
 
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
-        //recyclerView.setNestedScrollingEnabled(false);
-
         recyclerView.setItemViewCacheSize(20);
     }
 
@@ -155,10 +140,10 @@ public class LeadsListActivity extends BaseActivity {
             }
         });
         leadDetailsList.clear();
-        fetch(0);
+        fetchLeads();
     }
 
-    private void fetch(long lastLead) {
+    private void fetchLeads() {
         String s;
         if (profileManager.getCurrentUserType().equals(telecallerUser))
             s = "assigner";
@@ -167,7 +152,7 @@ public class LeadsListActivity extends BaseActivity {
         else
             s = "Admin";
         firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
-                s, profileManager.getCurrentUserDetails().getUserName(), lastLead);
+                s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem);
     }
 
     @Override
@@ -212,7 +197,7 @@ public class LeadsListActivity extends BaseActivity {
             public boolean onClose() {
                 mySwipeRefreshLayout.setEnabled(true);
                 leadDetailsList.clear();
-                fetch(0);
+                fetchLeads();
                 return false;
             }
         });
@@ -271,13 +256,18 @@ public class LeadsListActivity extends BaseActivity {
     private OnFetchLeadListListener onFetchLeadListListener() {
         return new OnFetchLeadListListener() {
             @Override
-            public void onLeadAdded(List<LeadDetails> l) {
+            public void onLeadAdded(List<LeadDetails> l, DocumentSnapshot lastVisible) {
+                if (l.size() < 6)
+                    isLastItemFetched = true;
+
+                bottomVisibleItem = lastVisible;
+
                 leadDetailsList.addAll(l);
                 adapter.notifyDataSetChanged();
 
-                //if (progress.isShowing())
-                //  progress.dismiss();
-                mySwipeRefreshLayout.setRefreshing(false);
+                if(mySwipeRefreshLayout.isRefreshing())
+                    mySwipeRefreshLayout.setRefreshing(false);
+
                 progressBar.setVisibility(View.GONE);
             }
 
@@ -289,7 +279,6 @@ public class LeadsListActivity extends BaseActivity {
                     }
                 }
                 adapter.notifyDataSetChanged();
-
             }
 
             @Override
