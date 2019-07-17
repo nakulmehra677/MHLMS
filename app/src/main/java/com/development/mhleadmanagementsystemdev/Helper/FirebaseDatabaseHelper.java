@@ -50,17 +50,19 @@ public class FirebaseDatabaseHelper {
         this.context = context;
     }
 
-    public void uploadCustomerDetails(OnUploadCustomerDetailsListener onUploadCustomerdetails,
-                                      LeadDetails leadDetails) {
+    public void uploadCustomerDetails(final OnUploadCustomerDetailsListener listener,
+                                      final LeadDetails leadDetails) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("leadList").document();
 
-        db.collection("leadList")
-                .add(leadDetails)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        leadDetails.setKey(dRef.getId());
+
+        dRef.set(leadDetails)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    public void onComplete(@NonNull Task<Void> task) {
+                        listener.onDataUploaded();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -69,15 +71,6 @@ public class FirebaseDatabaseHelper {
                         Log.w("TAG", "Error adding document", e);
                     }
                 });
-
-        /*Log.i("No of Nodes", "Uploading");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("leadList").push();
-
-        String key = myRef.getKey();
-        leadDetails.setKey(key);
-        myRef.setValue(leadDetails);*/
-        onUploadCustomerdetails.onDataUploaded();
     }
 
     public void fetchSalesPersonsByLocation(
@@ -111,12 +104,27 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void updateLeadDetails(OnUpdateLeadListener onUpdateLeadListener, LeadDetails updateLead) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("leadList").child(updateLead.getKey());
-        myRef.setValue(updateLead);
+    public void updateLeadDetails(final OnUpdateLeadListener listener, LeadDetails updateLead) {
 
-        onUpdateLeadListener.onLeadUpdated();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("leadList").document(updateLead.getKey());
+
+        dRef.update("assignedTo", updateLead.getAssignedTo(),
+                "telecallerRemarks", updateLead.getTelecallerRemarks(),
+                "salesmanRemarks", updateLead.getSalesmanRemarks(),
+                "salesmanReason", updateLead.getSalesmanReason())
+
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onLeadUpdated();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFailer();
+            }
+        });
     }
 
     public void getUserDetails(final OnFetchUserDetailsListener listener, String uId) {

@@ -238,6 +238,11 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 setLayoutFields();
                 progress.dismiss();
             }
+
+            @Override
+            public void onFailer() {
+                Toast.makeText(context, R.string.lead_update_failed, Toast.LENGTH_SHORT).show();
+            }
         };
     }
 }

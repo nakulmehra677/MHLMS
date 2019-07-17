@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,10 +19,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.support.v7.widget.SearchView;
 
 import com.development.mhleadmanagementsystemdev.Adapters.LeadListItemAdapter;
+import com.development.mhleadmanagementsystemdev.FilterActivity;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
@@ -41,11 +44,13 @@ public class LeadsListActivity extends BaseActivity {
     private FloatingActionButton fab;
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ProgressBar progressBar;
+    private Button sortBy, filter;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
     private SharedPreferences sharedPreferences;
     private ProfileManager profileManager;
+    private Fragment fragment = null;
 
     private List<LeadDetails> leadDetailsList = new ArrayList<>();
     private LeadListItemAdapter adapter;
@@ -62,6 +67,8 @@ public class LeadsListActivity extends BaseActivity {
         fab = findViewById(R.id.fab);
         mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
         progressBar = findViewById(R.id.progressBar);
+        sortBy = findViewById(R.id.sort_by);
+        filter = findViewById(R.id.filter);
 
         //showProgressDialog("Loading..", this);
 
@@ -153,6 +160,18 @@ public class LeadsListActivity extends BaseActivity {
             s = "Admin";
         firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
                 s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem);
+    }
+
+    public void onButtonClicked(View view) {
+        switch (view.getId()) {
+            case R.id.sort_by:
+                break;
+
+            case R.id.filter:
+                startActivity(new Intent(LeadsListActivity.this, FilterActivity.class));
+                break;
+
+        }
     }
 
     @Override
@@ -265,7 +284,7 @@ public class LeadsListActivity extends BaseActivity {
                 leadDetailsList.addAll(l);
                 adapter.notifyDataSetChanged();
 
-                if(mySwipeRefreshLayout.isRefreshing())
+                if (mySwipeRefreshLayout.isRefreshing())
                     mySwipeRefreshLayout.setRefreshing(false);
 
                 progressBar.setVisibility(View.GONE);
