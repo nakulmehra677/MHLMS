@@ -2,24 +2,21 @@ package com.development.mhleadmanagementsystemdev.Helper;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchDeviceTokenListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUsersListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsByUId;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnSetCurrentDeviceTokenListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
+import com.development.mhleadmanagementsystemdev.Models.UserList;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,11 +28,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class FirebaseDatabaseHelper {
     Context context;
@@ -73,35 +69,64 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void fetchSalesPersonsByLocation(
-            final OnFetchSalesPersonListListener onFetchSalesPersonListListener, String location) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("userList");
-        Log.i("Users", "Fetching Users...");
+    public void fetchSalesPersons(
+            final OnFetchUsersListListener listener, String location) {
 
-        final List<UserDetails> salesPersonList = new ArrayList<>();
-        final List<String> salesPersonNameList = new ArrayList<>();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query;
 
-        myRef.orderByChild("location").equalTo(location)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            UserDetails userDetails = snapshot.getValue(UserDetails.class);
+        if (location.equals("All") || location == null)
+            query = db.collection("userList")
+                    .whereEqualTo("userType", "Salesman");
+        else
+            query = db.collection("userList")
+                    .whereEqualTo("userType", "Salesman")
+                    .whereEqualTo("location", location);
 
-                            if (userDetails.getUserType().equals("Salesman")) {
-                                salesPersonList.add(userDetails);
-                                salesPersonNameList.add(userDetails.getUserName());
-                            }
-                        }
-                        onFetchSalesPersonListListener.onListFetched(salesPersonList, salesPersonNameList);
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
 
-                    }
-                });
+                List<UserDetails> salesPersonList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : documentSnapshots) {
+                    UserDetails l = document.toObject(UserDetails.class);
+                    salesPersonList.add(l);
+                }
+                UserList userList = new UserList(salesPersonList);
+                listener.onListFetched(userList);
+            }
+        });
+    }
+
+    public void fetchTelecallers(
+            final OnFetchUsersListListener listener, String location) {
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query;
+
+        if (location.equals("All") || location == null)
+            query = db.collection("userList")
+                    .whereEqualTo("userType", "Telecaller");
+        else
+            query = db.collection("userList")
+                    .whereEqualTo("userType", "Telecaller")
+                    .whereEqualTo("location", location);
+
+
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+
+                List<UserDetails> salesPersonList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : documentSnapshots) {
+                    UserDetails l = document.toObject(UserDetails.class);
+                    salesPersonList.add(l);
+                }
+                UserList userList = new UserList(salesPersonList);
+                listener.onListFetched(userList);
+            }
+        });
     }
 
     public void updateLeadDetails(final OnUpdateLeadListener listener, LeadDetails updateLead) {
@@ -148,11 +173,15 @@ public class FirebaseDatabaseHelper {
                 });
     }
 
-    public void getLeadList(final OnFetchLeadListListener listener, String key, String value, DocumentSnapshot lastLead) {
+    public void getLeadList(final OnFetchLeadListListener listener,
+                            String assign, String userName, DocumentSnapshot lastLead,
+                            String locationFilter, String assignerFilter,
+                            String assigneeFilter, String statusFilter) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Query query;
+
         if (lastLead == null)
             query = db.collection("leadList")
                     .orderBy("date", Query.Direction.DESCENDING)
@@ -162,6 +191,15 @@ public class FirebaseDatabaseHelper {
                     .orderBy("date", Query.Direction.DESCENDING)
                     .startAfter(lastLead)
                     .limit(6);
+
+        if (!locationFilter.equals("All"))
+            query = query.whereEqualTo("location", locationFilter);
+        if (!assignerFilter.equals("All"))
+            query = query.whereEqualTo("location", assignerFilter);
+        if (!assigneeFilter.equals("All"))
+            query = query.whereEqualTo("location", assigneeFilter);
+        if (!statusFilter.equals("All"))
+            query = query.whereEqualTo("location", statusFilter);
 
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -184,19 +222,16 @@ public class FirebaseDatabaseHelper {
     }
 
     public void getUsersByUId(final OnFetchUserDetailsByUId onFetchUserDetailsByUId, String uId) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("userList");
 
-        myRef.child(uId).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("userList").document(uId);
+
+        dRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserDetails userDetails = dataSnapshot.getValue(UserDetails.class);
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                UserDetails userDetails = documentSnapshot.toObject(UserDetails.class);
+                Log.i("Fetching detials", userDetails.getUserName());
                 onFetchUserDetailsByUId.onSuccess(userDetails);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                onFetchUserDetailsByUId.fail();
             }
         });
     }
@@ -206,14 +241,5 @@ public class FirebaseDatabaseHelper {
         DatabaseReference myRef = database.getReference("userList");
 
         myRef.child(key).child("deviceToken").setValue(deviceToken);
-    }
-
-    public void makeNewNodeOfUserDetails(UserDetails userDetails) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("userList");
-
-        myRef.child(userDetails.getuId()).setValue(userDetails);
-
-        myRef.child(userDetails.getKey()).removeValue();
     }
 }

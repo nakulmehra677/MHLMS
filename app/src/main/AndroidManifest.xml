@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".FilterActivity"
+            android:name=".Activities.FilterActivity"
             android:label="Filter Leads" />
         <activity
             android:name=".Activities.LeadsListActivity"

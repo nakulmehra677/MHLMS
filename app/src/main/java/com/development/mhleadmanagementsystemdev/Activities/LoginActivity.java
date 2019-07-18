@@ -109,59 +109,26 @@ public class LoginActivity extends BaseActivity {
         return new OnFetchUserDetailsByUId() {
             @Override
             public void onSuccess(UserDetails userDetails) {
+                if (!userDetails.getDeviceToken().equals(FirebaseInstanceId.getInstance().getToken())) {
+                    userDetails.setDeviceToken(FirebaseInstanceId.getInstance().getToken());
 
-                if (userDetails == null) {
-                    //if (profileManager.checkUserExist()) {
-                    //    profileManager.signOut();
-                    //    dismissProgressDialog();
-                    //    scrollView.setVisibility(View.VISIBLE);
-                    //} else {
-                    firebaseDatabaseHelper.getUserDetails(
-                            onFetchUserDetailsListener(), profileManager.getuId());
-                    //}
-                } else {
-                    if (!userDetails.getDeviceToken().equals(FirebaseInstanceId.getInstance().getToken())) {
-                        userDetails.setDeviceToken(FirebaseInstanceId.getInstance().getToken());
-
-                        firebaseDatabaseHelper.setCurrentDeviceToken(
-                                FirebaseInstanceId.getInstance().getToken(), profileManager.getuId());
-                    }
-                    currentUserDetails = userDetails;
-
-                    storeInSharedPrefernces();
-                    dismissProgressDialog();
-                    showToastMessage(R.string.logged_in);
-
-                    startActivityForResult(new Intent(
-                            LoginActivity.this, LeadsListActivity.class), 101);
+                    firebaseDatabaseHelper.setCurrentDeviceToken(
+                            FirebaseInstanceId.getInstance().getToken(), profileManager.getuId());
                 }
+
+                currentUserDetails = userDetails;
+
+                storeInSharedPrefernces();
+                dismissProgressDialog();
+                showToastMessage(R.string.logged_in);
+
+                startActivityForResult(new Intent(
+                        LoginActivity.this, LeadsListActivity.class), 101);
             }
 
             @Override
             public void fail() {
                 Log.i("FAIL", "FFAAIILL");
-            }
-        };
-    }
-
-    private OnFetchUserDetailsListener onFetchUserDetailsListener() {
-        return new OnFetchUserDetailsListener() {
-            @Override
-            public void onSuccess(UserDetails userDetails) {
-                if (userDetails == null) {
-                    profileManager.signOut();
-                    showToastMessage(R.string.something_wrong);
-                    dismissProgressDialog();
-                } else {
-                    userDetails.setDeviceToken(FirebaseInstanceId.getInstance().getToken());
-                    firebaseDatabaseHelper.makeNewNodeOfUserDetails(userDetails);
-
-                    storeInSharedPrefernces();
-                    dismissProgressDialog();
-
-                    showToastMessage(R.string.logged_in);
-                    startActivityForResult(new Intent(LoginActivity.this, LeadsListActivity.class), 101);
-                }
             }
         };
     }

@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,12 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUsersListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
+import com.development.mhleadmanagementsystemdev.Models.UserList;
 import com.development.mhleadmanagementsystemdev.R;
-import com.development.mhleadmanagementsystemdev.StringClass;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private LeadDetails leadDetails;
     private String currentUserType;
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
-    private List<UserDetails> userDetailsList;
 
     private String customerNotInterested = "Customer Not Interested";
     private String documentPicked = "Document Picked";
@@ -114,7 +113,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
 
-                        firebaseDatabaseHelper.fetchSalesPersonsByLocation(
+                        firebaseDatabaseHelper.fetchSalesPersons(
                                 onFetchSalesPersonListListener(), leadDetails.getLocation());
                     } else {
                         openSalesmanFragment();
@@ -160,13 +159,13 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         mBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
-    private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
-        return new OnFetchSalesPersonListListener() {
+    private OnFetchUsersListListener onFetchSalesPersonListListener() {
+        return new OnFetchUsersListListener() {
             @Override
-            public void onListFetched(final List userDetailList, List userName) {
+            public void onListFetched(UserList userList) {
                 progress.dismiss();
-                if (userName.size() > 0)
-                    openTelecallerFragment(userDetailList, userName);
+                if (userList.getUserList().size() > 0)
+                    openTelecallerFragment(userList.getUserList());
                 else
                     Toast.makeText(context, "No Salesmen are present for " +
                             leadDetails.getLocation() + ".", Toast.LENGTH_SHORT).show();
@@ -174,26 +173,31 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         };
     }
 
-    private void openTelecallerFragment(final List arrayList, List userName) {
-        EditLeadDetailsFragment.newInstance(userName, new EditLeadDetailsFragment.OnSubmitClickListener() {
-            @Override
-            public void onSubmitClicked(String dialogAssignedTo, String telecallerReason) {
-                leadDetails.setAssignedTo(dialogAssignedTo);
-                leadDetails.setTelecallerRemarks(telecallerReason);
+    private void openTelecallerFragment(final List<UserDetails> userList) {
 
-                userDetailsList = new ArrayList<>();
-                userDetailsList = arrayList;
-
-                String strAssignedToUId = null;
-                for (UserDetails userDetails : userDetailsList) {
-                    if (userDetails.getUserName().equals(dialogAssignedTo)) {
-                        strAssignedToUId = userDetails.getuId();
-                    }
-                }
-                leadDetails.setAssignedToUId(strAssignedToUId);
-                firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), leadDetails);
+        if (userList.size() != 0) {
+            List<String> salesPersonNameList = new ArrayList<>();
+            for (UserDetails user : userList) {
+                salesPersonNameList.add(user.getUserName());
             }
-        }).show(getFragmentManager(), "promo");
+
+            EditLeadDetailsFragment.newInstance(salesPersonNameList, new EditLeadDetailsFragment.OnSubmitClickListener() {
+                @Override
+                public void onSubmitClicked(String dialogAssignedTo, String telecallerReason) {
+                    leadDetails.setAssignedTo(dialogAssignedTo);
+                    leadDetails.setTelecallerRemarks(telecallerReason);
+
+                    String strAssignedToUId = null;
+                    for (UserDetails userDetails : userList) {
+                        if (userDetails.getUserName().equals(dialogAssignedTo)) {
+                            strAssignedToUId = userDetails.getuId();
+                        }
+                    }
+                    leadDetails.setAssignedToUId(strAssignedToUId);
+                    firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), leadDetails);
+                }
+            }).show(getFragmentManager(), "promo");
+        }
     }
 
     private void openSalesmanFragment() {

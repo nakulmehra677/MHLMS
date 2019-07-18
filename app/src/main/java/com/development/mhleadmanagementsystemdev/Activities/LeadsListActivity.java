@@ -13,7 +13,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,10 +23,9 @@ import android.widget.ProgressBar;
 import android.support.v7.widget.SearchView;
 
 import com.development.mhleadmanagementsystemdev.Adapters.LeadListItemAdapter;
-import com.development.mhleadmanagementsystemdev.FilterActivity;
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsByUId;
 import com.development.mhleadmanagementsystemdev.Managers.ProfileManager;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
@@ -44,7 +42,6 @@ public class LeadsListActivity extends BaseActivity {
     private FloatingActionButton fab;
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ProgressBar progressBar;
-    private Button sortBy, filter;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
@@ -57,6 +54,10 @@ public class LeadsListActivity extends BaseActivity {
     private boolean isSrolling;
     private boolean isLastItemFetched;
     private DocumentSnapshot bottomVisibleItem = null;
+    private String assignerFilter = "All",
+            assigneeFilter = "All",
+            locationFilter = "All",
+            statusFilter = "All";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,15 +68,12 @@ public class LeadsListActivity extends BaseActivity {
         fab = findViewById(R.id.fab);
         mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
         progressBar = findViewById(R.id.progressBar);
-        sortBy = findViewById(R.id.sort_by);
-        filter = findViewById(R.id.filter);
-
         //showProgressDialog("Loading..", this);
 
         profileManager = new ProfileManager();
         firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
 
-        firebaseDatabaseHelper.getUserDetails(onFetchUserDetailsListener(), profileManager.getuId());
+        firebaseDatabaseHelper.getUsersByUId(onFetchUserDetailsByUId(), profileManager.getuId());
 
         //sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
 
@@ -159,7 +157,8 @@ public class LeadsListActivity extends BaseActivity {
         else
             s = "Admin";
         firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
-                s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem);
+                s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem,
+                locationFilter, assignerFilter, assigneeFilter, statusFilter);
     }
 
     public void onButtonClicked(View view) {
@@ -168,7 +167,8 @@ public class LeadsListActivity extends BaseActivity {
                 break;
 
             case R.id.filter:
-                startActivity(new Intent(LeadsListActivity.this, FilterActivity.class));
+                startActivityForResult(
+                        new Intent(LeadsListActivity.this, FilterActivity.class), 201);
                 break;
 
         }
@@ -259,15 +259,20 @@ public class LeadsListActivity extends BaseActivity {
         }
     }
 
-    private OnFetchUserDetailsListener onFetchUserDetailsListener() {
-        return new OnFetchUserDetailsListener() {
+
+    private OnFetchUserDetailsByUId onFetchUserDetailsByUId() {
+        return new OnFetchUserDetailsByUId() {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 profileManager.setCurrentUserDetails(userDetails);
-                Log.i("UserDetails", userDetails.getUserType());
                 adapter = new LeadListItemAdapter(leadDetailsList, LeadsListActivity.this, profileManager.getCurrentUserType());
                 recyclerView.setAdapter(adapter);
                 setLayoutByUser();
+            }
+
+            @Override
+            public void fail() {
+
             }
         };
     }
@@ -310,5 +315,17 @@ public class LeadsListActivity extends BaseActivity {
                 //progressBar.setVisibility(View.GONE);
             }
         };
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+        if (resultCode == 201) {
+            assignerFilter = data.getStringExtra("assigner_filter");
+            assigneeFilter = data.getStringExtra("assignee_filter");
+            locationFilter = data.getStringExtra("location_filter");
+            statusFilter = data.getStringExtra("status_filter");
+        }
     }
 }

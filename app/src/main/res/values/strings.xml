@@ -80,4 +80,22 @@
         <item>Not Doable</item>
     </string-array>
 
+    <string-array name="location_filter">
+        <item>All</item>
+        <item>Delhi</item>
+        <item>Indore</item>
+        <item>Jaipur</item>
+        <item>Gwalior</item>
+        <item>Ahemdabad</item>
+    </string-array>
+
+    <string-array name="status_filter">
+        <item>Active</item>
+        <item>Non Active</item>
+        <item>Work in Progress</item>
+        <item>Closed</item>
+        <item>Follow Up</item>
+        <item>Not Doable</item>
+    </string-array>
+
 </resources>

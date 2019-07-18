@@ -23,13 +23,13 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
     private OnSubmitClickListener listener;
     private ArrayAdapter<CharSequence> assignedToAdapter;
     private Spinner assignedToSpinner;
-    List arrayList = new ArrayList();
+    List salesPersonList = new ArrayList();
     private EditText telecallerReason;
 
 
     public EditLeadDetailsFragment(List arrayList, OnSubmitClickListener listener) {
         this.listener = listener;
-        this.arrayList = arrayList;
+        this.salesPersonList = arrayList;
     }
 
     public static EditLeadDetailsFragment newInstance(List arrayList, OnSubmitClickListener listener) {
@@ -49,7 +49,7 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
         // AssignedTo Spinner
         assignedToAdapter = new ArrayAdapter<CharSequence>(
                 getContext(),
-                android.R.layout.simple_spinner_item, arrayList);
+                android.R.layout.simple_spinner_item, salesPersonList);
         assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         assignedToSpinner.setAdapter(assignedToAdapter);
         assignedToSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

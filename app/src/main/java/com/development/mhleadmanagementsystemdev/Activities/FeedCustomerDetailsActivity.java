@@ -17,15 +17,15 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchSalesPersonListListener;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUsersListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
+import com.development.mhleadmanagementsystemdev.Models.UserList;
 import com.development.mhleadmanagementsystemdev.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -230,8 +230,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         progress.setCanceledOnTouchOutside(false);
         progress.show();*/
 
-        firebaseDatabaseHelper.fetchSalesPersonsByLocation(
-                onFetchSalesPersonListListener(), strLocation);
+        firebaseDatabaseHelper.fetchSalesPersons(
+                onFetchUsersListListener(), strLocation);
     }
 
     private boolean checkEmpty() {
@@ -323,26 +323,29 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         };
     }
 
-    private OnFetchSalesPersonListListener onFetchSalesPersonListListener() {
-        return new OnFetchSalesPersonListListener() {
+    private OnFetchUsersListListener onFetchUsersListListener() {
+        return new OnFetchUsersListListener() {
             @Override
-            public void onListFetched(List arrayList, List userName) {
-                Log.i("TAGGG", String.valueOf(userName.size()));
+            public void onListFetched(UserList userList) {
 
-                if (userName.size() != 0) {
+                salesPersonList = userList.getUserList();
+
+                if (salesPersonList.size() != 0) {
+                    List salesPersonNameList = new ArrayList<>();
+                    for (UserDetails user: salesPersonList) {
+                        salesPersonNameList.add(user.getUserName());
+                    }
+
                     // AssignedTo Spinner
                     assignedToAdapter = new ArrayAdapter<CharSequence>(
                             FeedCustomerDetailsActivity.this,
-                            android.R.layout.simple_spinner_item, userName);
+                            android.R.layout.simple_spinner_item, salesPersonNameList);
                     assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     assignedToSpinner.setAdapter(assignedToAdapter);
                     assignedToSpinner.setOnItemSelectedListener(FeedCustomerDetailsActivity.this);
 
                     assignedToSpinner.setEnabled(true);
                     assignedToSpinner.setClickable(true);
-
-                    salesPersonList = new ArrayList<>();
-                    salesPersonList = arrayList;
 
                     //progress.dismiss();
                 } else {
