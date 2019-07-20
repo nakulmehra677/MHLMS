@@ -18,6 +18,7 @@
             android:padding="12dp">
 
             <LinearLayout
+                android:id="@+id/location_filter_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
@@ -38,6 +39,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/assigner_filter_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
@@ -58,6 +60,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/assignee_filter_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
@@ -71,6 +74,27 @@
 
                 <Spinner
                     android:id="@+id/assignee_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:text="Loan Type" />
+
+                <Spinner
+                    android:id="@+id/loan_type_filter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="8dp" />

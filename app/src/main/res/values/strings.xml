@@ -89,9 +89,19 @@
         <item>Ahemdabad</item>
     </string-array>
 
+    <string-array name="loan_type_filter">
+        <item>All</item>
+        <item>Home Loan</item>
+        <item>Business Loan</item>
+        <item>Personal Loan</item>
+        <item>Loan Against Property</item>
+        <item>Over Draft</item>
+    </string-array>
+
     <string-array name="status_filter">
+        <item>All</item>
         <item>Active</item>
-        <item>Non Active</item>
+        <item>Inactive</item>
         <item>Work in Progress</item>
         <item>Closed</item>
         <item>Follow Up</item>

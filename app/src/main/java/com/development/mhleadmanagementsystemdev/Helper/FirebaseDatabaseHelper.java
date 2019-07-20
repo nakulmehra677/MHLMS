@@ -137,7 +137,8 @@ public class FirebaseDatabaseHelper {
         dRef.update("assignedTo", updateLead.getAssignedTo(),
                 "telecallerRemarks", updateLead.getTelecallerRemarks(),
                 "salesmanRemarks", updateLead.getSalesmanRemarks(),
-                "salesmanReason", updateLead.getSalesmanReason())
+                "salesmanReason", updateLead.getSalesmanReason(),
+                "status", updateLead.getStatus())
 
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -152,7 +153,7 @@ public class FirebaseDatabaseHelper {
         });
     }
 
-    public void getUserDetails(final OnFetchUserDetailsListener listener, String uId) {
+    /*public void getUserDetails(final OnFetchUserDetailsListener listener, String uId) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("userList");
 
@@ -171,35 +172,44 @@ public class FirebaseDatabaseHelper {
 
                     }
                 });
-    }
+    }*/
 
     public void getLeadList(final OnFetchLeadListListener listener,
                             String assign, String userName, DocumentSnapshot lastLead,
                             String locationFilter, String assignerFilter,
-                            String assigneeFilter, String statusFilter) {
+                            String assigneeFilter, String loanTypeFilter, String statusFilter) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Query query;
-
-        if (lastLead == null)
-            query = db.collection("leadList")
-                    .orderBy("date", Query.Direction.DESCENDING)
-                    .limit(6);
-        else
-            query = db.collection("leadList")
-                    .orderBy("date", Query.Direction.DESCENDING)
-                    .startAfter(lastLead)
-                    .limit(6);
+        Query query = db.collection("leadList");
 
         if (!locationFilter.equals("All"))
             query = query.whereEqualTo("location", locationFilter);
         if (!assignerFilter.equals("All"))
-            query = query.whereEqualTo("location", assignerFilter);
+            query = query.whereEqualTo("assigner", assignerFilter);
         if (!assigneeFilter.equals("All"))
-            query = query.whereEqualTo("location", assigneeFilter);
+            query = query.whereEqualTo("assignedTo", assigneeFilter);
+        if (!loanTypeFilter.equals("All"))
+            query = query.whereEqualTo("loanType", loanTypeFilter);
         if (!statusFilter.equals("All"))
-            query = query.whereEqualTo("location", statusFilter);
+            query = query.whereEqualTo("status", statusFilter);
+
+        if (lastLead == null) {
+            if (!assign.equals("Admin"))
+                query = query.whereEqualTo(assign, userName);
+
+            query = query.orderBy("date", Query.Direction.DESCENDING)
+                    .orderBy("time", Query.Direction.DESCENDING)
+                    .limit(20);
+        } else {
+            if (!assign.equals("Admin"))
+                query = query.whereEqualTo(assign, userName);
+
+            query = query.orderBy("date", Query.Direction.DESCENDING)
+                    .orderBy("time", Query.Direction.DESCENDING)
+                    .startAfter(lastLead)
+                    .limit(20);
+        }
 
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -230,7 +240,6 @@ public class FirebaseDatabaseHelper {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 UserDetails userDetails = documentSnapshot.toObject(UserDetails.class);
-                Log.i("Fetching detials", userDetails.getUserName());
                 onFetchUserDetailsByUId.onSuccess(userDetails);
             }
         });

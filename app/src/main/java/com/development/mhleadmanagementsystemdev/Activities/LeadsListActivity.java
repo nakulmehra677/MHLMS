@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,7 +43,7 @@ public class LeadsListActivity extends BaseActivity {
     private LinearLayoutManager linearLayoutManager;
     private FloatingActionButton fab;
     private SwipeRefreshLayout mySwipeRefreshLayout;
-    private ProgressBar progressBar;
+    private ProgressBar progressBar, firstPageProgressBar;
 
     private FirebaseDatabaseHelper firebaseDatabaseHelper;
 
@@ -54,10 +56,12 @@ public class LeadsListActivity extends BaseActivity {
     private boolean isSrolling;
     private boolean isLastItemFetched;
     private DocumentSnapshot bottomVisibleItem = null;
-    private String assignerFilter = "All",
-            assigneeFilter = "All",
-            locationFilter = "All",
-            statusFilter = "All";
+
+    private String assignerFilter = "All";
+    private String assigneeFilter = "All";
+    private String locationFilter = "All";
+    private String statusFilter = "All";
+    private String loanTypeFilter = "All";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,7 @@ public class LeadsListActivity extends BaseActivity {
         fab = findViewById(R.id.fab);
         mySwipeRefreshLayout = findViewById(R.id.swiperefresh);
         progressBar = findViewById(R.id.progressBar);
+        firstPageProgressBar = findViewById(R.id.first_page_progressBar);
         //showProgressDialog("Loading..", this);
 
         profileManager = new ProfileManager();
@@ -82,6 +87,13 @@ public class LeadsListActivity extends BaseActivity {
 
         // Setting up the recyclerView //
         linearLayoutManager = new LinearLayoutManager(this);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                firstPageProgressBar.setVisibility(View.GONE);
+            }
+        }, 5000);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -121,6 +133,14 @@ public class LeadsListActivity extends BaseActivity {
                         adapter.notifyDataSetChanged();
                         isLastItemFetched = false;
                         bottomVisibleItem = null;
+                        firstPageProgressBar.setVisibility(View.VISIBLE);
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                firstPageProgressBar.setVisibility(View.GONE);
+                            }
+                        }, 5000);
                         //linearLayoutManager = new LinearLayoutManager(LeadsListActivity.this);
                         fetchLeads();
                     }
@@ -158,7 +178,7 @@ public class LeadsListActivity extends BaseActivity {
             s = "Admin";
         firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
                 s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem,
-                locationFilter, assignerFilter, assigneeFilter, statusFilter);
+                locationFilter, assignerFilter, assigneeFilter, loanTypeFilter, statusFilter);
     }
 
     public void onButtonClicked(View view) {
@@ -167,8 +187,8 @@ public class LeadsListActivity extends BaseActivity {
                 break;
 
             case R.id.filter:
-                startActivityForResult(
-                        new Intent(LeadsListActivity.this, FilterActivity.class), 201);
+                Intent intent  = new Intent(LeadsListActivity.this, FilterActivity.class);
+                startActivityForResult(intent, 201);
                 break;
 
         }
@@ -281,7 +301,7 @@ public class LeadsListActivity extends BaseActivity {
         return new OnFetchLeadListListener() {
             @Override
             public void onLeadAdded(List<LeadDetails> l, DocumentSnapshot lastVisible) {
-                if (l.size() < 6)
+                if (l.size() < 20)
                     isLastItemFetched = true;
 
                 bottomVisibleItem = lastVisible;
@@ -293,6 +313,7 @@ public class LeadsListActivity extends BaseActivity {
                     mySwipeRefreshLayout.setRefreshing(false);
 
                 progressBar.setVisibility(View.GONE);
+                firstPageProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -312,7 +333,8 @@ public class LeadsListActivity extends BaseActivity {
                 //if (progress.isShowing())
                 //  progress.dismiss();
                 mySwipeRefreshLayout.setRefreshing(false);
-                //progressBar.setVisibility(View.GONE);
+                firstPageProgressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
             }
         };
     }
@@ -325,7 +347,22 @@ public class LeadsListActivity extends BaseActivity {
             assignerFilter = data.getStringExtra("assigner_filter");
             assigneeFilter = data.getStringExtra("assignee_filter");
             locationFilter = data.getStringExtra("location_filter");
+            loanTypeFilter = data.getStringExtra("loan_type_filter");
             statusFilter = data.getStringExtra("status_filter");
+
+            leadDetailsList.clear();
+            adapter.notifyDataSetChanged();
+            isLastItemFetched = false;
+            bottomVisibleItem = null;
+            firstPageProgressBar.setVisibility(View.VISIBLE);
+
+            fetchLeads();
+            Log.i("TAGGGG_assignerFilter", assignerFilter);
+            Log.i("TAGGGG_assigneeFilter", assigneeFilter);
+            Log.i("TAGGGG_locationFilter", locationFilter);
+            Log.i("TAGGGG_statusFilter", statusFilter);
+            Log.i("TAGGGG_loanTypeFilter", loanTypeFilter);
+
         }
     }
 }

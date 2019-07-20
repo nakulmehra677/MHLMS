@@ -41,7 +41,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
     private BottomSheetBehavior mBehavior;
     private TextView name, loan, number, employment, employmentType, loanType, propertyType, location,
-            assignedTo, assigner, callerRemarks, salesmanRemarks, status, assignedOn, assignedAt;
+            assignedTo, assigner, callerRemarks, salesmanRemarks, status, assignedOn, assignedAt, customerRemarks;
 
     private Button button;
     private SharedPreferences sharedPreferences;
@@ -89,6 +89,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assigner = view.findViewById(R.id.assigner);
         callerRemarks = view.findViewById(R.id.caller_remarks);
         salesmanRemarks = view.findViewById(R.id.salesman_remarks);
+        customerRemarks = view.findViewById(R.id.customer_remarks);
         status = view.findViewById(R.id.status);
         assignedOn = view.findViewById(R.id.date);
         assignedAt = view.findViewById(R.id.time);
@@ -148,6 +149,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assigner.setText(leadDetails.getAssigner());
         callerRemarks.setText(leadDetails.getTelecallerRemarks());
         salesmanRemarks.setText(leadDetails.getSalesmanReason());
+        customerRemarks.setText(leadDetails.getSalesmanRemarks());
         status.setText(leadDetails.getStatus());
         assignedOn.setText(leadDetails.getDate());
         assignedAt.setText(leadDetails.getTime());
