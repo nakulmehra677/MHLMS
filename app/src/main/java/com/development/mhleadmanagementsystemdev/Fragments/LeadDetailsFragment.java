@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -26,22 +25,33 @@ import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserList;
 import com.development.mhleadmanagementsystemdev.R;
-import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.salesmanUser;
 import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.sharedPreferenceUserDetails;
 import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.sharedPreferenceUserType;
-import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
     private BottomSheetBehavior mBehavior;
-    private TextView name, loan, number, employment, employmentType, loanType, propertyType, location,
-            assignedTo, assigner, callerRemarks, salesmanRemarks, status, assignedOn, assignedAt, customerRemarks;
+    private TextView name;
+    private TextView loan;
+    private TextView number;
+    private TextView employment;
+    private TextView employmentType;
+    private TextView loanType;
+    private TextView propertyType;
+    private TextView location;
+    private TextView assignedTo;
+    private TextView assigner;
+    private TextView callerRemarks;
+    private TextView salesmanRemarks;
+    private TextView status;
+    private TextView assignedOn;
+    private TextView assignedAt;
+    private TextView customerRemarks;
 
     private Button button;
     private SharedPreferences sharedPreferences;
@@ -107,7 +117,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         .getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 if (cm.getActiveNetworkInfo() != null) {
-                    if (currentUserType.equals(telecallerUser)) {
+                    if (currentUserType.equals(getString(R.string.telecaller))) {
                         progress = new ProgressDialog(context);
                         progress.setMessage("Loading..");
                         progress.setCancelable(false);
@@ -130,9 +140,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private void setLayoutFields() {
-        if (currentUserType.equals(telecallerUser))
+        if (currentUserType.equals(getString(R.string.telecaller)))
             assignerLayout.setVisibility(View.GONE);
-        else if (currentUserType.equals(salesmanUser))
+        else if (currentUserType.equals(getString(R.string.salesman)))
             assignedToLayout.setVisibility(View.GONE);
         else
             button.setVisibility(View.GONE);

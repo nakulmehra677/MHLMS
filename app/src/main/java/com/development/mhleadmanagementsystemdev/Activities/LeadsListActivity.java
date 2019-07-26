@@ -155,7 +155,7 @@ public class LeadsListActivity extends BaseActivity {
     @SuppressLint("RestrictedApi")
     private void setLayoutByUser() {
         //if (sharedPreferences.getString(sharedPreferenceUserType, "Salesman").equals("Telecaller"))
-        if (profileManager.getCurrentUserType().equals(telecallerUser))
+        if (profileManager.getCurrentUserType().equals(getString(R.string.telecaller)))
             fab.setVisibility(View.VISIBLE);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -169,13 +169,17 @@ public class LeadsListActivity extends BaseActivity {
     }
 
     private void fetchLeads() {
+        String currentUserType = profileManager.getCurrentUserType();
         String s;
-        if (profileManager.getCurrentUserType().equals(telecallerUser))
+        if (currentUserType.equals(getString(R.string.telecaller)))
             s = "assigner";
-        else if (profileManager.getCurrentUserType().equals(salesmanUser))
+        else if (currentUserType.equals(getString(R.string.salesman)))
             s = "assignedTo";
         else
             s = "Admin";
+
+        Log.i("drfgtbrdgtbrgt","rrrrrrrrr");
+
         firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
                 s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem,
                 locationFilter, assignerFilter, assigneeFilter, loanTypeFilter, statusFilter);
@@ -187,10 +191,9 @@ public class LeadsListActivity extends BaseActivity {
                 break;
 
             case R.id.filter:
-                Intent intent  = new Intent(LeadsListActivity.this, FilterActivity.class);
+                Intent intent = new Intent(LeadsListActivity.this, FilterActivity.class);
                 startActivityForResult(intent, 201);
                 break;
-
         }
     }
 
@@ -304,6 +307,7 @@ public class LeadsListActivity extends BaseActivity {
                 if (l.size() < 20)
                     isLastItemFetched = true;
 
+                Log.i("drfgtbrdgtbrgt","rrrrrrrrr");
                 bottomVisibleItem = lastVisible;
 
                 leadDetailsList.addAll(l);

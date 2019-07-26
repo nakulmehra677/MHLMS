@@ -332,7 +332,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
                 if (salesPersonList.size() != 0) {
                     List salesPersonNameList = new ArrayList<>();
-                    for (UserDetails user: salesPersonList) {
+                    for (UserDetails user : salesPersonList) {
                         salesPersonNameList.add(user.getUserName());
                     }
 

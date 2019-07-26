@@ -71,10 +71,10 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
         sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
         currentUserType = sharedPreferences.getString(sharedPreferenceUserType, "Salesman");
 
-        if (currentUserType.equals("Salesman")) {
+        if (currentUserType.equals(getString(R.string.salesman))) {
             locationFilterLayout.setVisibility(View.GONE);
             assigneeFilterLayout.setVisibility(View.GONE);
-        } else if (currentUserType.equals("Telecaller")) {
+        } else if (currentUserType.equals(R.string.telecaller)) {
             assignerFilterLayout.setVisibility(View.GONE);
         }
 
@@ -101,7 +101,6 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
                 finish();
             }
         });
-
     }
 
     private void getAssignerList() {

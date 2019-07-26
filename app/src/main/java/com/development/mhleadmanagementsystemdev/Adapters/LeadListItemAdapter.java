@@ -1,6 +1,7 @@
 package com.development.mhleadmanagementsystemdev.Adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -22,8 +23,6 @@ import com.development.mhleadmanagementsystemdev.ViewHolders.LeadListViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.salesmanUser;
-import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.telecallerUser;
 
 public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder> implements Filterable {
     private List<LeadDetails> leads;
@@ -53,9 +52,9 @@ public class LeadListItemAdapter extends RecyclerView.Adapter<LeadListViewHolder
         holder.status.setText(model.getStatus());
         holder.date.setText(model.getDate());
 
-        if (currentUserType.equals(telecallerUser))
+        if (currentUserType.equals(context.getString(R.string.telecaller)))
             holder.assignedTo.setText(model.getAssignedTo());
-        else if (currentUserType.equals(salesmanUser)) {
+        else if (currentUserType.equals(context.getString(R.string.salesman))) {
             holder.assignText.setText("Assginer");
             holder.assignedTo.setText(model.getAssigner());
         } else

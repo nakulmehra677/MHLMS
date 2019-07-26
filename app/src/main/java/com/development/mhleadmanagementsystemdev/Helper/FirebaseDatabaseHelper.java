@@ -17,11 +17,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -153,34 +148,12 @@ public class FirebaseDatabaseHelper {
         });
     }
 
-    /*public void getUserDetails(final OnFetchUserDetailsListener listener, String uId) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("userList");
-
-        myRef.orderByChild("uId").equalTo(uId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            UserDetails userDetails = snapshot.getValue(UserDetails.class);
-                            listener.onSuccess(userDetails);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-    }*/
-
     public void getLeadList(final OnFetchLeadListListener listener,
                             String assign, String userName, DocumentSnapshot lastLead,
                             String locationFilter, String assignerFilter,
                             String assigneeFilter, String loanTypeFilter, String statusFilter) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         Query query = db.collection("leadList");
 
         if (!locationFilter.equals("All"))
@@ -199,21 +172,24 @@ public class FirebaseDatabaseHelper {
                 query = query.whereEqualTo(assign, userName);
 
             query = query.orderBy("date", Query.Direction.DESCENDING)
-                    .orderBy("time", Query.Direction.DESCENDING)
+                    //.orderBy("time", Query.Direction.DESCENDING)
                     .limit(20);
         } else {
             if (!assign.equals("Admin"))
                 query = query.whereEqualTo(assign, userName);
 
             query = query.orderBy("date", Query.Direction.DESCENDING)
-                    .orderBy("time", Query.Direction.DESCENDING)
+                    //.orderBy("time", Query.Direction.DESCENDING)
                     .startAfter(lastLead)
                     .limit(20);
         }
 
+        Log.i("database",assign);
+
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
+                Log.i("database","rrrrrrrrr");
 
                 List<LeadDetails> leads = new ArrayList<>();
                 for (QueryDocumentSnapshot document : documentSnapshots) {
@@ -245,10 +221,10 @@ public class FirebaseDatabaseHelper {
         });
     }
 
-    public void setCurrentDeviceToken(String deviceToken, String key) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("userList");
+    public void setCurrentDeviceToken(String deviceToken, String uId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("userList").document(uId);
 
-        myRef.child(key).child("deviceToken").setValue(deviceToken);
+        dRef.update("deviceToken", deviceToken);
     }
 }
