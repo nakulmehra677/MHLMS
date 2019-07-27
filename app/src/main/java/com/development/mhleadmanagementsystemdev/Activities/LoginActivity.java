@@ -121,7 +121,7 @@ public class LoginActivity extends BaseActivity {
             public void onSuccess(UserDetails userDetails) {
                 String strDeviceToken = FirebaseInstanceId.getInstance().getToken();
 
-                if (!userDetails.getDeviceToken().equals(strDeviceToken)) {
+                if (userDetails.getDeviceToken() == null || !userDetails.getDeviceToken().equals(strDeviceToken)) {
                     userDetails.setDeviceToken(strDeviceToken);
 
                     firebaseDatabaseHelper.setCurrentDeviceToken(

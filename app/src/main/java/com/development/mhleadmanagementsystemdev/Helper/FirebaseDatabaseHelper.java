@@ -129,7 +129,10 @@ public class FirebaseDatabaseHelper {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("leadList").document(updateLead.getKey());
 
-        dRef.update("assignedTo", updateLead.getAssignedTo(),
+        dRef.update("name", updateLead.getName(),
+                "loanAmount", updateLead.getLoanAmount(),
+                "contactNumber", updateLead.getContactNumber(),
+                "assignedTo", updateLead.getAssignedTo(),
                 "telecallerRemarks", updateLead.getTelecallerRemarks(),
                 "salesmanRemarks", updateLead.getSalesmanRemarks(),
                 "salesmanReason", updateLead.getSalesmanReason(),
@@ -184,12 +187,12 @@ public class FirebaseDatabaseHelper {
                     .limit(20);
         }
 
-        Log.i("database",assign);
+        Log.i("database", assign);
 
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
-                Log.i("database","rrrrrrrrr");
+                Log.i("database", "rrrrrrrrr");
 
                 List<LeadDetails> leads = new ArrayList<>();
                 for (QueryDocumentSnapshot document : documentSnapshots) {

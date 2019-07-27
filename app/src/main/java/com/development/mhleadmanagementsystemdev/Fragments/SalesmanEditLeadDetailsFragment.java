@@ -1,15 +1,17 @@
 package com.development.mhleadmanagementsystemdev.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatDialogFragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,7 +23,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.R;
+import com.development.mhleadmanagementsystemdev.Services.AlertReceiver;
 
 import java.util.Calendar;
 
@@ -38,17 +42,22 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
     private TextView dateTextView;
     private TextView timeTextView;
 
-    private LinearLayout datePickerLayout, timePickerLayout;
+    private LinearLayout reminderLayout;
 
     private int mYear, mMonth, mDay, mHour, mMinute;
+    private int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinute;
 
-    public SalesmanEditLeadDetailsFragment(OnSalesmanSubmitClickListener listener) {
+    private LeadDetails leadDetails;
+
+    public SalesmanEditLeadDetailsFragment(LeadDetails leadDetails, OnSalesmanSubmitClickListener listener) {
+        this.leadDetails = leadDetails;
         this.listener = listener;
     }
 
-    public static SalesmanEditLeadDetailsFragment newInstance(OnSalesmanSubmitClickListener listener) {
+    public static SalesmanEditLeadDetailsFragment newInstance(LeadDetails leadDetails,
+                                                              OnSalesmanSubmitClickListener listener) {
 
-        SalesmanEditLeadDetailsFragment f = new SalesmanEditLeadDetailsFragment(listener);
+        SalesmanEditLeadDetailsFragment f = new SalesmanEditLeadDetailsFragment(leadDetails, listener);
         return f;
     }
 
@@ -63,24 +72,25 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
         timePickerButton = v.findViewById(R.id.time_picker);
         dateTextView = v.findViewById(R.id.date);
         timeTextView = v.findViewById(R.id.time);
-        datePickerLayout = v.findViewById(R.id.date_picker_layout);
-        timePickerLayout = v.findViewById(R.id.time_picker_layout);
+        reminderLayout = v.findViewById(R.id.reminder_layout);
 
         remarksAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.remarks, android.R.layout.simple_spinner_item);
         remarksAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         remarksSpinner.setAdapter(remarksAdapter);
+
         remarksSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 strRemarks = parent.getItemAtPosition(position).toString();
                 if (strRemarks.equals("Customer Interested but Document Pending") ||
                         strRemarks.equals("Customer follow Up")) {
-                    datePickerLayout.setVisibility(View.VISIBLE);
-                    timePickerLayout.setVisibility(View.VISIBLE);
+                    reminderLayout.setVisibility(View.VISIBLE);
                 } else {
-                    datePickerLayout.setVisibility(View.GONE);
-                    timePickerLayout.setVisibility(View.GONE);
+                    reminderLayout.setVisibility(View.GONE);
+
+                    dateTextView.setText("DD/MM/YYYY");
+                    timeTextView.setText("hh:mm");
                 }
             }
 
@@ -106,10 +116,16 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
                             public void onDateSet(DatePicker view, int year,
                                                   int monthOfYear, int dayOfMonth) {
 
-                                dateTextView.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                                alarmDay = dayOfMonth;
+                                alarmMonth = monthOfYear;
+                                alarmYear = year;
+
+                                dateTextView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
 
                             }
                         }, mYear, mMonth, mDay);
+
+                datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
                 datePickerDialog.show();
             }
         });
@@ -131,6 +147,9 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
                             public void onTimeSet(TimePicker view, int hourOfDay,
                                                   int minute) {
 
+                                alarmHour = hourOfDay;
+                                alarmMinute = minute;
+
                                 timeTextView.setText(hourOfDay + ":" + minute);
                             }
                         }, mHour, mMinute, false);
@@ -139,30 +158,69 @@ public class SalesmanEditLeadDetailsFragment extends AppCompatDialogFragment {
         });
 
         builder.setView(v)
-                .
+                .setTitle("Edit details")
+                .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!salesmanReason.getText().toString().isEmpty()) {
 
-                        setTitle("Edit details")
-                .
+                            if (strRemarks.equals("Customer Interested but Document Pending") ||
+                                    strRemarks.equals("Customer follow Up")) {
 
-                        setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (!salesmanReason.getText().toString().isEmpty())
-                                    listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString());
+                                if (!dateTextView.getText().toString().equals("DD/MM/YYYY") &&
+                                        !timeTextView.getText().toString().equals("hh:mm")) {
+
+                                    Calendar c = Calendar.getInstance();
+
+                                    c.set(Calendar.DAY_OF_MONTH, alarmDay);
+                                    c.set(Calendar.MONTH, alarmMonth);
+                                    c.set(Calendar.YEAR, alarmYear);
+                                    c.set(Calendar.HOUR_OF_DAY, alarmHour);
+                                    c.set(Calendar.MINUTE, alarmMinute);
+                                    c.set(Calendar.SECOND, 0);
+
+                                    startAlarm(c);
+                                }
+                            } else {
+                                cancelAlarm();
                             }
-                        })
-                .
+                            listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString());
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                        setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        }).
-
-                setCancelable(false);
+                    }
+                })
+                .setCancelable(false);
 
         return builder.create();
+    }
+
+    private void startAlarm(Calendar c) {
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlertReceiver.class);
+        intent.putExtra("name", leadDetails.getName());
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                getContext(), leadDetails.getName().hashCode(), intent, 0);
+
+        if (c.before(Calendar.getInstance())) {
+            c.add(Calendar.DATE, 1);
+        }
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+    }
+
+    private void cancelAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                getContext(), leadDetails.getName().hashCode(), intent, 0);
+
+        alarmManager.cancel(pendingIntent);
     }
 
     public interface OnSalesmanSubmitClickListener {

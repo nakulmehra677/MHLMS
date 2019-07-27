@@ -5,11 +5,11 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.development.mhleadmanagementsystemdev"
-        minSdkVersion 21
+        minSdkVersion 16
         multiDexEnabled true
         targetSdkVersion 28
-        versionCode 12
-        versionName "2.2"
+        versionCode 13
+        versionName "2.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

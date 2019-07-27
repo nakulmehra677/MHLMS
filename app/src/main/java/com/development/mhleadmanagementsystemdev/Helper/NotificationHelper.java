@@ -14,13 +14,18 @@ import android.support.v4.app.NotificationCompat;
 import com.development.mhleadmanagementsystemdev.R;
 
 public class NotificationHelper extends ContextWrapper {
-    public static final String channelID = "channelID";
-    public static final String channelName = "Channel Name";
+    public static String channelID;
+    public static String channelName;
+    private String customerName;
 
     private NotificationManager mManager;
 
-    public NotificationHelper(Context base) {
+    public NotificationHelper(Context base, String customerName) {
         super(base);
+        this.customerName = customerName;
+        channelID = customerName;
+        channelName = customerName;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createChannel();
         }
@@ -43,8 +48,8 @@ public class NotificationHelper extends ContextWrapper {
 
     public NotificationCompat.Builder getChannelNotification() {
         return new NotificationCompat.Builder(getApplicationContext(), channelID)
-                .setContentTitle("Alarm!")
-                .setContentText("Your AlarmManager is working.")
+                .setContentTitle("Reminder!")
+                .setContentText("You got a reminder to work on the lead of " + customerName)
                 .setSmallIcon(R.mipmap.app_icon);
     }
 }

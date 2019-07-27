@@ -193,27 +193,34 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 salesPersonNameList.add(user.getUserName());
             }
 
-            EditLeadDetailsFragment.newInstance(salesPersonNameList, new EditLeadDetailsFragment.OnSubmitClickListener() {
-                @Override
-                public void onSubmitClicked(String dialogAssignedTo, String telecallerReason) {
-                    leadDetails.setAssignedTo(dialogAssignedTo);
-                    leadDetails.setTelecallerRemarks(telecallerReason);
+            EditLeadDetailsFragment.newInstance(
+                    leadDetails, salesPersonNameList, new EditLeadDetailsFragment.OnSubmitClickListener() {
+                        @Override
+                        public void onSubmitClicked(String dialogAssignedTo, LeadDetails dialogLeadDetails) {
+                            dialogLeadDetails.setAssignedTo(dialogAssignedTo);
 
-                    String strAssignedToUId = null;
-                    for (UserDetails userDetails : userList) {
-                        if (userDetails.getUserName().equals(dialogAssignedTo)) {
-                            strAssignedToUId = userDetails.getuId();
+                            String strAssignedToUId = null;
+                            for (UserDetails userDetails : userList) {
+                                if (userDetails.getUserName().equals(dialogAssignedTo)) {
+                                    strAssignedToUId = userDetails.getuId();
+                                }
+                            }
+                            dialogLeadDetails.setAssignedToUId(strAssignedToUId);
+
+                            progress = new ProgressDialog(context);
+                            progress.setMessage("Loading..");
+                            progress.setCancelable(false);
+                            progress.setCanceledOnTouchOutside(false);
+                            progress.show();
+                            
+                            firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), dialogLeadDetails);
                         }
-                    }
-                    leadDetails.setAssignedToUId(strAssignedToUId);
-                    firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), leadDetails);
-                }
-            }).show(getFragmentManager(), "promo");
+                    }).show(getFragmentManager(), "promo");
         }
     }
 
     private void openSalesmanFragment() {
-        SalesmanEditLeadDetailsFragment.newInstance(new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
+        SalesmanEditLeadDetailsFragment.newInstance(leadDetails, new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
             @Override
             public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason) {
 
@@ -252,7 +259,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             public void onLeadUpdated() {
                 Toast.makeText(context, R.string.lead_update, Toast.LENGTH_SHORT).show();
                 setLayoutFields();
-                progress.dismiss();
+                if (progress.isShowing())
+                    progress.dismiss();
             }
 
             @Override

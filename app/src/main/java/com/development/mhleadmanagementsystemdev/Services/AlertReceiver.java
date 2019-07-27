@@ -10,7 +10,11 @@ import com.development.mhleadmanagementsystemdev.Helper.NotificationHelper;
 public class AlertReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        NotificationHelper notificationHelper = new NotificationHelper(context);
+
+        String customerName = intent.getStringExtra("name");
+
+        NotificationHelper notificationHelper = new NotificationHelper(context, customerName);
         NotificationCompat.Builder nb = notificationHelper.getChannelNotification();
-        notificationHelper.getManager().notify(1, nb.build());    }
+        notificationHelper.getManager().notify(customerName.hashCode(), nb.build());
+    }
 }

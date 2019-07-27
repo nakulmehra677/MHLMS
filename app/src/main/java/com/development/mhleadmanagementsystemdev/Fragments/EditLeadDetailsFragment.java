@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.R;
 
 import java.util.ArrayList;
@@ -24,17 +25,25 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
     private ArrayAdapter<CharSequence> assignedToAdapter;
     private Spinner assignedToSpinner;
     List salesPersonList = new ArrayList();
+
+    private EditText customerName;
+    private EditText loanAmount;
+    private EditText contactNumber;
     private EditText telecallerReason;
 
+    private LeadDetails leadDetails;
 
-    public EditLeadDetailsFragment(List arrayList, OnSubmitClickListener listener) {
+
+    public EditLeadDetailsFragment(LeadDetails leadDetails, List arrayList, OnSubmitClickListener listener) {
+        this.leadDetails = leadDetails;
         this.listener = listener;
         this.salesPersonList = arrayList;
     }
 
-    public static EditLeadDetailsFragment newInstance(List arrayList, OnSubmitClickListener listener) {
+    public static EditLeadDetailsFragment newInstance(
+            LeadDetails leadDetails, List arrayList, OnSubmitClickListener listener) {
 
-        EditLeadDetailsFragment f = new EditLeadDetailsFragment(arrayList, listener);
+        EditLeadDetailsFragment f = new EditLeadDetailsFragment(leadDetails, arrayList, listener);
         return f;
     }
 
@@ -43,8 +52,16 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_telecaller_edit_lead_details_, null);
 
+        customerName = v.findViewById(R.id.customer_name);
+        loanAmount = v.findViewById(R.id.loan_amount);
+        contactNumber = v.findViewById(R.id.contact_number);
         assignedToSpinner = v.findViewById(R.id.assign_to);
         telecallerReason = v.findViewById(R.id.telecaller_reason);
+
+        customerName.setText(leadDetails.getName());
+        loanAmount.setText(leadDetails.getLoanAmount());
+        contactNumber.setText(leadDetails.getContactNumber());
+        telecallerReason.setText(leadDetails.getTelecallerRemarks());
 
         // AssignedTo Spinner
         assignedToAdapter = new ArrayAdapter<CharSequence>(
@@ -52,6 +69,9 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
                 android.R.layout.simple_spinner_item, salesPersonList);
         assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         assignedToSpinner.setAdapter(assignedToAdapter);
+
+        assignedToSpinner.setSelection(salesPersonList.indexOf(leadDetails.getAssignedTo()));
+
         assignedToSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
@@ -69,8 +89,14 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!telecallerReason.getText().toString().isEmpty())
-                            listener.onSubmitClicked(strAssignedTo, telecallerReason.getText().toString());
+                        if (!telecallerReason.getText().toString().isEmpty()) {
+                            leadDetails.setName(customerName.getText().toString());
+                            leadDetails.setLoanAmount(loanAmount.getText().toString());
+                            leadDetails.setContactNumber(contactNumber.getText().toString());
+                            leadDetails.setTelecallerRemarks(telecallerReason.getText().toString());
+
+                            listener.onSubmitClicked(strAssignedTo, leadDetails);
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -84,6 +110,6 @@ public class EditLeadDetailsFragment extends AppCompatDialogFragment {
     }
 
     public interface OnSubmitClickListener {
-        void onSubmitClicked(String dialogAssignedTo, String telecallerReason);
+        void onSubmitClicked(String dialogAssignedTo, LeadDetails leadDetails);
     }
 }
