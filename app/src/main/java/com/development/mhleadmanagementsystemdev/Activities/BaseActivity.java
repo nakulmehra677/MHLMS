@@ -1,23 +1,17 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 public class BaseActivity extends AppCompatActivity {
 
     protected ProgressDialog progress;
-    public static String sharedPreferenceUserDetails = "shared_preference_user_details";
-    public static String sharedPreferenceUserName = "shared_preference_user_name";
-    public static String sharedPreferenceUserType = "shared_preference_user_type";
-    public static String sharedPreferenceUserLocation = "shared_preference_user_location";
-    public static String sharedPreferenceUserKey = "shared_preference_user_key";
-    public static String sharedPreferenceUserUId = "shared_preference_user_uid";
 
     //protected boolean isAdmin = false;
 
@@ -42,8 +36,8 @@ public class BaseActivity extends AppCompatActivity {
         progress.dismiss();
     }
 
-    public static void hideKeyboard(Activity activity) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    public static void hideKeyboard(AppCompatActivity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();
         //If no view currently has focus, create a new one, just so we can grab a window token from it

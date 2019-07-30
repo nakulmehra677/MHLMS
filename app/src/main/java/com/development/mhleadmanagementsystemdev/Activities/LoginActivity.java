@@ -1,110 +1,104 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
-import com.development.mhleadmanagementsystemdev.Helper.FirebaseAuthenticationHelper;
-import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchDeviceTokenListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsByUId;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnSetCurrentDeviceTokenListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnUserLoginListener;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.development.mhleadmanagementsystemdev.Firebase.Authentication;
+import com.development.mhleadmanagementsystemdev.Firebase.Firestore;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnGetUserDetails;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnUserLogin;
 import com.development.mhleadmanagementsystemdev.Managers.ProfileManager;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
-import com.development.mhleadmanagementsystemdev.Services.ReminderService;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
-import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
 public class LoginActivity extends BaseActivity {
 
     private EditText mail, password;
-    private Button loginButton;
-    private String strMail, strPassword;
     private UserDetails currentUserDetails;
     private ScrollView scrollView;
 
-    private FirebaseAuthenticationHelper firebaseAuthenticationHelper;
-    private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private Authentication authentication;
+    private Firestore firestore;
     private ProfileManager profileManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        //startService(new Intent(this, ReminderService.class));
 
         showProgressDialog("Loading..", this);
 
         scrollView = findViewById(R.id.scrollLayout);
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
-        loginButton = findViewById(R.id.login);
 
-        firebaseAuthenticationHelper = new FirebaseAuthenticationHelper(this);
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
+        Log.d("API level", String.valueOf(Build.VERSION.SDK_INT));
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            checkLogin();
+        } else
+            checkUpdate();
+
+
+
+        authentication = new Authentication(this);
+        firestore = new Firestore(this);
         profileManager = new ProfileManager();
+    }
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideKeyboard(LoginActivity.this);
-                if (isNetworkConnected()) {
-                    getDetail();
-                    if (!strMail.isEmpty() && !strPassword.isEmpty()) {
-                        showProgressDialog("Loading..", LoginActivity.this);
-                        firebaseAuthenticationHelper.loginUser(onUserLoginListener(), strMail, strPassword);
-                    } else
-                        showToastMessage(R.string.fill_all_fields);
+    public void loginButton(View view) {
+        hideKeyboard(LoginActivity.this);
 
-                } else
-                    showToastMessage(R.string.no_internet);
-            }
-        });
+        if (isNetworkConnected()) {
+
+            String strMail = mail.getText().toString();
+            String strPassword = password.getText().toString();
+
+            if (!strMail.isEmpty() && !strPassword.isEmpty()) {
+                showProgressDialog("Loading..", LoginActivity.this);
+                authentication.loginUser(onUserLogin(), strMail, strPassword);
+
+            } else
+                showToastMessage(R.string.fill_all_fields);
+
+        } else
+            showToastMessage(R.string.no_internet);
     }
 
     private void checkLogin() {
+        profileManager = new ProfileManager();
         if (profileManager.checkUserExist()) {
-            firebaseDatabaseHelper.getUsersByUId(onFetchUserDetailsByUId(), profileManager.getuId());
+            firestore.getUsers(onGetUserDetails(), profileManager.getuId());
         } else {
             dismissProgressDialog();
             scrollView.setVisibility(View.VISIBLE);
         }
     }
 
-    private void getDetail() {
-        strMail = mail.getText().toString();
-        strPassword = password.getText().toString();
-    }
-
-    private OnUserLoginListener onUserLoginListener() {
-        return new OnUserLoginListener() {
+    private OnUserLogin onUserLogin() {
+        return new OnUserLogin() {
             @Override
             public void onSuccess(String uId) {
-                Log.i("UID", uId);
                 profileManager = new ProfileManager();
-                firebaseDatabaseHelper.getUsersByUId(onFetchUserDetailsByUId(), uId);
+                firestore.getUsers(onGetUserDetails(), uId);
             }
 
             @Override
@@ -115,22 +109,22 @@ public class LoginActivity extends BaseActivity {
         };
     }
 
-    private OnFetchUserDetailsByUId onFetchUserDetailsByUId() {
-        return new OnFetchUserDetailsByUId() {
+    private OnGetUserDetails onGetUserDetails() {
+        return new OnGetUserDetails() {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 String strDeviceToken = FirebaseInstanceId.getInstance().getToken();
 
-                if (userDetails.getDeviceToken() == null || !userDetails.getDeviceToken().equals(strDeviceToken)) {
+                if (userDetails.getDeviceToken() == null ||
+                        !userDetails.getDeviceToken().equals(strDeviceToken)) {
                     userDetails.setDeviceToken(strDeviceToken);
 
-                    firebaseDatabaseHelper.setCurrentDeviceToken(
+                    firestore.setCurrentDeviceToken(
                             strDeviceToken, profileManager.getuId());
                 }
-
                 currentUserDetails = userDetails;
 
-                storeInSharedPrefernces();
+                storeInSharedPreferences();
                 dismissProgressDialog();
                 showToastMessage(R.string.logged_in);
 
@@ -141,6 +135,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void fail() {
                 profileManager.signOut();
+                firestore.setCurrentDeviceToken("", profileManager.getuId());
             }
         };
     }
@@ -149,7 +144,10 @@ public class LoginActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (isNetworkConnected()) {
-            checkUpdate();
+            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                checkLogin();
+            } else
+                isUpdating();
         } else {
             showToastMessage(R.string.no_internet);
             finish();
@@ -173,45 +171,73 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private void storeInSharedPrefernces() {
-        SharedPreferences sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
+    private void storeInSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
+
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(sharedPreferenceUserName, currentUserDetails.getUserName());
-        editor.putString(sharedPreferenceUserType, currentUserDetails.getUserType());
-        editor.putString(sharedPreferenceUserLocation, currentUserDetails.getLocation());
-        editor.putString(sharedPreferenceUserKey, currentUserDetails.getKey());
-        editor.putString(sharedPreferenceUserUId, currentUserDetails.getuId());
+        editor.putString(getString(R.string.SH_user_name), currentUserDetails.getUserName());
+        editor.putString(getString(R.string.SH_user_type), currentUserDetails.getUserType());
+        editor.putString(getString(R.string.SH_user_location), currentUserDetails.getLocation());
+        editor.putString(getString(R.string.SH_user_key), currentUserDetails.getKey());
+        editor.putString(getString(R.string.SH_user_uid), currentUserDetails.getuId());
 
         editor.commit();
     }
 
     private void checkUpdate() {
-        final AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(this);
+        final AppUpdateManager manager = AppUpdateManagerFactory.create(this);
 
-        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+        Task<AppUpdateInfo> appUpdateInfoTask = manager.getAppUpdateInfo();
 
         appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
             @Override
             public void onSuccess(AppUpdateInfo appUpdateInfo) {
                 if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                        && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                        && appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)) {
                     if (progress.isShowing())
                         progress.dismiss();
-                    Log.i("UPDATE", "YESS");
+                    Log.i("UPDATE", "YES");
                     try {
-                        appUpdateManager.startUpdateFlowForResult(
+                        manager.startUpdateFlowForResult(
                                 appUpdateInfo,
-                                AppUpdateType.IMMEDIATE,
+                                IMMEDIATE,
                                 LoginActivity.this,
                                 17362);
                     } catch (IntentSender.SendIntentException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    Log.i("UPDATE", "NOO");
+                    Log.i("UPDATE", "NO");
                     checkLogin();
                 }
             }
         });
+    }
+
+    private void isUpdating() {
+        final AppUpdateManager manager = AppUpdateManagerFactory.create(this);
+
+        Task<AppUpdateInfo> appUpdateInfoTask = manager.getAppUpdateInfo();
+
+        manager.getAppUpdateInfo().addOnSuccessListener(
+                new OnSuccessListener<AppUpdateInfo>() {
+                    @Override
+                    public void onSuccess(AppUpdateInfo appUpdateInfo) {
+                        if (appUpdateInfo.updateAvailability()
+                                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                            // If an in-app update is already running, resume the update.
+                            try {
+                                manager.startUpdateFlowForResult(
+                                        appUpdateInfo,
+                                        IMMEDIATE,
+                                        LoginActivity.this,
+                                        17362);
+                            } catch (IntentSender.SendIntentException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
     }
 }

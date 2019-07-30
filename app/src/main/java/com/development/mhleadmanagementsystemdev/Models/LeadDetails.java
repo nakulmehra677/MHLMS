@@ -3,10 +3,27 @@ package com.development.mhleadmanagementsystemdev.Models;
 public class LeadDetails {
     String name, contactNumber, loanAmount, loanType, propertyType, employment,
             employmentType, location, salesmanRemarks, date, assignedTo, status, key,
-            assigner, telecallerRemarks, assignedToUId, assignerUId, salesmanReason, time;
+            assigner, telecallerRemarks, assignedToUId, assignerUId, salesmanReason,
+            time, assignDate, assignTime;
 
     public String getName() {
         return name;
+    }
+
+    public String getAssignDate() {
+        return assignDate;
+    }
+
+    public void setAssignDate(String assignDate) {
+        this.assignDate = assignDate;
+    }
+
+    public String getAssignTime() {
+        return assignTime;
+    }
+
+    public void setAssignTime(String assignTime) {
+        this.assignTime = assignTime;
     }
 
     public String getContactNumber() {
@@ -169,7 +186,7 @@ public class LeadDetails {
                        String employmentType, String loanType, String propertyType, String location,
                        String telecallerRemarks, String date, String assignedTo, String status,
                        String assigner, String key, String salesmanRemarks, String assignedToUId,
-                       String assignerUId, String salesmanReason, String time) {
+                       String assignerUId, String salesmanReason, String time, String assignDate, String assignTime) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.propertyType = propertyType;
@@ -189,5 +206,7 @@ public class LeadDetails {
         this.assignedToUId = assignedToUId;
         this.assignerUId = assignerUId;
         this.time = time;
+        this.assignDate = assignDate;
+        this.assignTime = assignTime;
     }
 }

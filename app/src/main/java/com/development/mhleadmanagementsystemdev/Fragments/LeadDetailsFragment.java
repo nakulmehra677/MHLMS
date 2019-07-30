@@ -8,29 +8,31 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.design.widget.BottomSheetDialogFragment;
+
+import androidx.annotation.NonNull;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import com.development.mhleadmanagementsystemdev.Firebase.Firestore;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUsersListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUpdateLeadListener;
+import com.development.mhleadmanagementsystemdev.Managers.TimeManager;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserList;
 import com.development.mhleadmanagementsystemdev.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.sharedPreferenceUserDetails;
-import static com.development.mhleadmanagementsystemdev.Activities.BaseActivity.sharedPreferenceUserType;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
@@ -52,6 +54,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView assignedOn;
     private TextView assignedAt;
     private TextView customerRemarks;
+    private TextView workDate;
+    private TextView workTime;
 
     private Button button;
     private SharedPreferences sharedPreferences;
@@ -61,7 +65,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
     private LeadDetails leadDetails;
     private String currentUserType;
-    private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private Firestore firestore;
 
     private String customerNotInterested = "Customer Not Interested";
     private String documentPicked = "Document Picked";
@@ -82,10 +86,11 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
 
-        sharedPreferences = this.getActivity().getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
-        currentUserType = sharedPreferences.getString(sharedPreferenceUserType, "Salesman");
+        sharedPreferences = this.getActivity().getSharedPreferences(
+                getString(R.string.SH_user_details), Activity.MODE_PRIVATE);
+        currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
 
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper();
+        firestore = new Firestore();
 
         name = view.findViewById(R.id.customer_name);
         loan = view.findViewById(R.id.loan_amount);
@@ -101,8 +106,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         salesmanRemarks = view.findViewById(R.id.salesman_remarks);
         customerRemarks = view.findViewById(R.id.customer_remarks);
         status = view.findViewById(R.id.status);
-        assignedOn = view.findViewById(R.id.date);
-        assignedAt = view.findViewById(R.id.time);
+        workDate = view.findViewById(R.id.date);
+        workTime = view.findViewById(R.id.time);
+        assignedOn = view.findViewById(R.id.assign_date);
+        assignedAt = view.findViewById(R.id.assign_time);
 
         assignedToLayout = view.findViewById(R.id.assigned_to_layout);
         assignerLayout = view.findViewById(R.id.assigner_layout);
@@ -124,7 +131,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
 
-                        firebaseDatabaseHelper.fetchSalesPersons(
+                        firestore.fetchSalesPersons(
                                 onFetchSalesPersonListListener(), leadDetails.getLocation());
                     } else {
                         openSalesmanFragment();
@@ -161,8 +168,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         salesmanRemarks.setText(leadDetails.getSalesmanReason());
         customerRemarks.setText(leadDetails.getSalesmanRemarks());
         status.setText(leadDetails.getStatus());
-        assignedOn.setText(leadDetails.getDate());
-        assignedAt.setText(leadDetails.getTime());
+        workDate.setText(leadDetails.getDate());
+        workTime.setText(leadDetails.getTime());
+        assignedOn.setText(leadDetails.getAssignDate());
+        assignedAt.setText(leadDetails.getAssignTime());
     }
 
     @Override
@@ -193,11 +202,20 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 salesPersonNameList.add(user.getUserName());
             }
 
-            EditLeadDetailsFragment.newInstance(
-                    leadDetails, salesPersonNameList, new EditLeadDetailsFragment.OnSubmitClickListener() {
+            TelecallerEditLeadFragment.newInstance(
+                    leadDetails, salesPersonNameList, new TelecallerEditLeadFragment.OnSubmitClickListener() {
                         @Override
                         public void onSubmitClicked(String dialogAssignedTo, LeadDetails dialogLeadDetails) {
-                            dialogLeadDetails.setAssignedTo(dialogAssignedTo);
+
+                            leadDetails = dialogLeadDetails;
+                            leadDetails.setAssignedTo(dialogAssignedTo);
+
+                            HashMap<String, String> time = new HashMap<>();
+                            TimeManager timeManager = new TimeManager();
+                            time = timeManager.getTime();
+
+                            leadDetails.setDate(time.get("date"));
+                            leadDetails.setTime(time.get("time"));
 
                             String strAssignedToUId = null;
                             for (UserDetails userDetails : userList) {
@@ -205,24 +223,31 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                                     strAssignedToUId = userDetails.getuId();
                                 }
                             }
-                            dialogLeadDetails.setAssignedToUId(strAssignedToUId);
+                            leadDetails.setAssignedToUId(strAssignedToUId);
 
                             progress = new ProgressDialog(context);
                             progress.setMessage("Loading..");
                             progress.setCancelable(false);
                             progress.setCanceledOnTouchOutside(false);
                             progress.show();
-                            
-                            firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), dialogLeadDetails);
+
+                            firestore.updateLeadDetails(onUpdateLeadListener(), dialogLeadDetails);
                         }
                     }).show(getFragmentManager(), "promo");
         }
     }
 
     private void openSalesmanFragment() {
-        SalesmanEditLeadDetailsFragment.newInstance(leadDetails, new SalesmanEditLeadDetailsFragment.OnSalesmanSubmitClickListener() {
+        SalesmanEditLeadFragment.newInstance(leadDetails, new SalesmanEditLeadFragment.OnSalesmanSubmitClickListener() {
             @Override
             public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason) {
+
+                HashMap<String, String> time = new HashMap<>();
+                TimeManager timeManager = new TimeManager();
+                time = timeManager.getTime();
+
+                leadDetails.setDate(time.get("date"));
+                leadDetails.setTime(time.get("time"));
 
                 leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
                 leadDetails.setSalesmanReason(dialogSalesmanReason);
@@ -248,7 +273,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 progress.setCanceledOnTouchOutside(false);
                 progress.show();
 
-                firebaseDatabaseHelper.updateLeadDetails(onUpdateLeadListener(), leadDetails);
+                firestore.updateLeadDetails(onUpdateLeadListener(), leadDetails);
             }
         }).show(getFragmentManager(), "promo");
     }

@@ -3,9 +3,9 @@ package com.development.mhleadmanagementsystemdev.Services;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
-import com.development.mhleadmanagementsystemdev.Helper.NotificationHelper;
+import com.development.mhleadmanagementsystemdev.Firebase.NotificationHelper;
 
 public class AlertReceiver extends BroadcastReceiver {
     @Override

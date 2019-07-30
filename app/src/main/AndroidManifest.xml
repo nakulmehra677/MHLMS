@@ -45,8 +45,9 @@
 
         <receiver android:name=".Services.AlertReceiver" />
 
-        <service android:name=".Services.ReminderService"
-            android:exported="false"/>
+        <service
+            android:name=".Services.ReminderService"
+            android:exported="false" />
     </application>
 
 </manifest>

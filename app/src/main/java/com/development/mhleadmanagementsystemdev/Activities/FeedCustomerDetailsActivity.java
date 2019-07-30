@@ -1,7 +1,5 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -16,18 +14,22 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
-import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.development.mhleadmanagementsystemdev.Firebase.Firestore;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUsersListListener;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
+import com.development.mhleadmanagementsystemdev.Managers.TimeManager;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserList;
 import com.development.mhleadmanagementsystemdev.R;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FeedCustomerDetailsActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
@@ -48,7 +50,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     private RadioGroup selfEmploymentTypeRadioGroup;
 
     private LeadDetails leadDetails;
-    private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private Firestore firestore;
     private SharedPreferences sharedPreferences;
 
     private List<UserDetails> salesPersonList;
@@ -71,8 +73,9 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         propertyTypeLayout = findViewById(R.id.property_type_layout);
         selfEmploymentTypeRadioGroup = findViewById(R.id.self_employment_type_radio_group);
 
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
-        sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
+        firestore = new Firestore(this);
+        sharedPreferences = getSharedPreferences(
+                getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
 
         initializeLoanTypeSpinner();
         initializeLocationSpinner();
@@ -230,7 +233,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         progress.setCanceledOnTouchOutside(false);
         progress.show();*/
 
-        firebaseDatabaseHelper.fetchSalesPersons(
+        firestore.fetchSalesPersons(
                 onFetchUsersListListener(), strLocation);
     }
 
@@ -249,14 +252,16 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     }
 
     private void uploadDetails() {
-        AlertDialog alertDialog = new AlertDialog.Builder(this)
+        androidx.appcompat.app.AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setMessage("Are you sure you want to upload the details?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.i("Fields filled", "All the fields are filled");
 
-                        getDate();
-                        makeObject();
+                        HashMap<String, String> time = new HashMap<>();
+                        TimeManager timeManager = new TimeManager();
+                        time = timeManager.getTime();
+                        makeObject(time);
 
                         progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
                         progress.setMessage("Uploading..");
@@ -264,7 +269,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
 
-                        firebaseDatabaseHelper.uploadCustomerDetails(onUploadCustomerdetails(), leadDetails);
+                        firestore.uploadCustomerDetails(onUploadCustomerdetails(), leadDetails);
                     }
                 })
 
@@ -284,22 +289,14 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         strRemarks = remarks.getText().toString().trim();
     }
 
-    private void getDate() {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MMM-yy");
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-
-        strDate = dateFormatter.format(new Date());
-        strTime = timeFormatter.format(new Date());
-    }
-
-    private void makeObject() {
-        String assigner = sharedPreferences.getString(sharedPreferenceUserName, "");
-        String assignerUId = sharedPreferences.getString(sharedPreferenceUserUId, "");
+    private void makeObject(Map<String, String> time) {
+        String assigner = sharedPreferences.getString(getString(R.string.SH_user_name), "");
+        String assignerUId = sharedPreferences.getString(getString(R.string.SH_user_uid), "");
 
         leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount, strEmployment,
-                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks, strDate,
+                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks, "None",
                 strAssignTo, "Active", assigner, "", "None",
-                strAssignToUId, assignerUId, "None", strTime);
+                strAssignToUId, assignerUId, "None", "None", time.get("date"), time.get("time"));
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {

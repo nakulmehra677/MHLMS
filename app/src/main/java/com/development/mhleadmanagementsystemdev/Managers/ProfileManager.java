@@ -1,14 +1,8 @@
 package com.development.mhleadmanagementsystemdev.Managers;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-
 import com.development.mhleadmanagementsystemdev.Activities.BaseActivity;
-import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsListener;
+import com.development.mhleadmanagementsystemdev.Firebase.Firestore;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
-import com.development.mhleadmanagementsystemdev.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -16,7 +10,7 @@ public class ProfileManager extends BaseActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private Firestore firestore;
     private UserDetails currentUserDetails;
     private String uId;
 

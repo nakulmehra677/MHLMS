@@ -1,37 +1,37 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.support.v7.widget.SearchView;
 
-import com.development.mhleadmanagementsystemdev.Adapters.LeadListItemAdapter;
-import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.development.mhleadmanagementsystemdev.Adapters.LeadsItemAdapter;
+import com.development.mhleadmanagementsystemdev.Firebase.Firestore;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
-import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUserDetailsByUId;
+import com.development.mhleadmanagementsystemdev.Interfaces.OnGetUserDetails;
 import com.development.mhleadmanagementsystemdev.Managers.ProfileManager;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -45,14 +45,14 @@ public class LeadsListActivity extends BaseActivity {
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ProgressBar progressBar, firstPageProgressBar;
 
-    private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private Firestore firestore;
 
     private SharedPreferences sharedPreferences;
     private ProfileManager profileManager;
     private Fragment fragment = null;
 
     private List<LeadDetails> leadDetailsList = new ArrayList<>();
-    private LeadListItemAdapter adapter;
+    private LeadsItemAdapter adapter;
     private boolean isSrolling;
     private boolean isLastItemFetched;
     private DocumentSnapshot bottomVisibleItem = null;
@@ -76,9 +76,9 @@ public class LeadsListActivity extends BaseActivity {
         //showProgressDialog("Loading..", this);
 
         profileManager = new ProfileManager();
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper(this);
+        firestore = new Firestore(this);
 
-        firebaseDatabaseHelper.getUsersByUId(onFetchUserDetailsByUId(), profileManager.getuId());
+        firestore.getUsers(onFetchUserDetailsByUId(), profileManager.getuId());
 
         //sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
 
@@ -178,9 +178,9 @@ public class LeadsListActivity extends BaseActivity {
         else
             s = "Admin";
 
-        Log.i("drfgtbrdgtbrgt","rrrrrrrrr");
+        Log.i("drfgtbrdgtbrgt", "rrrrrrrrr");
 
-        firebaseDatabaseHelper.getLeadList(onFetchLeadListListener(),
+        firestore.getLeadList(onFetchLeadListListener(),
                 s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem,
                 locationFilter, assignerFilter, assigneeFilter, loanTypeFilter, statusFilter);
     }
@@ -254,7 +254,7 @@ public class LeadsListActivity extends BaseActivity {
             case R.id.logout:
                 if (isNetworkConnected()) {
 
-                    AlertDialog.Builder build = new AlertDialog.Builder(LeadsListActivity.this);
+                    AlertDialog.Builder build = new androidx.appcompat.app.AlertDialog.Builder(LeadsListActivity.this);
                     build.setMessage("Are you sure you want to logout?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
@@ -271,7 +271,7 @@ public class LeadsListActivity extends BaseActivity {
 
                         }
                     });
-                    AlertDialog alert = build.create();
+                    androidx.appcompat.app.AlertDialog alert = build.create();
                     alert.show();
 
                 } else
@@ -283,12 +283,12 @@ public class LeadsListActivity extends BaseActivity {
     }
 
 
-    private OnFetchUserDetailsByUId onFetchUserDetailsByUId() {
-        return new OnFetchUserDetailsByUId() {
+    private OnGetUserDetails onFetchUserDetailsByUId() {
+        return new OnGetUserDetails() {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 profileManager.setCurrentUserDetails(userDetails);
-                adapter = new LeadListItemAdapter(leadDetailsList, LeadsListActivity.this, profileManager.getCurrentUserType());
+                adapter = new LeadsItemAdapter(leadDetailsList, LeadsListActivity.this, profileManager.getCurrentUserType());
                 recyclerView.setAdapter(adapter);
                 setLayoutByUser();
             }
@@ -307,7 +307,7 @@ public class LeadsListActivity extends BaseActivity {
                 if (l.size() < 20)
                     isLastItemFetched = true;
 
-                Log.i("drfgtbrdgtbrgt","rrrrrrrrr");
+                Log.i("drfgtbrdgtbrgt", "rrrrrrrrr");
                 bottomVisibleItem = lastVisible;
 
                 leadDetailsList.addAll(l);
@@ -361,12 +361,6 @@ public class LeadsListActivity extends BaseActivity {
             firstPageProgressBar.setVisibility(View.VISIBLE);
 
             fetchLeads();
-            Log.i("TAGGGG_assignerFilter", assignerFilter);
-            Log.i("TAGGGG_assigneeFilter", assigneeFilter);
-            Log.i("TAGGGG_locationFilter", locationFilter);
-            Log.i("TAGGGG_statusFilter", statusFilter);
-            Log.i("TAGGGG_loanTypeFilter", loanTypeFilter);
-
         }
     }
 }

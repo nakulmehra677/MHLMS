@@ -3,19 +3,7 @@ package com.development.mhleadmanagementsystemdev.Fragments;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-
-import java.util.Calendar;
-
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.text.format.DateFormat;
-import android.util.Log;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
+import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
 

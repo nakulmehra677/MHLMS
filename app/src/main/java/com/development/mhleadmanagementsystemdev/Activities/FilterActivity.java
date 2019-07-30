@@ -1,20 +1,18 @@
 package com.development.mhleadmanagementsystemdev.Activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Filter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.development.mhleadmanagementsystemdev.Helper.FirebaseDatabaseHelper;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.development.mhleadmanagementsystemdev.Firebase.Firestore;
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUsersListListener;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserList;
@@ -48,7 +46,7 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
     private String strLoanType = "All";
     private String currentUserType;
 
-    private FirebaseDatabaseHelper firebaseDatabaseHelper;
+    private Firestore firestore;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -68,8 +66,9 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
 
         showProgressDialog("Loading...", this);
 
-        sharedPreferences = getSharedPreferences(sharedPreferenceUserDetails, Activity.MODE_PRIVATE);
-        currentUserType = sharedPreferences.getString(sharedPreferenceUserType, "Salesman");
+        sharedPreferences = getSharedPreferences(
+                getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
+        currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
 
         if (currentUserType.equals(getString(R.string.salesman))) {
             locationFilterLayout.setVisibility(View.GONE);
@@ -78,7 +77,7 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
             assignerFilterLayout.setVisibility(View.GONE);
         }
 
-        firebaseDatabaseHelper = new FirebaseDatabaseHelper();
+        firestore = new Firestore();
 
         initializeLocationSpinner();
         initializeLoanTypeSpinner();
@@ -104,11 +103,11 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
     }
 
     private void getAssignerList() {
-        firebaseDatabaseHelper.fetchTelecallers(onFetchAssignerListListener(), "All");
+        firestore.fetchTelecallers(onFetchAssignerListListener(), "All");
     }
 
     private void getAssigneeList() {
-        firebaseDatabaseHelper.fetchSalesPersons(onFetchAssigneeListListener(), "All");
+        firestore.fetchSalesPersons(onFetchAssigneeListListener(), "All");
     }
 
 
