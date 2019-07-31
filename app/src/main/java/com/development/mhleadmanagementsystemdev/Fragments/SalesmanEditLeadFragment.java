@@ -9,6 +9,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,6 +25,7 @@ import android.widget.TimePicker;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.development.mhleadmanagementsystemdev.Managers.Alarm;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
 import com.development.mhleadmanagementsystemdev.R;
 import com.development.mhleadmanagementsystemdev.Services.AlertReceiver;
@@ -165,6 +167,8 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if (!salesmanReason.getText().toString().isEmpty()) {
 
+                            Alarm alarm = new Alarm(getContext());
+
                             if (strRemarks.equals("Customer Interested but Document Pending") ||
                                     strRemarks.equals("Customer follow Up")) {
 
@@ -180,10 +184,10 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                                     c.set(Calendar.MINUTE, alarmMinute);
                                     c.set(Calendar.SECOND, 0);
 
-                                    startAlarm(c);
+                                    alarm.startAlarm(c, leadDetails.getName());
                                 }
                             } else {
-                                cancelAlarm();
+                                alarm.cancelAlarm(leadDetails.getName());
                             }
                             listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString());
                         }
@@ -198,30 +202,6 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                 .setCancelable(false);
 
         return builder.create();
-    }
-
-    private void startAlarm(Calendar c) {
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getContext(), AlertReceiver.class);
-        intent.putExtra("name", leadDetails.getName());
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                getContext(), leadDetails.getName().hashCode(), intent, 0);
-
-        if (c.before(Calendar.getInstance())) {
-            c.add(Calendar.DATE, 1);
-        }
-
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
-    }
-
-    private void cancelAlarm() {
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getContext(), AlertReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                getContext(), leadDetails.getName().hashCode(), intent, 0);
-
-        alarmManager.cancel(pendingIntent);
     }
 
     public interface OnSalesmanSubmitClickListener {

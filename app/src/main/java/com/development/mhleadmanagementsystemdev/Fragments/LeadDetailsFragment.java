@@ -5,12 +5,17 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
+import com.development.mhleadmanagementsystemdev.Managers.CallRecord;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -33,6 +38,8 @@ import com.development.mhleadmanagementsystemdev.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static android.Manifest.permission.CALL_PHONE;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
@@ -57,7 +64,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView workDate;
     private TextView workTime;
 
-    private Button button;
+    private Button button, callButton;
     private SharedPreferences sharedPreferences;
     private LinearLayout assignedToLayout, assignerLayout;
     private ProgressDialog progress;
@@ -114,8 +121,24 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedToLayout = view.findViewById(R.id.assigned_to_layout);
         assignerLayout = view.findViewById(R.id.assigner_layout);
         button = view.findViewById(R.id.edit_lead_details);
+        callButton = view.findViewById(R.id.call_button);
 
         setLayoutFields();
+
+        callButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CallRecord record = new CallRecord(getContext());
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                
+                callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
+                if (ContextCompat.checkSelfPermission(getContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    startActivity(callIntent);
+                } else {
+                    requestPermissions(new String[]{CALL_PHONE}, 1);
+                }
+            }
+        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

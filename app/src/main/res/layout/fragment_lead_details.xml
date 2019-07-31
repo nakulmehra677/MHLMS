@@ -54,15 +54,26 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0"
                     android:text="Contact Number : " />
 
                 <TextView
                     android:id="@+id/contact_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:autoLink="phone"
-                    android:linksClickable="true"
+                    android:layout_weight="1"
                     android:textColor="@color/coloBlack" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_weight="0"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_call_white_24dp"
+                    android:text="Call"
+                    android:id="@+id/call_button"
+                    android:textColor="@color/colorWhite"
+                    android:padding="8dp"
+                    android:background="@color/colorPrimaryDark" />
 
             </LinearLayout>
 

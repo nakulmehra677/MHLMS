@@ -294,9 +294,10 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String assignerUId = sharedPreferences.getString(getString(R.string.SH_user_uid), "");
 
         leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount, strEmployment,
-                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks, "None",
-                strAssignTo, "Active", assigner, "", "None",
-                strAssignToUId, assignerUId, "None", "None", time.get("date"), time.get("time"));
+                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks,
+                time.get("date"), strAssignTo, "Active", assigner, "",
+                "None", strAssignToUId, assignerUId,
+                "None", time.get("time"), time.get("date"), time.get("time"));
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {
