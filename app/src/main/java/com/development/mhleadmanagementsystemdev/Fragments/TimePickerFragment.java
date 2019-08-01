@@ -11,12 +11,12 @@ public class TimePickerFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Get Current Time
+        // Get Current TimeModel
         final Calendar c = Calendar.getInstance();
         int mHour = c.get(Calendar.HOUR_OF_DAY);
         int mMinute = c.get(Calendar.MINUTE);
 
-        // Launch Time Picker Dialog
+        // Launch TimeModel Picker Dialog
         TimePickerDialog timePickerDialog = new TimePickerDialog(
                 getActivity(), (TimePickerDialog.OnTimeSetListener) getActivity(), mHour, mMinute, false);
         return timePickerDialog;

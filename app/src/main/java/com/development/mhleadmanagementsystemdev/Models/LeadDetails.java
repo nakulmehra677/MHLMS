@@ -5,6 +5,15 @@ public class LeadDetails {
             employmentType, location, salesmanRemarks, date, assignedTo, status, key,
             assigner, telecallerRemarks, assignedToUId, assignerUId, salesmanReason,
             time, assignDate, assignTime;
+    long timeStamp;
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
     public String getName() {
         return name;
@@ -186,7 +195,8 @@ public class LeadDetails {
                        String employmentType, String loanType, String propertyType, String location,
                        String telecallerRemarks, String date, String assignedTo, String status,
                        String assigner, String key, String salesmanRemarks, String assignedToUId,
-                       String assignerUId, String salesmanReason, String time, String assignDate, String assignTime) {
+                       String assignerUId, String salesmanReason, String time, String assignDate,
+                       String assignTime, long timeStamp) {
         this.name = name;
         this.contactNumber = contactNumber;
         this.propertyType = propertyType;
@@ -208,5 +218,6 @@ public class LeadDetails {
         this.time = time;
         this.assignDate = assignDate;
         this.assignTime = assignTime;
+        this.timeStamp = timeStamp;
     }
 }

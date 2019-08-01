@@ -1,24 +1,29 @@
 package com.development.mhleadmanagementsystemdev.Managers;
 
+import android.util.Log;
+
+import com.development.mhleadmanagementsystemdev.Models.TimeModel;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 public class TimeManager {
 
     public TimeManager() {
     }
 
-    public HashMap<String, String> getTime() {
+    public TimeModel getTime() {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MMM-yy");
         SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
 
         String strDate = dateFormatter.format(new Date());
         String strTime = timeFormatter.format(new Date());
 
-        HashMap<String, String> time = new HashMap<>();
-        time.put("date", strDate);
-        time.put("time", strTime);
-        return time;
+        Date date = new Date();
+        long timeStamp = date.getTime();
+        Log.d("TimeStamp", String.valueOf(timeStamp));
+        TimeModel timeModel = new TimeModel(strTime, strDate, timeStamp);
+
+        return timeModel;
     }
 }

@@ -1,7 +1,9 @@
 package com.development.mhleadmanagementsystemdev.Firebase;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
+
 import android.util.Log;
 
 import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchLeadListListener;
@@ -136,7 +138,8 @@ public class Firestore {
                 "salesmanReason", updateLead.getSalesmanReason(),
                 "status", updateLead.getStatus(),
                 "date", updateLead.getDate(),
-                "time", updateLead.getTime())
+                "time", updateLead.getTime(),
+                "timeStamp", updateLead.getTimeStamp())
 
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -174,15 +177,13 @@ public class Firestore {
             if (!assign.equals("Admin"))
                 query = query.whereEqualTo(assign, userName);
 
-            query = query.orderBy("date", Query.Direction.DESCENDING)
-                    //.orderBy("time", Query.Direction.DESCENDING)
+            query = query.orderBy("timeStamp", Query.Direction.DESCENDING)
                     .limit(20);
         } else {
             if (!assign.equals("Admin"))
                 query = query.whereEqualTo(assign, userName);
 
-            query = query.orderBy("date", Query.Direction.DESCENDING)
-                    //.orderBy("time", Query.Direction.DESCENDING)
+            query = query.orderBy("timeStamp", Query.Direction.DESCENDING)
                     .startAfter(lastLead)
                     .limit(20);
         }

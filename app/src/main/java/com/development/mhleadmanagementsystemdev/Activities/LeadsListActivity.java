@@ -178,8 +178,6 @@ public class LeadsListActivity extends BaseActivity {
         else
             s = "Admin";
 
-        Log.i("drfgtbrdgtbrgt", "rrrrrrrrr");
-
         firestore.getLeadList(onFetchLeadListListener(),
                 s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem,
                 locationFilter, assignerFilter, assigneeFilter, loanTypeFilter, statusFilter);
@@ -307,7 +305,6 @@ public class LeadsListActivity extends BaseActivity {
                 if (l.size() < 20)
                     isLastItemFetched = true;
 
-                Log.i("drfgtbrdgtbrgt", "rrrrrrrrr");
                 bottomVisibleItem = lastVisible;
 
                 leadDetailsList.addAll(l);

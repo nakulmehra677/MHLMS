@@ -1,5 +1,6 @@
 package com.development.mhleadmanagementsystemdev.Fragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -13,13 +14,15 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.development.mhleadmanagementsystemdev.Managers.CallRecord;
+import com.development.mhleadmanagementsystemdev.Models.TimeModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -128,16 +131,28 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CallRecord record = new CallRecord(getContext());
+//                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//
+//                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO},
+//                            0);
+//
+//                } else {
+//                    Intent intent = new Intent(getContext(), RecordingService.class);
+//                    getActivity().startService(intent);
+
+
+                //CallRecord record = new CallRecord(getContext());
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                
+
                 callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
                 if (ContextCompat.checkSelfPermission(getContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("call record", "started");
                     startActivity(callIntent);
                 } else {
                     requestPermissions(new String[]{CALL_PHONE}, 1);
                 }
             }
+            //}
         });
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -233,12 +248,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                             leadDetails = dialogLeadDetails;
                             leadDetails.setAssignedTo(dialogAssignedTo);
 
-                            HashMap<String, String> time = new HashMap<>();
                             TimeManager timeManager = new TimeManager();
-                            time = timeManager.getTime();
+                            TimeModel timeModel = timeManager.getTime();
 
-                            leadDetails.setDate(time.get("date"));
-                            leadDetails.setTime(time.get("time"));
+                            leadDetails.setDate(timeModel.getDate());
+                            leadDetails.setTime(timeModel.getTime());
+                            leadDetails.setTimeStamp(timeModel.getTimeStamp());
+
+                            Log.d("sssssssssssssssss", String.valueOf(timeModel.getTimeStamp()));
 
                             String strAssignedToUId = null;
                             for (UserDetails userDetails : userList) {
@@ -265,12 +282,12 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             @Override
             public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason) {
 
-                HashMap<String, String> time = new HashMap<>();
                 TimeManager timeManager = new TimeManager();
-                time = timeManager.getTime();
+                TimeModel timeModel = timeManager.getTime();
 
-                leadDetails.setDate(time.get("date"));
-                leadDetails.setTime(time.get("time"));
+                leadDetails.setDate(timeModel.getDate());
+                leadDetails.setTime(timeModel.getTime());
+                leadDetails.setTimeStamp(timeModel.getTimeStamp());
 
                 leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
                 leadDetails.setSalesmanReason(dialogSalesmanReason);

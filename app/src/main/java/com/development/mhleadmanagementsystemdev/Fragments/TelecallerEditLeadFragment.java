@@ -153,12 +153,12 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
             @Override
             public void onClick(View v) {
 
-                // Get Current Time
+                // Get Current TimeModel
                 final Calendar c = Calendar.getInstance();
                 mHour = c.get(Calendar.HOUR_OF_DAY);
                 mMinute = c.get(Calendar.MINUTE);
 
-                // Launch Time Picker Dialog
+                // Launch TimeModel Picker Dialog
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
                         new TimePickerDialog.OnTimeSetListener() {
 

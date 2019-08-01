@@ -22,6 +22,7 @@ import com.development.mhleadmanagementsystemdev.Interfaces.OnFetchUsersListList
 import com.development.mhleadmanagementsystemdev.Interfaces.OnUploadCustomerDetailsListener;
 import com.development.mhleadmanagementsystemdev.Managers.TimeManager;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
+import com.development.mhleadmanagementsystemdev.Models.TimeModel;
 import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.Models.UserList;
 import com.development.mhleadmanagementsystemdev.R;
@@ -258,10 +259,9 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                     public void onClick(DialogInterface dialog, int which) {
                         Log.i("Fields filled", "All the fields are filled");
 
-                        HashMap<String, String> time = new HashMap<>();
                         TimeManager timeManager = new TimeManager();
-                        time = timeManager.getTime();
-                        makeObject(time);
+                        TimeModel timeModel = timeManager.getTime();
+                        makeObject(timeModel);
 
                         progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
                         progress.setMessage("Uploading..");
@@ -289,15 +289,15 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         strRemarks = remarks.getText().toString().trim();
     }
 
-    private void makeObject(Map<String, String> time) {
+    private void makeObject(TimeModel timeModel) {
         String assigner = sharedPreferences.getString(getString(R.string.SH_user_name), "");
         String assignerUId = sharedPreferences.getString(getString(R.string.SH_user_uid), "");
 
         leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount, strEmployment,
                 strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks,
-                time.get("date"), strAssignTo, "Active", assigner, "",
-                "None", strAssignToUId, assignerUId,
-                "None", time.get("time"), time.get("date"), time.get("time"));
+                timeModel.getDate(), strAssignTo, "Active", assigner, "",
+                "None", strAssignToUId, assignerUId, "None",
+                timeModel.getTime(), timeModel.getDate(), timeModel.getTime(),timeModel.getTimeStamp());
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {
