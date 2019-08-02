@@ -1,6 +1,5 @@
 package com.development.mhleadmanagementsystemdev.Fragments;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -8,21 +7,19 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
+import com.development.mhleadmanagementsystemdev.Managers.PermissionManager;
 import com.development.mhleadmanagementsystemdev.Models.TimeModel;
+import com.development.mhleadmanagementsystemdev.Services.RecordingService;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -39,10 +36,7 @@ import com.development.mhleadmanagementsystemdev.Models.UserList;
 import com.development.mhleadmanagementsystemdev.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import static android.Manifest.permission.CALL_PHONE;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
@@ -131,28 +125,21 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-//
-//                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO},
-//                            0);
-//
-//                } else {
-//                    Intent intent = new Intent(getContext(), RecordingService.class);
-//                    getActivity().startService(intent);
 
+                PermissionManager permission = new PermissionManager(getContext());
 
-                //CallRecord record = new CallRecord(getContext());
-                Intent callIntent = new Intent(Intent.ACTION_CALL);
-
-                callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
-                if (ContextCompat.checkSelfPermission(getContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                    Log.d("call record", "started");
-                    startActivity(callIntent);
-                } else {
-                    requestPermissions(new String[]{CALL_PHONE}, 1);
-                }
+                if (permission.checkCallPhone()) {
+                    if (permission.checkReadPhoneState()) {
+                        if (permission.checkRecordAudio()) {
+                            callCustomer();
+                            recordVoice();
+                        } else
+                            permission.requestRecordAudio();
+                    } else
+                        permission.requestReadPhoneState();
+                } else
+                    permission.requestCallPhone();
             }
-            //}
         });
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -255,8 +242,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                             leadDetails.setTime(timeModel.getTime());
                             leadDetails.setTimeStamp(timeModel.getTimeStamp());
 
-                            Log.d("sssssssssssssssss", String.valueOf(timeModel.getTimeStamp()));
-
                             String strAssignedToUId = null;
                             for (UserDetails userDetails : userList) {
                                 if (userDetails.getUserName().equals(dialogAssignedTo)) {
@@ -333,5 +318,16 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 Toast.makeText(context, R.string.lead_update_failed, Toast.LENGTH_SHORT).show();
             }
         };
+    }
+
+    private void callCustomer() {
+        Intent callIntent = new Intent(Intent.ACTION_CALL);
+        callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
+        startActivity(callIntent);
+    }
+
+    private void recordVoice() {
+        Intent intent = new Intent(getContext(), RecordingService.class);
+        getActivity().startService(intent);
     }
 }

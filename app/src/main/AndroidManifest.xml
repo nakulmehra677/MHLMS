@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -23,12 +23,12 @@
             android:label="Filter Leads" />
 
         <activity
-            android:name=".Activities.LeadsListActivity"
+            android:name=".Activities.LeadListActivity"
             android:screenOrientation="portrait">
 
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.NEW_OUTGOING_CALL" />-->
-            <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
 
         </activity>
 
@@ -61,7 +61,18 @@
         <service
             android:name=".Services.ReminderService"
             android:exported="false" />
-        <!--<service android:name=".Services.RecordingService" />-->
+
+        <service android:name=".Services.RecordingService" />
+
+        <receiver
+            android:name=".BroadcastReceivers.Call"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
