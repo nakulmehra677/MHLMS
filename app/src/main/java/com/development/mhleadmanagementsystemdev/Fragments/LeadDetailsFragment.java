@@ -220,36 +220,11 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private void openTelecallerFragment(final List<UserDetails> userList) {
-
         if (userList.size() != 0) {
-            List<String> salesPersonNameList = new ArrayList<>();
-            for (UserDetails user : userList) {
-                salesPersonNameList.add(user.getUserName());
-            }
-
             TelecallerEditLeadFragment.newInstance(
-                    leadDetails, salesPersonNameList, new TelecallerEditLeadFragment.OnSubmitClickListener() {
+                    leadDetails, userList, new TelecallerEditLeadFragment.OnSubmitClickListener() {
                         @Override
-                        public void onSubmitClicked(String dialogAssignedTo, LeadDetails dialogLeadDetails) {
-
-                            leadDetails = dialogLeadDetails;
-                            leadDetails.setAssignedTo(dialogAssignedTo);
-
-                            TimeManager timeManager = new TimeManager();
-                            TimeModel timeModel = timeManager.getTime();
-
-                            leadDetails.setDate(timeModel.getDate());
-                            leadDetails.setTime(timeModel.getTime());
-                            leadDetails.setTimeStamp(timeModel.getTimeStamp());
-
-                            String strAssignedToUId = null;
-                            for (UserDetails userDetails : userList) {
-                                if (userDetails.getUserName().equals(dialogAssignedTo)) {
-                                    strAssignedToUId = userDetails.getuId();
-                                }
-                            }
-                            leadDetails.setAssignedToUId(strAssignedToUId);
-
+                        public void onSubmitClicked(LeadDetails dialogLeadDetails) {
                             progress = new ProgressDialog(context);
                             progress.setMessage("Loading..");
                             progress.setCancelable(false);
@@ -327,7 +302,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private void recordVoice() {
-        Intent intent = new Intent(getContext(), RecordingService.class);
-        getActivity().startService(intent);
+        //Intent intent = new Intent(getContext(), RecordingService.class);
+        //getActivity().startService(intent);
     }
 }

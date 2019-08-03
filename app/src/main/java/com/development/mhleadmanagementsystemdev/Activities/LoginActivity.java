@@ -129,7 +129,7 @@ public class LoginActivity extends BaseActivity {
                 showToastMessage(R.string.logged_in);
 
                 startActivityForResult(new Intent(
-                        LoginActivity.this, LeadsListActivity.class), 101);
+                        LoginActivity.this, LeadListActivity.class), 101);
             }
 
             @Override

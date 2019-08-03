@@ -20,7 +20,8 @@
 
         <activity
             android:name=".Activities.FilterActivity"
-            android:label="Filter Leads" />
+            android:label="Filter Leads"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".Activities.LeadListActivity"
@@ -72,7 +73,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
+
         </receiver>
+
     </application>
 
 </manifest>

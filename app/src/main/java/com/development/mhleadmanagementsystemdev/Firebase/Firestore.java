@@ -133,6 +133,7 @@ public class Firestore {
                 "loanAmount", updateLead.getLoanAmount(),
                 "contactNumber", updateLead.getContactNumber(),
                 "assignedTo", updateLead.getAssignedTo(),
+                "assignedToUId", updateLead.getAssignedToUId(),
                 "telecallerRemarks", updateLead.getTelecallerRemarks(),
                 "salesmanRemarks", updateLead.getSalesmanRemarks(),
                 "salesmanReason", updateLead.getSalesmanReason(),

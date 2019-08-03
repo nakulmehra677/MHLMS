@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,8 +22,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.development.mhleadmanagementsystemdev.Managers.Alarm;
+import com.development.mhleadmanagementsystemdev.Managers.TimeManager;
+import com.development.mhleadmanagementsystemdev.Managers.UpdateLead;
 import com.development.mhleadmanagementsystemdev.Models.LeadDetails;
+import com.development.mhleadmanagementsystemdev.Models.TimeModel;
+import com.development.mhleadmanagementsystemdev.Models.UserDetails;
 import com.development.mhleadmanagementsystemdev.R;
+import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,7 +40,7 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
     private OnSubmitClickListener listener;
     private ArrayAdapter<CharSequence> assignedToAdapter;
     private Spinner assignedToSpinner;
-    List salesPersonList = new ArrayList();
+    List<UserDetails> salesPersonList = new ArrayList();
 
     private EditText customerName;
     private EditText loanAmount;
@@ -54,16 +60,16 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
     private LeadDetails leadDetails;
 
 
-    public TelecallerEditLeadFragment(LeadDetails leadDetails, List arrayList, OnSubmitClickListener listener) {
+    public TelecallerEditLeadFragment(LeadDetails leadDetails, List<UserDetails> salesPersonList, OnSubmitClickListener listener) {
         this.leadDetails = leadDetails;
         this.listener = listener;
-        this.salesPersonList = arrayList;
+        this.salesPersonList = salesPersonList;
     }
 
     public static TelecallerEditLeadFragment newInstance(
-            LeadDetails leadDetails, List arrayList, OnSubmitClickListener listener) {
+            LeadDetails leadDetails, List<UserDetails> salesPersonList, OnSubmitClickListener listener) {
 
-        TelecallerEditLeadFragment f = new TelecallerEditLeadFragment(leadDetails, arrayList, listener);
+        TelecallerEditLeadFragment f = new TelecallerEditLeadFragment(leadDetails, salesPersonList, listener);
         return f;
     }
 
@@ -98,19 +104,27 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
             timeTextView.setText("hh:mm");
         }
 
+        List salesPersonNameList = new ArrayList<>();
+        for (UserDetails user : salesPersonList) {
+            salesPersonNameList.add(user.getUserName());
+        }
+
         // AssignedTo Spinner
         assignedToAdapter = new ArrayAdapter<CharSequence>(
                 getContext(),
-                android.R.layout.simple_spinner_item, salesPersonList);
+                android.R.layout.simple_spinner_item, salesPersonNameList);
         assignedToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         assignedToSpinner.setAdapter(assignedToAdapter);
 
-        assignedToSpinner.setSelection(salesPersonList.indexOf(leadDetails.getAssignedTo()));
+        assignedToSpinner.setSelection(salesPersonNameList.indexOf(leadDetails.getAssignedTo()));
 
         assignedToSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 strAssignedTo = parent.getItemAtPosition(position).toString();
+                Log.i("Assignedto",leadDetails.getAssignedTo());
+
+                Log.i("Assignedto",strAssignedTo);
             }
 
             @Override
@@ -181,12 +195,19 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
                 .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!telecallerReason.getText().toString().isEmpty()) {
-                            leadDetails.setName(customerName.getText().toString());
-                            leadDetails.setLoanAmount(loanAmount.getText().toString());
-                            leadDetails.setContactNumber(contactNumber.getText().toString());
-                            leadDetails.setTelecallerRemarks(telecallerReason.getText().toString());
+                        String strName = customerName.getText().toString();
+                        String strLoanAmount = loanAmount.getText().toString();
+                        String strNumber = contactNumber.getText().toString();
+                        String strReason = telecallerReason.getText().toString();
 
+                        if (!strName.isEmpty() &&
+                                !strLoanAmount.isEmpty() &&
+                                !strNumber.isEmpty() &&
+                                !strReason.isEmpty()) {
+
+                            UpdateLead updateLead = new UpdateLead(leadDetails);
+
+                            updateLead.taleCaller(strName, strLoanAmount, strNumber, strReason);
 
                             Alarm alarm = new Alarm(getContext());
 
@@ -207,11 +228,21 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
 
                                     alarm.startAlarm(c, leadDetails.getName());
                                 }
-
                             } else {
                                 alarm.cancelAlarm(leadDetails.getName());
                             }
-                            listener.onSubmitClicked(strAssignedTo, leadDetails);
+
+                            updateLead.time();
+
+                            if (!leadDetails.getAssignedTo().equals(strAssignedTo)) {
+                                for (UserDetails userDetails : salesPersonList) {
+                                    if (userDetails.getUserName().equals(strAssignedTo)) {
+                                        updateLead.assignedToDetails(strAssignedTo, userDetails.getuId());
+                                    }
+                                }
+                            }
+
+                            listener.onSubmitClicked(updateLead.getLeadDetails());
                         }
                     }
                 })
@@ -226,6 +257,6 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
     }
 
     public interface OnSubmitClickListener {
-        void onSubmitClicked(String dialogAssignedTo, LeadDetails leadDetails);
+        void onSubmitClicked(LeadDetails leadDetails);
     }
 }
