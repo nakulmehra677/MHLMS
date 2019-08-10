@@ -50,6 +50,10 @@ public class LoginActivity extends BaseActivity {
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
 
+        authentication = new Authentication(this);
+        firestore = new Firestore(this);
+        profileManager = new ProfileManager();
+
         Log.d("API level", String.valueOf(Build.VERSION.SDK_INT));
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             checkLogin();
@@ -57,9 +61,7 @@ public class LoginActivity extends BaseActivity {
             checkUpdate();
 
 
-        authentication = new Authentication(this);
-        firestore = new Firestore(this);
-        profileManager = new ProfileManager();
+
     }
 
     public void loginButton(View view) {

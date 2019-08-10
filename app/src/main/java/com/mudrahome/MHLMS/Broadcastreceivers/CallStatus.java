@@ -6,21 +6,18 @@ import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.mudrahome.MHLMS.Managers.Callrecord;
-
 public class CallStatus extends BroadcastReceiver {
     public CallStatus() {
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("Call started", "Dfv");
-        Callrecord callrecord = new Callrecord();
+
         if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
-            Log.d("Call started", "Dfv");
+            Log.d("Calll", "Broadcast started");
 
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
-            Log.d("Call ended", "Dfv");
+            Log.d("Calll", "Broadcast stopped");
         }
     }
 }

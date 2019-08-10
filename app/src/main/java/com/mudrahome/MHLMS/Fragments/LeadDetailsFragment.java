@@ -15,14 +15,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.mudrahome.MHLMS.Managers.Callrecord;
+import com.mudrahome.MHLMS.Broadcastreceivers.CallStatus;
 import com.mudrahome.MHLMS.Managers.PermissionManager;
+import com.mudrahome.MHLMS.Managers.RecordingManager;
 import com.mudrahome.MHLMS.Models.TimeModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -73,6 +73,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private LeadDetails leadDetails;
     private String currentUserType;
     private Firestore firestore;
+    private BroadcastReceiver br;
 
     private String customerNotInterested = "Customer Not Interested";
     private String documentPicked = "Document Picked";
@@ -89,6 +90,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        IntentFilter filter = new IntentFilter("android.intent.action.PHONE_STATE");
+        context.registerReceiver(br, filter);
+
+
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
 
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
@@ -97,6 +102,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 getString(R.string.SH_user_details), Activity.MODE_PRIVATE);
         currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
 
+        br = new CallStatus();
         firestore = new Firestore();
 
         name = view.findViewById(R.id.customer_name);
@@ -301,36 +307,26 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
         startActivity(callIntent);
-    }
+        RecordingManager manager = new RecordingManager(context);
+        manager.startRecording();
 
-    @Override
-    public void onResume() {
-        IntentFilter filter = new IntentFilter("android.intent.action.PHONE_STATE");
-        context.registerReceiver(receiver, filter);
-        super.onResume();
+        try {
+            for (int i = 0; i < 20; i++) {
+                Log.d("calll", " " + i);
+
+                Thread.sleep(500);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        manager.stopRecording();
+        manager.uploadRecording();
     }
 
     @Override
     public void onDestroy() {
-        context.unregisterReceiver(receiver);
+        Log.d("onnnnn", "destroy");
+        context.unregisterReceiver(br);
         super.onDestroy();
     }
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d("Call started", "sdrgvsrtg");
-            //Callrecord callrecord = new Callrecord();
-            if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
-
-                Log.d("Call started", "true");
-                getActivity().startService(new Intent(getActivity(), Callrecord.class));
-
-            } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
-                
-                Log.d("Call started", "false");
-                getActivity().stopService(new Intent(getActivity(), Callrecord.class));
-            }
-        }
-    };
 }
