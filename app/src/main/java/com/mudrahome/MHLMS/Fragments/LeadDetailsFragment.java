@@ -90,9 +90,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        IntentFilter filter = new IntentFilter("android.intent.action.PHONE_STATE");
-        context.registerReceiver(br, filter);
-
+        Log.d("State", "onCreateDialog");
 
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
 
@@ -211,6 +209,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     public void onStart() {
         super.onStart();
         mBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        IntentFilter filter = new IntentFilter("android.intent.action.PHONE_STATE");
+        context.registerReceiver(br, filter);
+        Log.d("State", "onStart");
     }
 
     private OnFetchUsersListListener onFetchSalesPersonListListener() {
@@ -307,25 +308,11 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
         startActivity(callIntent);
-        RecordingManager manager = new RecordingManager(context);
-        manager.startRecording();
-
-        try {
-            for (int i = 0; i < 20; i++) {
-                Log.d("calll", " " + i);
-
-                Thread.sleep(500);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        manager.stopRecording();
-        manager.uploadRecording();
     }
 
     @Override
     public void onDestroy() {
-        Log.d("onnnnn", "destroy");
+        Log.d("State", "onDestroy");
         context.unregisterReceiver(br);
         super.onDestroy();
     }

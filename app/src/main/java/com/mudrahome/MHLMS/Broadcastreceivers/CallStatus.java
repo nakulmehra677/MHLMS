@@ -6,18 +6,23 @@ import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.mudrahome.MHLMS.Managers.RecordingManager;
+
 public class CallStatus extends BroadcastReceiver {
-    public CallStatus() {
-    }
+    private RecordingManager manager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
         if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
-            Log.d("Calll", "Broadcast started");
+            Log.d("State", "Broadcast started");
+            manager = new RecordingManager(context);
+            manager.startRecording();
 
         } else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
-            Log.d("Calll", "Broadcast stopped");
+            Log.d("State", "Broadcast stopped");
+            manager.stopRecording();
+            manager.uploadRecording();
         }
     }
 }
