@@ -64,48 +64,18 @@ public class Firestore {
                 });
     }
 
-    public void fetchSalesPersons(
-            final OnFetchUsersListListener listener, String location) {
+    public void fetchUsersByUserType(
+            final OnFetchUsersListListener listener, String location, String userType) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query query;
 
         if (location.equals("All") || location == null)
             query = db.collection("userList")
-                    .whereEqualTo("userType", "Salesman");
+                    .whereEqualTo("userType", userType);
         else
             query = db.collection("userList")
-                    .whereEqualTo("userType", "Salesman")
-                    .whereEqualTo("location", location);
-
-
-        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-
-                List<UserDetails> salesPersonList = new ArrayList<>();
-                for (QueryDocumentSnapshot document : documentSnapshots) {
-                    UserDetails l = document.toObject(UserDetails.class);
-                    salesPersonList.add(l);
-                }
-                UserList userList = new UserList(salesPersonList);
-                listener.onListFetched(userList);
-            }
-        });
-    }
-
-    public void fetchTelecallers(
-            final OnFetchUsersListListener listener, String location) {
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query query;
-
-        if (location.equals("All") || location == null)
-            query = db.collection("userList")
-                    .whereEqualTo("userType", "Telecaller");
-        else
-            query = db.collection("userList")
-                    .whereEqualTo("userType", "Telecaller")
+                    .whereEqualTo("userType", userType)
                     .whereEqualTo("location", location);
 
 

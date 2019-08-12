@@ -162,8 +162,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
 
-                        firestore.fetchSalesPersons(
-                                onFetchSalesPersonListListener(), leadDetails.getLocation());
+                        firestore.fetchUsersByUserType(
+                                onFetchSalesPersonListListener(),
+                                leadDetails.getLocation(),
+                                getString(R.string.salesman));
                     } else {
                         openSalesmanFragment();
                     }

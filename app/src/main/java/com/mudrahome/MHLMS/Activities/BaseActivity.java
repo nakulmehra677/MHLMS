@@ -33,7 +33,8 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void dismissProgressDialog() {
-        progress.dismiss();
+        if (progress.isShowing())
+            progress.dismiss();
     }
 
     public static void hideKeyboard(AppCompatActivity activity) {

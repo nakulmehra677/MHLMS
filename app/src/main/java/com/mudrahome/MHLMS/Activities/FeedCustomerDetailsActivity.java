@@ -311,8 +311,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         progress.setCanceledOnTouchOutside(false);
         progress.show();*/
 
-        firestore.fetchSalesPersons(
-                onFetchUsersListListener(), strLocation);
+        firestore.fetchUsersByUserType(
+                onFetchUsersListListener(), strLocation, getString(R.string.salesman));
     }
 
     private boolean checkEmpty() {

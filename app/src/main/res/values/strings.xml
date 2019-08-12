@@ -121,4 +121,12 @@
         <item>Not Doable</item>
     </string-array>
 
+    <string-array name="filter_button">
+        <item>Location</item>
+        <item>Assigner</item>
+        <item>Assignee</item>
+        <item>Loan Type</item>
+        <item>Status</item>
+    </string-array>
+
 </resources>
