@@ -184,8 +184,6 @@ public class LeadListActivity extends BaseActivity {
 
     public void onButtonClicked(View view) {
         switch (view.getId()) {
-            case R.id.sort_by:
-                break;
 
             case R.id.filter:
                 Intent intent = new Intent(LeadListActivity.this, FilterActivity.class);

@@ -15,9 +15,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.mudrahome.MHLMS.Broadcastreceivers.CallStatus;
 import com.mudrahome.MHLMS.Managers.PermissionManager;
-import com.mudrahome.MHLMS.Managers.RecordingManager;
 import com.mudrahome.MHLMS.Models.TimeModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -100,7 +98,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 getString(R.string.SH_user_details), Activity.MODE_PRIVATE);
         currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
 
-        br = new CallStatus();
+//        br = new CallStatus();
         firestore = new Firestore();
 
         name = view.findViewById(R.id.customer_name);
@@ -136,13 +134,13 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 PermissionManager permission = new PermissionManager(getContext());
 
                 if (permission.checkCallPhone()) {
-                    if (permission.checkReadPhoneState()) {
-                        if (permission.checkRecordAudio()) {
-                            callCustomer();
-                        } else
-                            permission.requestRecordAudio();
-                    } else
-                        permission.requestReadPhoneState();
+//                    if (permission.checkReadPhoneState()) {
+//                        if (permission.checkRecordAudio()) {
+                    callCustomer();
+//                        } else
+//                            permission.requestRecordAudio();
+//                    } else
+//                        permission.requestReadPhoneState();
                 } else
                     permission.requestCallPhone();
             }
@@ -211,9 +209,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     public void onStart() {
         super.onStart();
         mBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        IntentFilter filter = new IntentFilter("android.intent.action.PHONE_STATE");
-        context.registerReceiver(br, filter);
-        Log.d("State", "onStart");
+//        IntentFilter filter = new IntentFilter("android.intent.action.PHONE_STATE");
+//        context.registerReceiver(br, filter);
+//        Log.d("State", "onStart");
     }
 
     private OnFetchUsersListListener onFetchSalesPersonListListener() {
@@ -312,10 +310,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         startActivity(callIntent);
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d("State", "onDestroy");
-        context.unregisterReceiver(br);
-        super.onDestroy();
-    }
+//    @Override
+//    public void onDestroy() {
+//        Log.d("State", "onDestroy");
+//        context.unregisterReceiver(br);
+//        super.onDestroy();
+//    }
 }

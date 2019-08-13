@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.Toast;
@@ -30,17 +31,27 @@ import java.util.List;
 
 public class FilterActivity extends BaseActivity {
 
-    private String strLocation = "All";
-    private String strAssigner = "All";
-    private String strAssignee = "All";
-    private String strStatus = "All";
-    private String strLoanType = "All";
+    private String strLocation;
+    private String strAssigner;
+    private String strAssignee;
+    private String strStatus;
+    private String strLoanType;
     private String currentUserType;
 
     private Firestore firestore;
     private SharedPreferences sharedPreferences;
 
-    private RadioGroup radioGroup;
+    private RadioGroup locationRadioGroup;
+    private RadioGroup assignerRadioGroup;
+    private RadioGroup assigneeRadioGroup;
+    private RadioGroup loanTypeRadioGroup;
+    private RadioGroup statusRadioGroup;
+
+    private ScrollView locationScrollView;
+    private ScrollView assignerScrollView;
+    private ScrollView assigneeScrollView;
+    private ScrollView loanTypeScrollView;
+    private ScrollView statusScrollView;
 
     private Button locationButton;
     private Button assignerButton;
@@ -48,273 +59,437 @@ public class FilterActivity extends BaseActivity {
     private Button loanTypeButton;
     private Button statusButton;
 
-    private ListView listView;
+    private Button clearFilterButton;
+    private Button filterButton;
 
+    private boolean assignerLocationChanged;
+    private boolean assigneeLocationChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
 
-        listView = findViewById(R.id.list_view);
+        locationButton = findViewById(R.id.location_button);
+        assignerButton = findViewById(R.id.assigner_button);
+        assigneeButton = findViewById(R.id.assignee_button);
+        loanTypeButton = findViewById(R.id.loan_type_button);
+        statusButton = findViewById(R.id.status_button);
+
+        locationScrollView = findViewById(R.id.location_scroll_view);
+        assignerScrollView = findViewById(R.id.assigner_scroll_view);
+        assigneeScrollView = findViewById(R.id.assignee_scroll_view);
+        loanTypeScrollView = findViewById(R.id.loan_type_scroll_view);
+        statusScrollView = findViewById(R.id.status_scroll_view);
+
+        locationRadioGroup = findViewById(R.id.location_radio_group);
+        assignerRadioGroup = findViewById(R.id.assigner_radio_group);
+        assigneeRadioGroup = findViewById(R.id.assignee_radio_group);
+        loanTypeRadioGroup = findViewById(R.id.loan_type_radio_group);
+        statusRadioGroup = findViewById(R.id.status_radio_group);
+
+        filterButton = findViewById(R.id.filter_button);
+        clearFilterButton = findViewById(R.id.clear_filter_button);
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,
                 android.R.id.text1,
                 getResources().getStringArray(R.array.filter_button));
 
-        listView.setAdapter(adapter);
-
-        listView.setItemsCanFocus(true);
-        listView.setSelection(0);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if (position == 0) {
-                    showLocationList();
-                } else if (position == 1) {
-                    showAssignerList();
-                } else if (position == 2) {
-                    showAssigneeList();
-                } else if (position == 3) {
-                    showLoanTypeList();
-                } else {
-                    showStatusList();
-                }
-            }
-        });
-
-
         sharedPreferences = getSharedPreferences(
                 getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
         currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
 
+        if (currentUserType.equals(getString(R.string.telecaller))) {
+            adapter.remove("Assigner");
+            adapter.notifyDataSetChanged();
+        } else if (currentUserType.equals(getString(R.string.salesman))) {
+            adapter.remove("Assignee");
+            adapter.notifyDataSetChanged();
+        }
+
         firestore = new Firestore();
-
-        radioGroup = findViewById(R.id.radio_group);
-
+        initAllValues();
         showLocationList();
 
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        locationRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                Log.d("Radio_Button", "" + i);
+                RadioButton rb = findViewById(i);
+                strLocation = rb.getText().toString();
+
+                Log.d("Radio_Button", "" + strLocation);
+
+                assigneeLocationChanged = true;
+                assignerLocationChanged = true;
+            }
+        });
+
+        assignerRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton rb = findViewById(i);
+                strAssigner = rb.getText().toString();
+
+                Log.d("Radio_Button", "" + strAssigner);
+            }
+        });
+
+        assigneeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton rb = findViewById(i);
+                strAssignee = rb.getText().toString();
+
+                Log.d("Radio_Button", "" + strAssignee);
+            }
+        });
+
+        loanTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton rb = findViewById(i);
+                strLoanType = rb.getText().toString();
+
+                Log.d("Radio_Button", "" + strLoanType);
+            }
+        });
+
+        statusRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton rb = findViewById(i);
+                strStatus = rb.getText().toString();
+
+                Log.d("Radio_Button", "" + strStatus);
             }
         });
     }
 
-    private void showLocationList() {
+    public void buttonClicked(View v) {
+        switch (v.getId()) {
+            case R.id.location_button:
+                showLocationList();
+                highlightLocationButton();
+                break;
 
-        radioGroup.removeAllViews();
+            case R.id.assigner_button:
+                setAssignerRadioGroup();
+                highlightAssignerButton();
+                break;
+
+            case R.id.assignee_button:
+                setAssigneeRadioGroup();
+                highlightAssigneeButton();
+                break;
+
+            case R.id.loan_type_button:
+                showLoanTypeList();
+                highlightLoanTypeButton();
+                break;
+
+            case R.id.status_button:
+                showStatusList();
+                highlightStatusButton();
+                break;
+
+            case R.id.clear_filter_button:
+                initAllValues();
+                break;
+
+            case R.id.filter_button:
+                Intent intent = new Intent();
+                intent.putExtra("assigner_filter", strAssigner);
+                intent.putExtra("assignee_filter", strAssignee);
+                intent.putExtra("location_filter", strLocation);
+                intent.putExtra("loan_type_filter", strLoanType);
+                intent.putExtra("status_filter", strStatus);
+
+                setResult(201, intent);
+                finish();
+                break;
+        }
+    }
+
+    private void initAllValues() {
+        strLocation = "All";
+        strAssigner = "All";
+        strAssignee = "All";
+        strStatus = "All";
+        strLoanType = "All";
+
+        assignerLocationChanged = true;
+        assigneeLocationChanged = true;
+
+        setLocationRadioGroup();
+        setLoanTypeRadioGroup();
+        setStatusRadioGroup();
+
+        showLocationList();
+        highlightLocationButton();
+    }
+
+    private void setLocationRadioGroup() {
+        locationRadioGroup.removeAllViews();
 
         String[] locationArray = getResources().getStringArray(R.array.location_filter);
         for (String locationItem : locationArray) {
             RadioButton rb = new RadioButton(this);
             rb.setPadding(24, 24, 24, 24);
             rb.setText(locationItem);
-            radioGroup.addView(rb);
+            locationRadioGroup.addView(rb);
         }
-        ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
+        ((RadioButton) locationRadioGroup.getChildAt(0)).setChecked(true);
     }
 
-    private void showAssignerList() {
-        showProgressDialog("Loading...", this);
-        firestore.fetchUsersByUserType(
-                onFetchAssignerListListener(), "All", getString(R.string.telecaller));
+    private void setAssignerRadioGroup() {
+        if (assignerLocationChanged) {
+            showProgressDialog("Loading...", this);
+            assignerRadioGroup.removeAllViews();
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    RadioButton rb = new RadioButton(FilterActivity.this);
+                    rb.setPadding(24, 24, 24, 24);
+                    rb.setText("All");
+                    assignerRadioGroup.addView(rb);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            RadioButton rb2 = new RadioButton(FilterActivity.this);
+                            rb2.setPadding(24, 24, 24, 24);
+                            rb2.setText(user.getUserName());
+                            assignerRadioGroup.addView(rb2);
+                        }
+                    }
+                    ((RadioButton) assignerRadioGroup.getChildAt(0)).setChecked(true);
+
+                    assignerLocationChanged = false;
+                    showAssignerList();
+                    dismissProgressDialog();
+                }
+            }, strLocation, getString(R.string.telecaller));
+        } else
+            showAssignerList();
     }
 
-    private void showAssigneeList() {
-        showProgressDialog("Loading...", this);
-        firestore.fetchUsersByUserType(
-                onFetchAssigneeListListener(), "All", getString(R.string.salesman));
+    private void setAssigneeRadioGroup() {
+        if (assigneeLocationChanged) {
+            showProgressDialog("Loading...", this);
+            assigneeRadioGroup.removeAllViews();
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    RadioButton rb = new RadioButton(FilterActivity.this);
+                    rb.setPadding(24, 24, 24, 24);
+                    rb.setText("All");
+                    assigneeRadioGroup.addView(rb);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            RadioButton rb2 = new RadioButton(FilterActivity.this);
+                            rb2.setPadding(24, 24, 24, 24);
+                            rb2.setText(user.getUserName());
+                            assigneeRadioGroup.addView(rb2);
+                        }
+                    }
+                    ((RadioButton) assigneeRadioGroup.getChildAt(0)).setChecked(true);
+
+                    showAssigneeList();
+                    assigneeLocationChanged = false;
+                    dismissProgressDialog();
+                }
+            }, strLocation, getString(R.string.salesman));
+        } else
+            showAssigneeList();
     }
 
-    private void showLoanTypeList() {
-        radioGroup.removeAllViews();
+    private void setLoanTypeRadioGroup() {
+        loanTypeRadioGroup.removeAllViews();
 
         String[] locationArray = getResources().getStringArray(R.array.loan_type_filter);
         for (String locationItem : locationArray) {
             RadioButton rb = new RadioButton(this);
             rb.setPadding(24, 24, 24, 24);
             rb.setText(locationItem);
-            radioGroup.addView(rb);
+            loanTypeRadioGroup.addView(rb);
         }
-
-        ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
+        ((RadioButton) loanTypeRadioGroup.getChildAt(0)).setChecked(true);
     }
 
-    private void showStatusList() {
-        radioGroup.removeAllViews();
+    private void setStatusRadioGroup() {
+        statusRadioGroup.removeAllViews();
 
         String[] locationArray = getResources().getStringArray(R.array.status_filter);
         for (String locationItem : locationArray) {
             RadioButton rb = new RadioButton(this);
             rb.setPadding(24, 24, 24, 24);
             rb.setText(locationItem);
-            radioGroup.addView(rb);
+            statusRadioGroup.addView(rb);
         }
+        ((RadioButton) statusRadioGroup.getChildAt(0)).setChecked(true);
+    }
 
-        ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
+    private void showLocationList() {
+        showLocationScrollView();
+        hideAssignerScrollView();
+        hideAssigneeScrollView();
+        hideLoanTypeScrollView();
+        hideStatusScrollView();
+    }
+
+    private void showAssignerList() {
+        hideLocationScrollView();
+        showAssignerScrollView();
+        hideAssigneeScrollView();
+        hideLoanTypeScrollView();
+        hideStatusScrollView();
+    }
+
+    private void showAssigneeList() {
+        hideLocationScrollView();
+        hideAssignerScrollView();
+        showAssigneeScrollView();
+        hideLoanTypeScrollView();
+        hideStatusScrollView();
+    }
+
+    private void showLoanTypeList() {
+        hideLocationScrollView();
+        hideAssignerScrollView();
+        hideAssigneeScrollView();
+        showLoanTypeScrollView();
+        hideStatusScrollView();
+    }
+
+    private void showStatusList() {
+        hideLocationScrollView();
+        hideAssignerScrollView();
+        hideAssigneeScrollView();
+        hideLoanTypeScrollView();
+        showStatusScrollView();
+    }
+
+    private void highlightLocationButton() {
+        makeLocationButtonWhite();
+        makeAssignerButtonGray();
+        makeAssigneeButtonGray();
+        makeLoanTypeButtonGray();
+        makeStatusButtonGray();
+    }
+
+    private void highlightAssignerButton() {
+        makeLocationButtonGray();
+        makeAssignerButtonWhite();
+        makeAssigneeButtonGray();
+        makeLoanTypeButtonGray();
+        makeStatusButtonGray();
+    }
+
+    private void highlightAssigneeButton() {
+        makeLocationButtonGray();
+        makeAssignerButtonGray();
+        makeAssigneeButtonWhite();
+        makeLoanTypeButtonGray();
+        makeStatusButtonGray();
+    }
+
+    private void highlightLoanTypeButton() {
+        makeLocationButtonGray();
+        makeAssignerButtonGray();
+        makeAssigneeButtonGray();
+        makeLoanTypeButtonWhite();
+        makeStatusButtonGray();
+    }
+
+    private void highlightStatusButton() {
+        makeLocationButtonGray();
+        makeAssignerButtonGray();
+        makeAssigneeButtonGray();
+        makeLoanTypeButtonGray();
+        makeStatusButtonWhite();
+    }
+
+    private void makeLocationButtonWhite() {
+        locationButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+    }
+
+    private void makeAssignerButtonWhite() {
+        assignerButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+    }
+
+    private void makeAssigneeButtonWhite() {
+        assigneeButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+    }
+
+    private void makeLoanTypeButtonWhite() {
+        loanTypeButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+    }
+
+    private void makeStatusButtonWhite() {
+        statusButton.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+    }
+
+    private void makeLocationButtonGray() {
+        locationButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
+    }
+
+    private void makeAssignerButtonGray() {
+        assignerButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
+    }
+
+    private void makeAssigneeButtonGray() {
+        assigneeButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
+    }
+
+    private void makeLoanTypeButtonGray() {
+        loanTypeButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
+    }
+
+    private void makeStatusButtonGray() {
+        statusButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
     }
 
 
-    private OnFetchUsersListListener onFetchAssignerListListener() {
-        return new OnFetchUsersListListener() {
-            @Override
-            public void onListFetched(UserList userList) {
-                radioGroup.removeAllViews();
-                RadioButton rb = new RadioButton(FilterActivity.this);
-                rb.setPadding(24, 24, 24, 24);
-                rb.setText("All");
-                radioGroup.addView(rb);
-
-                if (userList.getUserList().size() != 0) {
-                    for (UserDetails user : userList.getUserList()) {
-                        RadioButton rb2 = new RadioButton(FilterActivity.this);
-                        rb2.setPadding(24, 24, 24, 24);
-                        rb2.setText(user.getUserName());
-                        radioGroup.addView(rb2);
-                    }
-                }
-                ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
-
-                dismissProgressDialog();
-            }
-        };
+    private void showLocationScrollView() {
+        locationScrollView.setVisibility(View.VISIBLE);
     }
 
-    private OnFetchUsersListListener onFetchAssigneeListListener() {
-        return new OnFetchUsersListListener() {
-            @Override
-            public void onListFetched(UserList userList) {
-                radioGroup.removeAllViews();
-                RadioButton rb = new RadioButton(FilterActivity.this);
-                rb.setPadding(24, 24, 24, 24);
-                rb.setText("All");
-                radioGroup.addView(rb);
-
-                if (userList.getUserList().size() != 0) {
-                    for (UserDetails user : userList.getUserList()) {
-                        RadioButton rb2 = new RadioButton(FilterActivity.this);
-                        rb2.setPadding(24, 24, 24, 24);
-                        rb2.setText(user.getUserName());
-                        radioGroup.addView(rb2);
-                    }
-                }
-                ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
-
-                dismissProgressDialog();
-            }
-        };
+    private void showAssignerScrollView() {
+        assignerScrollView.setVisibility(View.VISIBLE);
     }
 
+    private void showAssigneeScrollView() {
+        assigneeScrollView.setVisibility(View.VISIBLE);
+    }
 
-//        assignerSpinner = findViewById(R.id.assigner_filter);
-//        assigneeSpinner = findViewById(R.id.assignee_filter);
-//        locationSpinner = findViewById(R.id.location_filter);
-//        loanTypeSpinner = findViewById(R.id.loan_type_filter);
-//        statusSpinner = findViewById(R.id.status_filter);
-//
-//        locationFilterLayout = findViewById(R.id.location_filter_layout);
-//        assignerFilterLayout = findViewById(R.id.assigner_filter_layout);
-//        assigneeFilterLayout = findViewById(R.id.assignee_filter_layout);
-//
-//        showProgressDialog("Loading...", this);
-//
-//        if (currentUserType.equals(getString(R.string.salesman))) {
-//            locationFilterLayout.setVisibility(View.GONE);
-//            assigneeFilterLayout.setVisibility(View.GONE);
-//        } else if (currentUserType.equals(R.string.telecaller)) {
-//            assignerFilterLayout.setVisibility(View.GONE);
-//        }
-//
-//
-//        initializeLocationSpinner();
-//        initializeLoanTypeSpinner();
-//        initializeStatusSpinner();
-//
-//        getAssignerList();
-//
-//        Button button = findViewById(R.id.filter_button);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent();
-//                intent.putExtra("assigner_filter", strAssigner);
-//                intent.putExtra("assignee_filter", strAssignee);
-//                intent.putExtra("location_filter", strLocation);
-//                intent.putExtra("loan_type_filter", strLoanType);
-//                intent.putExtra("status_filter", strStatus);
-//
-//                setResult(201, intent);
-//                finish();
-//            }
-//        });
-//    }
-//
-//
-//
-//
-//
-//    private void initializeLocationSpinner() {
-//        // Location Spinner
-//        locationAdapter = ArrayAdapter.createFromResource(this,
-//                R.array.location_filter, android.R.layout.simple_spinner_item);
-//        locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        locationSpinner.setAdapter(locationAdapter);
-//        locationSpinner.setOnItemSelectedListener(this);
-//    }
-//
-//    private void initializeLoanTypeSpinner() {
-//        // Loan Type Spinner
-//        loanTypeAdapter = ArrayAdapter.createFromResource(this,
-//                R.array.loan_type_filter, android.R.layout.simple_spinner_item);
-//        loanTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        loanTypeSpinner.setAdapter(loanTypeAdapter);
-//        loanTypeSpinner.setOnItemSelectedListener(this);
-//    }
-//
-//    private void initializeStatusSpinner() {
-//        // Status Spinner
-//        statusAdapter = ArrayAdapter.createFromResource(this,
-//                R.array.status_filter, android.R.layout.simple_spinner_item);
-//        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        statusSpinner.setAdapter(statusAdapter);
-//        statusSpinner.setOnItemSelectedListener(this);
-//    }
-//
-//    @Override
-//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//        switch (parent.getId()) {
-//
-//            case R.id.location_filter:
-//                strLocation = parent.getItemAtPosition(position).toString();
-//                break;
-//
-//            case R.id.assigner_filter:
-//                strAssigner = parent.getItemAtPosition(position).toString();
-//                break;
-//
-//            case R.id.assignee_filter:
-//                strAssignee = parent.getItemAtPosition(position).toString();
-//                break;
-//
-//            case R.id.loan_type_filter:
-//                strLoanType = parent.getItemAtPosition(position).toString();
-//                break;
-//
-//            case R.id.status_filter:
-//                strStatus = parent.getItemAtPosition(position).toString();
-//                break;
-//
-//            default:
-//                break;
-//        }
-//    }
-//
-//    @Override
-//    public void onNothingSelected(AdapterView<?> parent) {
-//
-//    }
+    private void showLoanTypeScrollView() {
+        loanTypeScrollView.setVisibility(View.VISIBLE);
+    }
+
+    private void showStatusScrollView() {
+        statusScrollView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLocationScrollView() {
+        locationScrollView.setVisibility(View.GONE);
+    }
+
+    private void hideAssignerScrollView() {
+        assignerScrollView.setVisibility(View.GONE);
+    }
+
+    private void hideAssigneeScrollView() {
+        assigneeScrollView.setVisibility(View.GONE);
+    }
+
+    private void hideLoanTypeScrollView() {
+        loanTypeScrollView.setVisibility(View.GONE);
+    }
+
+    private void hideStatusScrollView() {
+        statusScrollView.setVisibility(View.GONE);
+    }
 }

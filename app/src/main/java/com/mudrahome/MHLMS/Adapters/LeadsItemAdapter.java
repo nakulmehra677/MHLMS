@@ -45,7 +45,10 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<LeadListViewHolder> i
         final LeadDetails model = leads.get(i);
 
         holder.name.setText(model.getName());
-        holder.loanAmount.setText("\u20B9" + model.getLoanAmount());
+        holder.loanAmount.setText(model.getLoanAmount());
+        holder.loanType.setText(model.getLoanType());
+        holder.location.setText(model.getLocation());
+
         holder.status.setText(model.getStatus());
         holder.date.setText(model.getDate());
 

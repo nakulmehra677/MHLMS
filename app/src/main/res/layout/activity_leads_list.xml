@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.LeadsListActivity">
+    tools:context=".Activities.LeadListActivity">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swiperefresh"
@@ -28,7 +28,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@android:color/transparent"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_button"
+        app:layout_constraintBottom_toTopOf="@+id/filter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -42,7 +42,7 @@
         android:background="@android:color/transparent"
         android:elevation="-10dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_button"
+        app:layout_constraintBottom_toTopOf="@+id/filter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -55,37 +55,20 @@
         android:layout_marginBottom="16dp"
         android:src="@drawable/ic_add_white_24dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_button"
+        app:layout_constraintBottom_toTopOf="@+id/filter"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/bottom_button"
+    <Button
+        android:id="@+id/filter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="4dp"
-        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:background="@color/colorWhite"
+        android:elevation="8dp"
+        android:onClick="onButtonClicked"
+        android:text="Filter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/sort_by"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/colorWhite"
-            android:onClick="onButtonClicked"
-            android:text="Sort By" />
-
-        <Button
-            android:id="@+id/filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/colorWhite"
-            android:onClick="onButtonClicked"
-            android:text="Filter" />
-
-    </LinearLayout>
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
