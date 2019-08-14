@@ -154,15 +154,27 @@ public class LeadListActivity extends BaseActivity {
     @SuppressLint("RestrictedApi")
     private void setLayoutByUser() {
         //if (sharedPreferences.getString(sharedPreferenceUserType, "Salesman").equals("Telecaller"))
-        if (profileManager.getCurrentUserType().equals(getString(R.string.telecaller)))
+        if (profileManager.getCurrentUserType().equals(getString(R.string.telecaller))) {
             fab.setVisibility(View.VISIBLE);
+            fab.setImageResource(R.drawable.ic_add_white_24dp);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(LeadListActivity.this, FeedCustomerDetailsActivity.class));
-            }
-        });
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(LeadListActivity.this, FeedCustomerDetailsActivity.class));
+                }
+            });
+        } else if (profileManager.getCurrentUserType().equals(getString(R.string.admin))) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setImageResource(R.drawable.megaphone);
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(LeadListActivity.this, StartOfferActivity.class));
+                }
+            });
+        }
         leadDetailsList.clear();
         fetchLeads();
     }

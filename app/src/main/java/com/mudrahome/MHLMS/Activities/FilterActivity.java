@@ -1,22 +1,14 @@
 package com.mudrahome.MHLMS.Activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
-import android.widget.Spinner;
-import android.widget.TabHost;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,8 +18,6 @@ import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class FilterActivity extends BaseActivity {
 
@@ -59,9 +49,6 @@ public class FilterActivity extends BaseActivity {
     private Button loanTypeButton;
     private Button statusButton;
 
-    private Button clearFilterButton;
-    private Button filterButton;
-
     private boolean assignerLocationChanged;
     private boolean assigneeLocationChanged;
 
@@ -88,24 +75,15 @@ public class FilterActivity extends BaseActivity {
         loanTypeRadioGroup = findViewById(R.id.loan_type_radio_group);
         statusRadioGroup = findViewById(R.id.status_radio_group);
 
-        filterButton = findViewById(R.id.filter_button);
-        clearFilterButton = findViewById(R.id.clear_filter_button);
-
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                getResources().getStringArray(R.array.filter_button));
-
         sharedPreferences = getSharedPreferences(
                 getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
         currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
 
         if (currentUserType.equals(getString(R.string.telecaller))) {
-            adapter.remove("Assigner");
-            adapter.notifyDataSetChanged();
+            assignerButton.setVisibility(View.GONE);
         } else if (currentUserType.equals(getString(R.string.salesman))) {
-            adapter.remove("Assignee");
-            adapter.notifyDataSetChanged();
+            locationButton.setVisibility(View.GONE);
+            assigneeButton.setVisibility(View.GONE);
         }
 
         firestore = new Firestore();
@@ -225,8 +203,13 @@ public class FilterActivity extends BaseActivity {
         setLoanTypeRadioGroup();
         setStatusRadioGroup();
 
-        showLocationList();
-        highlightLocationButton();
+        if (currentUserType.equals(getString(R.string.salesman))) {
+            setAssignerRadioGroup();
+            highlightAssignerButton();
+        } else {
+            showLocationList();
+            highlightLocationButton();
+        }
     }
 
     private void setLocationRadioGroup() {
