@@ -23,22 +23,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@android:color/white"
+                android:background="@color/colorGray"
                 android:clickable="false"
                 android:stateListAnimator="@null" />
 
             <Button
+                android:id="@+id/telecaller_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/colorGray"
+                android:background="@color/colorWhite"
+                android:stateListAnimator="@null"
                 android:text="Telecaller" />
 
             <Button
+                android:id="@+id/salesman_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@color/colorGray"
+                android:stateListAnimator="@null"
                 android:text="Salesmen" />
 
         </LinearLayout>
@@ -60,8 +64,7 @@
                     android:id="@+id/delhi_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorGray"
-                    android:onClick="buttonClicked"
+                    android:background="@color/colorWhite"
                     android:stateListAnimator="@null"
                     android:text="Delhi" />
 
@@ -70,7 +73,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorGray"
-                    android:onClick="buttonClicked"
                     android:stateListAnimator="@null"
                     android:text="Indore" />
 
@@ -79,7 +81,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorGray"
-                    android:onClick="buttonClicked"
                     android:stateListAnimator="@null"
                     android:text="Jaipur" />
 
@@ -88,7 +89,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorGray"
-                    android:onClick="buttonClicked"
                     android:stateListAnimator="@null"
                     android:text="Gwalior" />
 
@@ -97,7 +97,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorGray"
-                    android:onClick="buttonClicked"
                     android:stateListAnimator="@null"
                     android:text="Ahmedabad" />
 
@@ -115,88 +114,167 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="delhi telecaller" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/delhi_salesmen_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="delhi salesman" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/indore_telecaller_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="indore telecaller" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/indore_salesman_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="indore salesman" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/jaipur_telecaller_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="jaipur telecaller" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/jaipur_salesman_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="jaipur salesman" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/gwalior_telecaller_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="gwalior telecaller" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/gwalior_salesman_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="gwalior salesman" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/ahmedabad_telecaller_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="ahmedabad telecaller" />
+
+                </ScrollView>
 
                 <ScrollView
                     android:id="@+id/ahmedabad_salesman_scroll_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="ahmedabad salesman" />
+
+                </ScrollView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
