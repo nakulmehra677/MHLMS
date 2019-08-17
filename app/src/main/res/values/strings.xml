@@ -18,6 +18,7 @@
     <string name="lead_update_failed">Failed to update Lead.</string>
     <string name="logging_in">Logging in.</string>
     <string name="something_wrong">Something went wrong.</string>
+    <string name="uploaded">Uploaded…</string>
 
     <string name="home_loan">Home Loan</string>
     <string name="business_loan">Business Loan</string>
@@ -43,6 +44,13 @@
     <string name="SH_user_location">SHUserLocation</string>
     <string name="SH_user_key">SHUserKey</string>
     <string name="SH_user_uid">SHUserUid</string>
+
+    <!-- Locations -->
+    <string name="delhi">Delhi</string>
+    <string name="indore">Indore</string>
+    <string name="jaipur">Jaipur</string>
+    <string name="gwalior">Gwalior</string>
+    <string name="ahmedabad">Ahemdabad</string>
 
     <string-array name="property_type">
         <item>Self Occupied Residential Property</item>

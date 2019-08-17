@@ -8,6 +8,8 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.mudrahome.MHLMS.Fragments.FeedOfferDetailsFragment;
 import com.mudrahome.MHLMS.Fragments.SelectUserForOfferFragment;
@@ -24,6 +26,16 @@ public class StartOfferActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start_offer);
 
         mPager = findViewById(R.id.pager);
+        mPager.setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                return true;
+            }
+
+        });
+
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
     }

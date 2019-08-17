@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/select_user_button"
         app:layout_constraintEnd_toEndOf="parent"
@@ -116,10 +116,12 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/delhi_telecaller_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="delhi telecaller" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -131,12 +133,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/delhi_salesman_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="delhi salesman" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -148,12 +152,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/indore_telecaller_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="indore telecaller" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -165,12 +171,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/indore_salesman_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="indore salesman" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -182,12 +190,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/jaipur_telecaller_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="jaipur telecaller" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -199,12 +209,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/jaipur_salesman_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="jaipur salesman" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -216,12 +228,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/gwalior_telecaller_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="gwalior telecaller" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -233,12 +247,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/gwalior_salesman_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="gwalior salesman" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -250,12 +266,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/ahmedabad_telecaller_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="ahmedabad telecaller" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -267,12 +285,14 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/ahmedabad_salesman_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="ahmedabad salesman" />
+                        android:orientation="vertical"
+                        android:padding="16dp" />
 
                 </ScrollView>
 
@@ -282,18 +302,39 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/select_user_button"
+    <LinearLayout
+        android:id="@+id/button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginVertical="36dp"
-        android:background="@color/colorPrimaryDark"
-        android:onClick="buttonClicked"
-        android:text="Start Offer"
-        android:textColor="@color/colorWhite"
+        android:background="@color/colorWhite"
+        android:elevation="8dp"
+        android:orientation="horizontal"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/edit_offer_details_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:background="@color/colorWhite"
+            android:onClick="buttonClicked"
+            android:text="Edit Offer Details" />
+
+        <Button
+            android:id="@+id/start_offer_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:background="@color/colorPrimaryDark"
+            android:onClick="buttonClicked"
+            android:text="Start Offer"
+            android:textColor="@color/colorWhite" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

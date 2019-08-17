@@ -1,19 +1,35 @@
 package com.mudrahome.MHLMS.Fragments;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
+import com.mudrahome.MHLMS.ExtraViews;
+import com.mudrahome.MHLMS.Firebase.Firestore;
+import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
+import com.mudrahome.MHLMS.Interfaces.OnUploadOfferListener;
+import com.mudrahome.MHLMS.Models.OfferDetails;
+import com.mudrahome.MHLMS.Models.UserDetails;
+import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
+
+import java.util.ArrayList;
 
 public class SelectUserForOfferFragment extends Fragment implements View.OnClickListener {
 
+    private ViewGroup v;
     private Button delhiButton;
     private Button indoreButton;
     private Button jaipurButton;
@@ -41,11 +57,29 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
     private ScrollView gwaliorSalesmanScrollView;
     private ScrollView ahmedabadSalesmanScrollView;
 
+    private LinearLayout delhiTelecallerLayout;
+    private LinearLayout indoreTelecallerLayout;
+    private LinearLayout jaipurTelecallerLayout;
+    private LinearLayout gwaliorTelecallerLayout;
+    private LinearLayout ahmedabadTelecallerLayout;
+    private LinearLayout delhiSalesmanLayout;
+    private LinearLayout indoreSalesmanLayout;
+    private LinearLayout jaipurSalesmanLayout;
+    private LinearLayout gwaliorSalesmanLayout;
+    private LinearLayout ahmedabadSalesmanLayout;
+
+    private Button startOffer;
+    private Button editOfferDetails;
+
+    private ArrayList<CharSequence> userNames = new ArrayList<CharSequence>();
+    private OfferDetails details;
+    private Firestore firestore;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ViewGroup v = (ViewGroup) inflater.inflate(
+        v = (ViewGroup) inflater.inflate(
                 R.layout.fragment_select_user_for_offer, container, false);
 
         delhiButton = v.findViewById(R.id.delhi_button);
@@ -75,282 +109,340 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         gwaliorSalesmanScrollView = v.findViewById(R.id.gwalior_salesman_scroll_view);
         ahmedabadSalesmanScrollView = v.findViewById(R.id.ahmedabad_salesman_scroll_view);
 
+        delhiTelecallerLayout = v.findViewById(R.id.delhi_telecaller_layout);
+        indoreTelecallerLayout = v.findViewById(R.id.indore_telecaller_layout);
+        jaipurTelecallerLayout = v.findViewById(R.id.jaipur_telecaller_layout);
+        gwaliorTelecallerLayout = v.findViewById(R.id.gwalior_telecaller_layout);
+        ahmedabadTelecallerLayout = v.findViewById(R.id.ahmedabad_telecaller_layout);
+        delhiSalesmanLayout = v.findViewById(R.id.delhi_salesman_layout);
+        indoreSalesmanLayout = v.findViewById(R.id.indore_salesman_layout);
+        jaipurSalesmanLayout = v.findViewById(R.id.jaipur_salesman_layout);
+        gwaliorSalesmanLayout = v.findViewById(R.id.gwalior_salesman_layout);
+        ahmedabadSalesmanLayout = v.findViewById(R.id.ahmedabad_salesman_layout);
+
+        startOffer = v.findViewById(R.id.start_offer_button);
+        editOfferDetails = v.findViewById(R.id.edit_offer_details_button);
+
+        firestore = new Firestore();
+
         showDelhiTelecallerScrollView();
+
+        editOfferDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View pager = getActivity().findViewById(R.id.pager);
+                ((ViewPager) pager).setCurrentItem(0);
+            }
+        });
+
+        startOffer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                details.setUserNames(userNames);
+
+                if (isNetworkConnected()) {
+                    firestore.startOffer(new OnUploadOfferListener() {
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(getContext(), getString(R.string.uploaded), Toast.LENGTH_SHORT).show();
+                            getActivity().finish();
+                        }
+
+                        @Override
+                        public void onFail() {
+                            Toast.makeText(getContext(), getString(R.string.failed_to_upload), Toast.LENGTH_SHORT).show();
+
+                        }
+                    }, details);
+                } else {
+                    Toast.makeText(getContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         return v;
     }
 
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.telecaller_button:
-                if (salesmanButtonActive) {
+        if (isNetworkConnected()) {
 
-                    if (delhiButtonActive) {
-                        showDelhiTelecallerScrollView();
-                        hideDelhiSalesmanScrollView();
-                    } else if (indoreButtonActive) {
-                        showIndoreTelecallerScrollView();
-                        hideIndoreSalesmanScrollView();
+            switch (v.getId()) {
+                case R.id.telecaller_button:
+                    if (salesmanButtonActive) {
+
+                        if (delhiButtonActive) {
+                            showDelhiTelecallerScrollView();
+                            hideDelhiSalesmanScrollView();
+                        } else if (indoreButtonActive) {
+                            showIndoreTelecallerScrollView();
+                            hideIndoreSalesmanScrollView();
+                        } else if (jaipurButtonActive) {
+                            showJaipurTelecallerScrollView();
+                            hideJaipurSalesmanScrollView();
+                        } else if (gwaliorButtonActive) {
+                            showGwaliorTelecallerScrollView();
+                            hideGwaliorSalesmanScrollView();
+                        } else {
+                            showAhmedabadTelecallerScrollView();
+                            hideAhmedabadSalesmanScrollView();
+                        }
+                    }
+                    setTelecallerButtonWhite();
+                    setSalesmanButtonGray();
+                    break;
+
+                case R.id.salesman_button:
+                    if (telecallerButtonActive) {
+
+                        if (delhiButtonActive) {
+                            showDelhiSalesmanScrollView();
+                            hideDelhiTelecallerScrollView();
+                        } else if (indoreButtonActive) {
+                            hideIndoreTelecallerScrollView();
+                            showIndoreSalesmanScrollView();
+                        } else if (jaipurButtonActive) {
+                            hideJaipurTelecallerScrollView();
+                            showJaipurSalesmanScrollView();
+                        } else if (gwaliorButtonActive) {
+                            hideGwaliorTelecallerScrollView();
+                            showGwaliorSalesmanScrollView();
+                        } else {
+                            showAhmedabadSalesmanScrollView();
+                            hideAhmedabadTelecallerScrollView();
+                        }
+                        setTelecallerButtonGray();
+                        setSalesmanButtonWhite();
+                    }
+                    break;
+
+                case R.id.delhi_button:
+                    if (indoreButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideIndoreTelecallerScrollView();
+                            showDelhiTelecallerScrollView();
+                        } else {
+                            hideIndoreSalesmanScrollView();
+                            showDelhiSalesmanScrollView();
+                        }
+                        setDelhiButtonWhite();
+                        setIndoreButtonGray();
                     } else if (jaipurButtonActive) {
-                        showJaipurTelecallerScrollView();
-                        hideJaipurSalesmanScrollView();
+                        if (telecallerButtonActive) {
+                            hideJaipurTelecallerScrollView();
+                            showDelhiTelecallerScrollView();
+                        } else {
+                            hideJaipurSalesmanScrollView();
+                            showDelhiSalesmanScrollView();
+                        }
+                        setDelhiButtonWhite();
+                        setJaipurButtonGray();
                     } else if (gwaliorButtonActive) {
-                        showGwaliorTelecallerScrollView();
-                        hideGwaliorSalesmanScrollView();
-                    } else {
-                        showAhmedabadTelecallerScrollView();
-                        hideAhmedabadSalesmanScrollView();
+                        if (telecallerButtonActive) {
+                            hideGwaliorTelecallerScrollView();
+                            showDelhiTelecallerScrollView();
+                        } else {
+                            hideGwaliorSalesmanScrollView();
+                            showDelhiSalesmanScrollView();
+                        }
+                        setDelhiButtonWhite();
+                        setGwaliorButtonGray();
+                    } else if (ahmedabadButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideAhmedabadTelecallerScrollView();
+                            showDelhiTelecallerScrollView();
+                        } else {
+                            hideAhmedabadSalesmanScrollView();
+                            showDelhiSalesmanScrollView();
+                        }
+                        setDelhiButtonWhite();
+                        setAhmedabadButtonGray();
                     }
-                }
-                setTelecallerButtonWhite();
-                setSalesmanButtonGray();
-                break;
+                    break;
 
-            case R.id.salesman_button:
-                if (telecallerButtonActive) {
-
+                case R.id.indore_button:
                     if (delhiButtonActive) {
-                        showDelhiSalesmanScrollView();
-                        hideDelhiTelecallerScrollView();
-                    } else if (indoreButtonActive) {
-                        hideIndoreTelecallerScrollView();
-                        showIndoreSalesmanScrollView();
+                        if (telecallerButtonActive) {
+                            hideDelhiTelecallerScrollView();
+                            showIndoreTelecallerScrollView();
+                        } else {
+                            hideDelhiSalesmanScrollView();
+                            showIndoreSalesmanScrollView();
+                        }
+                        setIndoreButtonWhite();
+                        setDelhiButtonGray();
                     } else if (jaipurButtonActive) {
-                        hideJaipurTelecallerScrollView();
-                        showJaipurSalesmanScrollView();
+                        if (telecallerButtonActive) {
+                            hideJaipurTelecallerScrollView();
+                            showIndoreTelecallerScrollView();
+                        } else {
+                            hideJaipurSalesmanScrollView();
+                            showIndoreSalesmanScrollView();
+                        }
+                        setIndoreButtonWhite();
+                        setJaipurButtonGray();
                     } else if (gwaliorButtonActive) {
-                        hideGwaliorTelecallerScrollView();
-                        showGwaliorSalesmanScrollView();
-                    } else {
-                        showAhmedabadSalesmanScrollView();
-                        hideAhmedabadTelecallerScrollView();
+                        if (telecallerButtonActive) {
+                            hideGwaliorTelecallerScrollView();
+                            showIndoreTelecallerScrollView();
+                        } else {
+                            hideGwaliorSalesmanScrollView();
+                            showIndoreSalesmanScrollView();
+                        }
+                        setIndoreButtonWhite();
+                        setGwaliorButtonGray();
+                    } else if (ahmedabadButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideAhmedabadTelecallerScrollView();
+                            showIndoreTelecallerScrollView();
+                        } else {
+                            hideAhmedabadSalesmanScrollView();
+                            showIndoreSalesmanScrollView();
+                        }
+                        setIndoreButtonWhite();
+                        setAhmedabadButtonGray();
                     }
-                    setTelecallerButtonGray();
-                    setSalesmanButtonWhite();
-                }
-                break;
+                    break;
 
-            case R.id.delhi_button:
-                if (indoreButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideIndoreTelecallerScrollView();
-                        showDelhiTelecallerScrollView();
-                    } else {
-                        hideIndoreSalesmanScrollView();
-                        showDelhiSalesmanScrollView();
+                case R.id.jaipur_button:
+                    if (indoreButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideIndoreTelecallerScrollView();
+                            showJaipurTelecallerScrollView();
+                        } else {
+                            hideIndoreSalesmanScrollView();
+                            showJaipurSalesmanScrollView();
+                        }
+                        setJaipurButtonWhite();
+                        setIndoreButtonGray();
+                    } else if (delhiButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideDelhiTelecallerScrollView();
+                            showJaipurTelecallerScrollView();
+                        } else {
+                            hideDelhiSalesmanScrollView();
+                            showJaipurSalesmanScrollView();
+                        }
+                        setJaipurButtonWhite();
+                        setDelhiButtonGray();
+                    } else if (gwaliorButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideGwaliorTelecallerScrollView();
+                            showJaipurTelecallerScrollView();
+                        } else {
+                            hideGwaliorSalesmanScrollView();
+                            showJaipurSalesmanScrollView();
+                        }
+                        setJaipurButtonWhite();
+                        setGwaliorButtonGray();
+                    } else if (ahmedabadButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideAhmedabadTelecallerScrollView();
+                            showJaipurTelecallerScrollView();
+                        } else {
+                            hideAhmedabadSalesmanScrollView();
+                            showJaipurSalesmanScrollView();
+                        }
+                        setJaipurButtonWhite();
+                        setAhmedabadButtonGray();
                     }
-                    setDelhiButtonWhite();
-                    setIndoreButtonGray();
-                } else if (jaipurButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideJaipurTelecallerScrollView();
-                        showDelhiTelecallerScrollView();
-                    } else {
-                        hideJaipurSalesmanScrollView();
-                        showDelhiSalesmanScrollView();
-                    }
-                    setDelhiButtonWhite();
-                    setJaipurButtonGray();
-                } else if (gwaliorButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideGwaliorTelecallerScrollView();
-                        showDelhiTelecallerScrollView();
-                    } else {
-                        hideGwaliorSalesmanScrollView();
-                        showDelhiSalesmanScrollView();
-                    }
-                    setDelhiButtonWhite();
-                    setGwaliorButtonGray();
-                } else if (ahmedabadButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideAhmedabadTelecallerScrollView();
-                        showDelhiTelecallerScrollView();
-                    } else {
-                        hideAhmedabadSalesmanScrollView();
-                        showDelhiSalesmanScrollView();
-                    }
-                    setDelhiButtonWhite();
-                    setAhmedabadButtonGray();
-                }
-                break;
+                    break;
 
-            case R.id.indore_button:
-                if (delhiButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideDelhiTelecallerScrollView();
-                        showIndoreTelecallerScrollView();
-                    } else {
-                        hideDelhiSalesmanScrollView();
-                        showIndoreSalesmanScrollView();
+                case R.id.gwalior_button:
+                    if (indoreButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideIndoreTelecallerScrollView();
+                            showGwaliorTelecallerScrollView();
+                        } else {
+                            hideIndoreSalesmanScrollView();
+                            showGwaliorSalesmanScrollView();
+                        }
+                        setGwaliorButtonWhite();
+                        setIndoreButtonGray();
+                    } else if (jaipurButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideJaipurTelecallerScrollView();
+                            showGwaliorTelecallerScrollView();
+                        } else {
+                            hideJaipurSalesmanScrollView();
+                            showGwaliorSalesmanScrollView();
+                        }
+                        setGwaliorButtonWhite();
+                        setJaipurButtonGray();
+                    } else if (delhiButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideDelhiTelecallerScrollView();
+                            showGwaliorTelecallerScrollView();
+                        } else {
+                            showGwaliorSalesmanScrollView();
+                            hideDelhiSalesmanScrollView();
+                        }
+                        setGwaliorButtonWhite();
+                        setDelhiButtonGray();
+                    } else if (ahmedabadButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideAhmedabadTelecallerScrollView();
+                            showGwaliorTelecallerScrollView();
+                        } else {
+                            hideAhmedabadSalesmanScrollView();
+                            showGwaliorSalesmanScrollView();
+                        }
+                        setGwaliorButtonWhite();
+                        setAhmedabadButtonGray();
                     }
-                    setIndoreButtonWhite();
-                    setDelhiButtonGray();
-                } else if (jaipurButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideJaipurTelecallerScrollView();
-                        showIndoreTelecallerScrollView();
-                    } else {
-                        hideJaipurSalesmanScrollView();
-                        showIndoreSalesmanScrollView();
-                    }
-                    setIndoreButtonWhite();
-                    setJaipurButtonGray();
-                } else if (gwaliorButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideGwaliorTelecallerScrollView();
-                        showIndoreTelecallerScrollView();
-                    } else {
-                        hideGwaliorSalesmanScrollView();
-                        showIndoreSalesmanScrollView();
-                    }
-                    setIndoreButtonWhite();
-                    setGwaliorButtonGray();
-                } else if (ahmedabadButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideAhmedabadTelecallerScrollView();
-                        showIndoreTelecallerScrollView();
-                    } else {
-                        hideAhmedabadSalesmanScrollView();
-                        showIndoreSalesmanScrollView();
-                    }
-                    setIndoreButtonWhite();
-                    setAhmedabadButtonGray();
-                }
-                break;
+                    break;
 
-            case R.id.jaipur_button:
-                if (indoreButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideIndoreTelecallerScrollView();
-                        showJaipurTelecallerScrollView();
-                    } else {
-                        hideIndoreSalesmanScrollView();
-                        showJaipurSalesmanScrollView();
+                case R.id.ahmedabad_button:
+                    if (indoreButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideIndoreTelecallerScrollView();
+                            showAhmedabadTelecallerScrollView();
+                        } else {
+                            hideIndoreSalesmanScrollView();
+                            showAhmedabadSalesmanScrollView();
+                        }
+                        setAhmedabadButtonWhite();
+                        setIndoreButtonGray();
+                    } else if (jaipurButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideJaipurTelecallerScrollView();
+                            showAhmedabadTelecallerScrollView();
+                        } else {
+                            hideJaipurSalesmanScrollView();
+                            showAhmedabadSalesmanScrollView();
+                        }
+                        setAhmedabadButtonWhite();
+                        setJaipurButtonGray();
+                    } else if (gwaliorButtonActive) {
+                        if (telecallerButtonActive) {
+                            hideGwaliorTelecallerScrollView();
+                            showAhmedabadTelecallerScrollView();
+                        } else {
+                            hideGwaliorSalesmanScrollView();
+                            showAhmedabadSalesmanScrollView();
+                        }
+                        setAhmedabadButtonWhite();
+                        setGwaliorButtonGray();
+                    } else if (delhiButtonActive) {
+                        if (telecallerButtonActive) {
+                            showAhmedabadTelecallerScrollView();
+                            hideDelhiTelecallerScrollView();
+                        } else {
+                            showAhmedabadSalesmanScrollView();
+                            hideDelhiSalesmanScrollView();
+                        }
+                        setAhmedabadButtonWhite();
+                        setDelhiButtonGray();
                     }
-                    setJaipurButtonWhite();
-                    setIndoreButtonGray();
-                } else if (delhiButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideDelhiTelecallerScrollView();
-                        showJaipurTelecallerScrollView();
-                    } else {
-                        hideDelhiSalesmanScrollView();
-                        showJaipurSalesmanScrollView();
-                    }
-                    setJaipurButtonWhite();
-                    setDelhiButtonGray();
-                } else if (gwaliorButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideGwaliorTelecallerScrollView();
-                        showJaipurTelecallerScrollView();
-                    } else {
-                        hideGwaliorSalesmanScrollView();
-                        showJaipurSalesmanScrollView();
-                    }
-                    setJaipurButtonWhite();
-                    setGwaliorButtonGray();
-                } else if (ahmedabadButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideAhmedabadTelecallerScrollView();
-                        showJaipurTelecallerScrollView();
-                    } else {
-                        hideAhmedabadSalesmanScrollView();
-                        showJaipurSalesmanScrollView();
-                    }
-                    setJaipurButtonWhite();
-                    setAhmedabadButtonGray();
-                }
-                break;
-
-            case R.id.gwalior_button:
-                if (indoreButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideIndoreTelecallerScrollView();
-                        showGwaliorTelecallerScrollView();
-                    } else {
-                        hideIndoreSalesmanScrollView();
-                        showGwaliorSalesmanScrollView();
-                    }
-                    setGwaliorButtonWhite();
-                    setIndoreButtonGray();
-                } else if (jaipurButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideJaipurTelecallerScrollView();
-                        showGwaliorTelecallerScrollView();
-                    } else {
-                        hideJaipurSalesmanScrollView();
-                        showGwaliorSalesmanScrollView();
-                    }
-                    setGwaliorButtonWhite();
-                    setJaipurButtonGray();
-                } else if (delhiButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideDelhiTelecallerScrollView();
-                        showGwaliorTelecallerScrollView();
-                    } else {
-                        showGwaliorSalesmanScrollView();
-                        hideDelhiSalesmanScrollView();
-                    }
-                    setGwaliorButtonWhite();
-                    setDelhiButtonGray();
-                } else if (ahmedabadButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideAhmedabadTelecallerScrollView();
-                        showGwaliorTelecallerScrollView();
-                    } else {
-                        hideAhmedabadSalesmanScrollView();
-                        showGwaliorSalesmanScrollView();
-                    }
-                    setGwaliorButtonWhite();
-                    setAhmedabadButtonGray();
-                }
-                break;
-
-            case R.id.ahmedabad_button:
-                if (indoreButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideIndoreTelecallerScrollView();
-                        showAhmedabadTelecallerScrollView();
-                    } else {
-                        hideIndoreSalesmanScrollView();
-                        showAhmedabadSalesmanScrollView();
-                    }
-                    setAhmedabadButtonWhite();
-                    setIndoreButtonGray();
-                } else if (jaipurButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideJaipurTelecallerScrollView();
-                        showAhmedabadTelecallerScrollView();
-                    } else {
-                        hideJaipurSalesmanScrollView();
-                        showAhmedabadSalesmanScrollView();
-                    }
-                    setAhmedabadButtonWhite();
-                    setJaipurButtonGray();
-                } else if (gwaliorButtonActive) {
-                    if (telecallerButtonActive) {
-                        hideGwaliorTelecallerScrollView();
-                        showAhmedabadTelecallerScrollView();
-                    } else {
-                        hideGwaliorSalesmanScrollView();
-                        showAhmedabadSalesmanScrollView();
-                    }
-                    setAhmedabadButtonWhite();
-                    setGwaliorButtonGray();
-                } else if (delhiButtonActive) {
-                    if (telecallerButtonActive) {
-                        showAhmedabadTelecallerScrollView();
-                        hideDelhiTelecallerScrollView();
-                    } else {
-                        showAhmedabadSalesmanScrollView();
-                        hideDelhiSalesmanScrollView();
-                    }
-                    setAhmedabadButtonWhite();
-                    setDelhiButtonGray();
-                }
-                break;
-        }
+                    break;
+            }
+        } else
+            Toast.makeText(getContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
     }
 
     private void setDelhiButtonWhite() {
@@ -423,46 +515,312 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         salesmanButtonActive = false;
     }
 
+    ExtraViews extraViews = new ExtraViews();
+
+    private CheckBox addAllCheckBox(String text) {
+        CheckBox checkBox = new CheckBox(getContext());
+        checkBox.setPadding(24, 24, 24, 24);
+        checkBox.setText(text);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int id = ((View) view.getParent()).getId();
+                LinearLayout linearLayout = v.findViewById(id);
+
+                if (((CheckBox) view).getText().equals("All")) {
+
+                    if (((CheckBox) view).isChecked()) {
+                        for (int i = 1; i < linearLayout.getChildCount(); i++) {
+                            View childView = linearLayout.getChildAt(i);
+                            if (!((CheckBox) childView).isChecked()) {
+                                ((CheckBox) childView).setChecked(true);
+                                userNames.add(((CheckBox) childView).getText());
+                            }
+                        }
+                    } else {
+                        for (int i = 1; i < linearLayout.getChildCount(); i++) {
+                            View childView = linearLayout.getChildAt(i);
+                            ((CheckBox) childView).setChecked(false);
+                            userNames.remove(((CheckBox) childView).getText());
+                        }
+                    }
+                } else {
+                    boolean flag = false;
+                    if (((CheckBox) view).isChecked()) {
+                        for (int i = 1; i < linearLayout.getChildCount(); i++) {
+                            View childView = linearLayout.getChildAt(i);
+                            if (!((CheckBox) childView).isChecked()) {
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (!flag) {
+                            View childView = linearLayout.getChildAt(0);
+                            ((CheckBox) childView).setChecked(true);
+                        }
+                        userNames.add(((CheckBox) view).getText());
+                    } else {
+                        View childView = linearLayout.getChildAt(0);
+                        if (((CheckBox) childView).isChecked()) {
+                            ((CheckBox) childView).setChecked(false);
+                        }
+                        userNames.remove(((CheckBox) view).getText());
+                    }
+                }
+                Log.d("UserNames", String.valueOf(userNames));
+            }
+        });
+        return checkBox;
+    }
+
     private void showDelhiTelecallerScrollView() {
-        if (delhiTelecallerScrollView.getChildCount() > 0)
-            Toast.makeText(getContext(), "Empty", Toast.LENGTH_SHORT).show();
-        delhiTelecallerScrollView.setVisibility(View.VISIBLE);
+        if (delhiTelecallerLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    delhiTelecallerLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            delhiTelecallerLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    delhiTelecallerScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.delhi), getString(R.string.telecaller));
+
+        } else
+            delhiTelecallerScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showIndoreTelecallerScrollView() {
-        indoreTelecallerScrollView.setVisibility(View.VISIBLE);
+        if (indoreTelecallerLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    indoreTelecallerLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            indoreTelecallerLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    indoreTelecallerScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.indore), getString(R.string.telecaller));
+
+        } else
+            indoreTelecallerScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showJaipurTelecallerScrollView() {
-        jaipurTelecallerScrollView.setVisibility(View.VISIBLE);
+        if (jaipurTelecallerLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    jaipurTelecallerLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            jaipurTelecallerLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    jaipurTelecallerScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.jaipur), getString(R.string.telecaller));
+
+        } else
+            jaipurTelecallerScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showGwaliorTelecallerScrollView() {
-        gwaliorTelecallerScrollView.setVisibility(View.VISIBLE);
+        if (gwaliorTelecallerLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    gwaliorTelecallerLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            gwaliorTelecallerLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    gwaliorTelecallerScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.gwalior), getString(R.string.telecaller));
+
+        } else
+            gwaliorTelecallerScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showAhmedabadTelecallerScrollView() {
-        ahmedabadTelecallerScrollView.setVisibility(View.VISIBLE);
+        if (ahmedabadTelecallerLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    ahmedabadTelecallerLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            ahmedabadTelecallerLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    ahmedabadTelecallerScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.ahmedabad), getString(R.string.telecaller));
+
+        } else
+            ahmedabadTelecallerScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showDelhiSalesmanScrollView() {
-        delhiSalesmanScrollView.setVisibility(View.VISIBLE);
+        if (delhiSalesmanLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    delhiSalesmanLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            delhiSalesmanLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    delhiSalesmanScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.delhi), getString(R.string.salesman));
+
+        } else
+            delhiSalesmanScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showIndoreSalesmanScrollView() {
-        indoreSalesmanScrollView.setVisibility(View.VISIBLE);
+        if (indoreSalesmanLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    indoreSalesmanLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            indoreSalesmanLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    indoreSalesmanScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.indore), getString(R.string.salesman));
+
+        } else
+            indoreSalesmanScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showJaipurSalesmanScrollView() {
-        jaipurSalesmanScrollView.setVisibility(View.VISIBLE);
+        if (jaipurSalesmanLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    jaipurSalesmanLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            jaipurSalesmanLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    jaipurSalesmanScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.jaipur), getString(R.string.salesman));
+
+        } else
+            jaipurSalesmanScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showGwaliorSalesmanScrollView() {
-        gwaliorSalesmanScrollView.setVisibility(View.VISIBLE);
+        if (gwaliorSalesmanLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    gwaliorSalesmanLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            gwaliorSalesmanLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    gwaliorSalesmanScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.gwalior), getString(R.string.salesman));
+
+        } else
+            gwaliorSalesmanScrollView.setVisibility(View.VISIBLE);
     }
 
     private void showAhmedabadSalesmanScrollView() {
-        ahmedabadSalesmanScrollView.setVisibility(View.VISIBLE);
+        if (ahmedabadSalesmanLayout.getChildCount() == 0) {
+            extraViews.startProgressDialog("Loading...", getContext());
+
+            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                @Override
+                public void onListFetched(UserList userList) {
+                    CheckBox allCheckBox = addAllCheckBox("All");
+                    ahmedabadSalesmanLayout.addView(allCheckBox);
+
+                    if (userList.getUserList().size() != 0) {
+                        for (UserDetails user : userList.getUserList()) {
+                            CheckBox checkBox = addAllCheckBox(user.getUserName());
+                            ahmedabadSalesmanLayout.addView(checkBox);
+                        }
+                    }
+                    extraViews.dismissProgressDialog();
+                    ahmedabadSalesmanScrollView.setVisibility(View.VISIBLE);
+                }
+            }, getString(R.string.ahmedabad), getString(R.string.salesman));
+
+        } else
+            ahmedabadSalesmanScrollView.setVisibility(View.VISIBLE);
     }
 
     private void hideDelhiTelecallerScrollView() {

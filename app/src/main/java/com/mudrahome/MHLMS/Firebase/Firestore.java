@@ -11,7 +11,9 @@ import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
 import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
 import com.mudrahome.MHLMS.Interfaces.OnUpdateLeadListener;
 import com.mudrahome.MHLMS.Interfaces.OnUploadCustomerDetailsListener;
+import com.mudrahome.MHLMS.Interfaces.OnUploadOfferListener;
 import com.mudrahome.MHLMS.Models.LeadDetails;
+import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -198,5 +200,25 @@ public class Firestore {
         DocumentReference dRef = db.collection("userList").document(uId);
 
         dRef.update("deviceToken", deviceToken);
+    }
+
+    public void startOffer(final OnUploadOfferListener listener, OfferDetails details) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("offerList").document();
+
+        details.setKey(dRef.getId());
+
+        dRef.set(details).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                listener.onSuccess();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFail();
+                Log.e("TAG", "Error adding document", e);
+            }
+        });
     }
 }
