@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import android.util.Log;
 
+import com.mudrahome.MHLMS.Interfaces.FetchOffer;
 import com.mudrahome.MHLMS.Interfaces.OnFetchLeadListListener;
 import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
 import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
@@ -123,6 +124,26 @@ public class Firestore {
             @Override
             public void onFailure(@NonNull Exception e) {
                 listener.onFailer();
+            }
+        });
+    }
+
+    public void getOffers(final FetchOffer fetchOffer, String name){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query = db.collection("offerList");
+        query = query.whereArrayContains("userNames", name);
+
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+
+                List<OfferDetails> offerDetails = new ArrayList<>();
+                for (QueryDocumentSnapshot document : documentSnapshots) {
+                    OfferDetails l = document.toObject(OfferDetails.class);
+                    offerDetails.add(l);
+                }
+
+                fetchOffer.onSuccess(offerDetails);
             }
         });
     }

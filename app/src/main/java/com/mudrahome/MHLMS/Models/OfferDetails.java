@@ -12,6 +12,10 @@ public class OfferDetails {
         this.userNames = userNames;
     }
 
+    public OfferDetails() {
+        
+    }
+
     public String getKey() {
         return key;
     }

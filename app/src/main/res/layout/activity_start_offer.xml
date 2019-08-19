@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.mudrahome.MHLMS.Activities.StartOfferActivity">
 
-    <androidx.viewpager.widget.ViewPager
+    <com.mudrahome.MHLMS.CustomViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

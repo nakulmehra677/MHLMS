@@ -151,7 +151,6 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                         @Override
                         public void onFail() {
                             Toast.makeText(getContext(), getString(R.string.failed_to_upload), Toast.LENGTH_SHORT).show();
-
                         }
                     }, details);
                 } else {

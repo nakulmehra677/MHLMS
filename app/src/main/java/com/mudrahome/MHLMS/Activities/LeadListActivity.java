@@ -24,10 +24,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.mudrahome.MHLMS.Adapters.LeadsItemAdapter;
 import com.mudrahome.MHLMS.Firebase.Firestore;
+import com.mudrahome.MHLMS.Interfaces.FetchOffer;
 import com.mudrahome.MHLMS.Interfaces.OnFetchLeadListListener;
 import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.LeadDetails;
+import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -50,7 +52,7 @@ public class LeadListActivity extends BaseActivity {
     private ProfileManager profileManager;
     private Fragment fragment = null;
 
-    private List<LeadDetails> leadDetailsList = new ArrayList<>();
+    private List<Object> leadDetailsList = new ArrayList<>();
     private LeadsItemAdapter adapter;
     private boolean isSrolling;
     private boolean isLastItemFetched;
@@ -141,7 +143,7 @@ public class LeadListActivity extends BaseActivity {
                             }
                         }, 5000);
                         //linearLayoutManager = new LinearLayoutManager(LeadListActivity.this);
-                        fetchLeads();
+                        getOffer();
                     }
                 }
         );
@@ -176,7 +178,25 @@ public class LeadListActivity extends BaseActivity {
             });
         }
         leadDetailsList.clear();
-        fetchLeads();
+        getOffer();
+    }
+
+    private void getOffer() {
+        firestore.getOffers(new FetchOffer() {
+            @Override
+            public void onSuccess(List<OfferDetails> details) {
+                if (details.size() > 0) {
+                    leadDetailsList.addAll(details);
+                    adapter.notifyDataSetChanged();
+                }
+                fetchLeads();
+            }
+
+            @Override
+            public void onFail() {
+                fetchLeads();
+            }
+        }, profileManager.getCurrentUserDetails().getUserName());
     }
 
     private void fetchLeads() {
@@ -329,7 +349,8 @@ public class LeadListActivity extends BaseActivity {
             @Override
             public void onLeadChanged(LeadDetails l) {
                 for (int i = 0; i < leadDetailsList.size(); i++) {
-                    if (l.getKey().equals(leadDetailsList.get(i).getKey())) {
+                    LeadDetails details = (LeadDetails) leadDetailsList.get(i);
+                    if (l.getKey().equals(details.getKey())) {
                         leadDetailsList.set(i, l);
                     }
                 }
