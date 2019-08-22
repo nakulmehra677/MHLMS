@@ -19,8 +19,8 @@ public class FeedOfferDetailsFragment extends Fragment {
     private EditText offerDescription;
     private Button button;
 
-    private String strOfferName;
-    private String strOfferDescription;
+    public static String strOfferTitle;
+    public static String strOfferDescription;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,10 +35,10 @@ public class FeedOfferDetailsFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                strOfferName = offerName.getText().toString();
+                strOfferTitle = offerName.getText().toString();
                 strOfferDescription = offerDescription.getText().toString();
 
-                if (strOfferName.isEmpty() || strOfferDescription.isEmpty()) {
+                if (strOfferTitle.isEmpty() || strOfferDescription.isEmpty()) {
                     Toast.makeText(getContext(), getString(R.string.fill_all_fields), Toast.LENGTH_SHORT).show();
                 } else {
                     View pager = getActivity().findViewById(R.id.pager);

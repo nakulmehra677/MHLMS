@@ -3,9 +3,13 @@ package com.mudrahome.MHLMS.Adapters;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +25,7 @@ import com.mudrahome.MHLMS.ViewHolders.OfferViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
@@ -56,8 +61,6 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 View v1 = inflater.inflate(R.layout.lead_list_item, parent, false);
                 viewHolder = new LeadListViewHolder(v1);
                 break;
-
-
         }
         return viewHolder;
     }
@@ -69,9 +72,19 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             case OFFER:
                 OfferViewHolder vh1 = (OfferViewHolder) holder;
                 final OfferDetails offerDetails = (OfferDetails) items.get(i);
+
                 if (offerDetails != null) {
+                    Random rnd = new Random();
+//                    int color = Color.argb(255,
+//                            rnd.nextInt(256),
+//                            rnd.nextInt(256),
+//                            rnd.nextInt(256));
+//
+//                    vh1.layout.setBackgroundColor(color);
+
                     vh1.offerTitle.setText(offerDetails.getTitle());
                     vh1.offerDescription.setText(offerDetails.getDescription());
+
                 }
                 break;
 
@@ -103,6 +116,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         leadDetailsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "f");
                     }
                 });
+                break;
         }
     }
 

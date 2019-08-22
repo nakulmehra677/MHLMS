@@ -103,11 +103,11 @@
 
     <string-array name="location_filter">
         <item>All</item>
+        <item>Ahemdabad</item>
         <item>Delhi</item>
+        <item>Gwalior</item>
         <item>Indore</item>
         <item>Jaipur</item>
-        <item>Gwalior</item>
-        <item>Ahemdabad</item>
     </string-array>
 
     <string-array name="loan_type_filter">

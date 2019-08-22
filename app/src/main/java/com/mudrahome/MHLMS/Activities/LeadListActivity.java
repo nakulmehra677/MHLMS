@@ -173,7 +173,10 @@ public class LeadListActivity extends BaseActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startActivity(new Intent(LeadListActivity.this, StartOfferActivity.class));
+                    if(isNetworkConnected()){
+                    startActivity(new Intent(LeadListActivity.this, StartOfferActivity.class));}
+                    else
+                        showToastMessage(R.string.no_internet);
                 }
             });
         }
@@ -183,20 +186,23 @@ public class LeadListActivity extends BaseActivity {
 
     private void getOffer() {
         firestore.getOffers(new FetchOffer() {
-            @Override
-            public void onSuccess(List<OfferDetails> details) {
-                if (details.size() > 0) {
-                    leadDetailsList.addAll(details);
-                    adapter.notifyDataSetChanged();
-                }
-                fetchLeads();
-            }
+                                @Override
+                                public void onSuccess(List<OfferDetails> details) {
+                                    if (details.size() > 0) {
+                                        leadDetailsList.addAll(details);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                    fetchLeads();
+                                }
 
-            @Override
-            public void onFail() {
-                fetchLeads();
-            }
-        }, profileManager.getCurrentUserDetails().getUserName());
+                                @Override
+                                public void onFail() {
+                                    fetchLeads();
+                                }
+                            },
+                profileManager.getCurrentUserDetails().getUserName(),
+                profileManager.getCurrentUserType(),
+                true);
     }
 
     private void fetchLeads() {
@@ -237,40 +243,6 @@ public class LeadListActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.lead_list_menu, menu);
-
-        MenuItem item = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                adapter.getFilter().filter(query);
-                mySwipeRefreshLayout.setEnabled(false);
-                mySwipeRefreshLayout.setRefreshing(false);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                /*for (int i = 0; i < leadDetailsList.size(); i++) {
-                    if (!leadDetailsList.get(i).getName().toLowerCase().contains(newText))
-                        leadDetailsList.remove(i);
-                }
-                adapter.notifyDataSetChanged();*/
-                return false;
-            }
-        });
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                mySwipeRefreshLayout.setEnabled(true);
-                leadDetailsList.clear();
-                fetchLeads();
-                return false;
-            }
-        });
-
         return true;
     }
 
@@ -303,12 +275,18 @@ public class LeadListActivity extends BaseActivity {
 
                 } else
                     showToastMessage(R.string.no_internet);
+                break;
 
-            default:
-                return super.onOptionsItemSelected(item);
+            case R.id.notification:
+                if (isNetworkConnected()) {
+                    Intent intent = new Intent(LeadListActivity.this, NotificationActivity.class);
+                    startActivity(intent);
+                } else
+                    showToastMessage(R.string.no_internet);
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
-
 
     private OnGetUserDetails onFetchUserDetailsByUId() {
         return new OnGetUserDetails() {

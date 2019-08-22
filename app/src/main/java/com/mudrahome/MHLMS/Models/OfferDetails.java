@@ -1,19 +1,32 @@
 package com.mudrahome.MHLMS.Models;
 
+import com.google.firebase.Timestamp;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class OfferDetails {
     private String title, description, key;
-    ArrayList<CharSequence> userNames;
+    private List<String> userNames = new ArrayList<>();
+    private Timestamp timestamp;
 
-    public OfferDetails(String title, String description, ArrayList<CharSequence> userNames) {
-        this.title = title;
-        this.description = description;
-        this.userNames = userNames;
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
     public OfferDetails() {
-        
+
+    }
+
+    public OfferDetails(String title, String description, List<String> userNames, Timestamp timestamp) {
+        this.title = title;
+        this.description = description;
+        this.userNames = userNames;
+        this.timestamp = timestamp;
     }
 
     public String getKey() {
@@ -40,11 +53,11 @@ public class OfferDetails {
         this.description = description;
     }
 
-    public ArrayList<CharSequence> getUserNames() {
+    public List<String> getUserNames() {
         return userNames;
     }
 
-    public void setUserNames(ArrayList<CharSequence> userNames) {
+    public void setUserNames(List<String> userNames) {
         this.userNames = userNames;
     }
 }

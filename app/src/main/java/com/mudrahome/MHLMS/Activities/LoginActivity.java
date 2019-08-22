@@ -55,13 +55,13 @@ public class LoginActivity extends BaseActivity {
         profileManager = new ProfileManager();
 
         Log.d("API level", String.valueOf(Build.VERSION.SDK_INT));
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            checkLogin();
+        if (isNetworkConnected()) {
+            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                checkLogin();
+            } else
+                checkUpdate();
         } else
-            checkUpdate();
-
-
-
+            showToastMessage(R.string.no_internet);
     }
 
     public void loginButton(View view) {
@@ -127,8 +127,7 @@ public class LoginActivity extends BaseActivity {
                 currentUserDetails = userDetails;
 
                 storeInSharedPreferences();
-                if (progress.isShowing())
-                    dismissProgressDialog();
+                dismissProgressDialog();
                 showToastMessage(R.string.logged_in);
 
                 startActivityForResult(new Intent(
@@ -147,9 +146,7 @@ public class LoginActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (isNetworkConnected()) {
-            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                checkLogin();
-            } else
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 isUpdating();
         } else {
             showToastMessage(R.string.no_internet);
@@ -223,24 +220,23 @@ public class LoginActivity extends BaseActivity {
 
         Task<AppUpdateInfo> appUpdateInfoTask = manager.getAppUpdateInfo();
 
-        manager.getAppUpdateInfo().addOnSuccessListener(
-                new OnSuccessListener<AppUpdateInfo>() {
-                    @Override
-                    public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                        if (appUpdateInfo.updateAvailability()
-                                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-                            // If an in-app update is already running, resume the update.
-                            try {
-                                manager.startUpdateFlowForResult(
-                                        appUpdateInfo,
-                                        IMMEDIATE,
-                                        LoginActivity.this,
-                                        17362);
-                            } catch (IntentSender.SendIntentException e) {
-                                e.printStackTrace();
-                            }
-                        }
+        manager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo appUpdateInfo) {
+                if (appUpdateInfo.updateAvailability()
+                        == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                    // If an in-app update is already running, resume the update.
+                    try {
+                        manager.startUpdateFlowForResult(
+                                appUpdateInfo,
+                                IMMEDIATE,
+                                LoginActivity.this,
+                                17362);
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
                     }
-                });
+                }
+            }
+        });
     }
 }

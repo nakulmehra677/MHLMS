@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.mudrahome.MHLMS.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,10 +82,12 @@ public class Firestore {
                     .whereEqualTo("userType", userType)
                     .whereEqualTo("location", location);
 
+        query = query.orderBy("userName", Query.Direction.ASCENDING);
 
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
+                Log.d("HEREEE", "ffff");
 
                 List<UserDetails> salesPersonList = new ArrayList<>();
                 for (QueryDocumentSnapshot document : documentSnapshots) {
@@ -128,10 +131,17 @@ public class Firestore {
         });
     }
 
-    public void getOffers(final FetchOffer fetchOffer, String name){
+    public void getOffers(final FetchOffer fetchOffer, String name, String userType, boolean singleItem) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query query = db.collection("offerList");
-        query = query.whereArrayContains("userNames", name);
+
+        if (!userType.equals("Admin"))
+            query = query.whereArrayContains("userNames", name);
+
+        query = query.orderBy("timestamp", Query.Direction.DESCENDING);
+
+        if (singleItem)
+            query = query.limit(1);
 
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -141,6 +151,8 @@ public class Firestore {
                 for (QueryDocumentSnapshot document : documentSnapshots) {
                     OfferDetails l = document.toObject(OfferDetails.class);
                     offerDetails.add(l);
+//                    Log.d("offerr", l.getTitle());
+//                    Log.d("offerr", l.getDescription());
                 }
 
                 fetchOffer.onSuccess(offerDetails);

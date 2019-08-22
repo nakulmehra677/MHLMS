@@ -7,27 +7,25 @@ import android.view.MotionEvent;
 import androidx.viewpager.widget.ViewPager;
 
 public class CustomViewPager extends ViewPager {
-    private boolean isPagingEnabled = false;
-
+    private Boolean disable = false;
     public CustomViewPager(Context context) {
         super(context);
     }
-
-    public CustomViewPager(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public CustomViewPager(Context context, AttributeSet attrs){
+        super(context,attrs);
+    }
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        return !disable && super.onInterceptTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return this.isPagingEnabled && super.onTouchEvent(event);
+        return !disable && super.onTouchEvent(event);
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        return this.isPagingEnabled && super.onInterceptTouchEvent(event);
-    }
-
-    public void setPagingEnabled(boolean b) {
-        this.isPagingEnabled = b;
+    public void disableScroll(Boolean disable){
+        //When disable = true not work the scroll and when disble = false work the scroll
+        this.disable = disable;
     }
 }

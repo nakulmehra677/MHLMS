@@ -28,6 +28,7 @@ public class StartOfferActivity extends AppCompatActivity {
 
         mPager = findViewById(R.id.pager);
 
+        mPager.disableScroll(true);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
     }

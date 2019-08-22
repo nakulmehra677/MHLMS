@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FieldValue;
 import com.mudrahome.MHLMS.ExtraViews;
 import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
@@ -26,6 +29,10 @@ import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static com.mudrahome.MHLMS.Fragments.FeedOfferDetailsFragment.strOfferDescription;
+import static com.mudrahome.MHLMS.Fragments.FeedOfferDetailsFragment.strOfferTitle;
 
 public class SelectUserForOfferFragment extends Fragment implements View.OnClickListener {
 
@@ -71,7 +78,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
     private Button startOffer;
     private Button editOfferDetails;
 
-    private ArrayList<CharSequence> userNames = new ArrayList<CharSequence>();
+    private List<String> userNames = new ArrayList<>();
     private OfferDetails details;
     private Firestore firestore;
 
@@ -138,24 +145,30 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         startOffer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                details.setUserNames(userNames);
+                if (userNames.size() != 0) {
+                    details = new OfferDetails(strOfferTitle, strOfferDescription, userNames, Timestamp.now());
 
-                if (isNetworkConnected()) {
-                    firestore.startOffer(new OnUploadOfferListener() {
-                        @Override
-                        public void onSuccess() {
-                            Toast.makeText(getContext(), getString(R.string.uploaded), Toast.LENGTH_SHORT).show();
-                            getActivity().finish();
-                        }
+                    if (isNetworkConnected()) {
+                        final ExtraViews extraViews = new ExtraViews();
+                        extraViews.startProgressDialog("Loading...", getContext());
+                        firestore.startOffer(new OnUploadOfferListener() {
+                            @Override
+                            public void onSuccess() {
+                                extraViews.dismissProgressDialog();
+                                Toast.makeText(getContext(), getString(R.string.uploaded), Toast.LENGTH_SHORT).show();
+                                getActivity().finish();
+                            }
 
-                        @Override
-                        public void onFail() {
-                            Toast.makeText(getContext(), getString(R.string.failed_to_upload), Toast.LENGTH_SHORT).show();
-                        }
-                    }, details);
-                } else {
-                    Toast.makeText(getContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
-                }
+                            @Override
+                            public void onFail() {
+                                Toast.makeText(getContext(), getString(R.string.failed_to_upload), Toast.LENGTH_SHORT).show();
+                            }
+                        }, details);
+                    } else {
+                        Toast.makeText(getContext(), getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+                    }
+                } else
+                    Toast.makeText(getContext(), "Select Users", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -533,7 +546,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                             View childView = linearLayout.getChildAt(i);
                             if (!((CheckBox) childView).isChecked()) {
                                 ((CheckBox) childView).setChecked(true);
-                                userNames.add(((CheckBox) childView).getText());
+                                userNames.add((String) ((CheckBox) childView).getText());
                             }
                         }
                     } else {
@@ -557,7 +570,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                             View childView = linearLayout.getChildAt(0);
                             ((CheckBox) childView).setChecked(true);
                         }
-                        userNames.add(((CheckBox) view).getText());
+                        userNames.add((String) ((CheckBox) view).getText());
                     } else {
                         View childView = linearLayout.getChildAt(0);
                         if (((CheckBox) childView).isChecked()) {
@@ -579,10 +592,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    delhiTelecallerLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        delhiTelecallerLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             delhiTelecallerLayout.addView(checkBox);
@@ -604,10 +618,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    indoreTelecallerLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        indoreTelecallerLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             indoreTelecallerLayout.addView(checkBox);
@@ -629,10 +644,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    jaipurTelecallerLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        jaipurTelecallerLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             jaipurTelecallerLayout.addView(checkBox);
@@ -654,10 +670,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    gwaliorTelecallerLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        gwaliorTelecallerLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             gwaliorTelecallerLayout.addView(checkBox);
@@ -679,10 +696,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    ahmedabadTelecallerLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        ahmedabadTelecallerLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             ahmedabadTelecallerLayout.addView(checkBox);
@@ -704,10 +722,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    delhiSalesmanLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        delhiSalesmanLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             delhiSalesmanLayout.addView(checkBox);
@@ -729,10 +748,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    indoreSalesmanLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        indoreSalesmanLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             indoreSalesmanLayout.addView(checkBox);
@@ -754,10 +774,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    jaipurSalesmanLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        jaipurSalesmanLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             jaipurSalesmanLayout.addView(checkBox);
@@ -779,10 +800,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    gwaliorSalesmanLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        gwaliorSalesmanLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             gwaliorSalesmanLayout.addView(checkBox);
@@ -804,10 +826,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
                 @Override
                 public void onListFetched(UserList userList) {
-                    CheckBox allCheckBox = addAllCheckBox("All");
-                    ahmedabadSalesmanLayout.addView(allCheckBox);
 
                     if (userList.getUserList().size() != 0) {
+                        CheckBox allCheckBox = addAllCheckBox("All");
+                        ahmedabadSalesmanLayout.addView(allCheckBox);
+
                         for (UserDetails user : userList.getUserList()) {
                             CheckBox checkBox = addAllCheckBox(user.getUserName());
                             ahmedabadSalesmanLayout.addView(checkBox);
