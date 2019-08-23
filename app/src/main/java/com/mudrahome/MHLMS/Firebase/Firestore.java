@@ -10,6 +10,7 @@ import com.mudrahome.MHLMS.Interfaces.FetchOffer;
 import com.mudrahome.MHLMS.Interfaces.OnFetchLeadListListener;
 import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
 import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
+import com.mudrahome.MHLMS.Interfaces.OnRemoveAd;
 import com.mudrahome.MHLMS.Interfaces.OnUpdateLeadListener;
 import com.mudrahome.MHLMS.Interfaces.OnUploadCustomerDetailsListener;
 import com.mudrahome.MHLMS.Interfaces.OnUploadOfferListener;
@@ -251,6 +252,23 @@ public class Firestore {
             public void onFailure(@NonNull Exception e) {
                 listener.onFail();
                 Log.e("TAG", "Error adding document", e);
+            }
+        });
+    }
+
+    public void removeAd(final OnRemoveAd removeAd, OfferDetails details) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("offerList").document(details.getKey());
+
+        dRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                removeAd.onSuccess();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                removeAd.onFail();
             }
         });
     }
