@@ -91,6 +91,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         Log.d("State", "onCreateDialog");
 
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+        dialog.setCancelable(false);
 
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
 

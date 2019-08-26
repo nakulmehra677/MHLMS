@@ -47,4 +47,24 @@ public class BaseActivity extends AppCompatActivity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+    protected boolean flag;
+
+    protected void startCountdown(final int i) {
+        flag = false;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int j = i; j > 0; j--) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        System.out.println("got interrupted!");
+                    }
+                }
+                dismissProgressDialog();
+            }
+        });
+    }
 }

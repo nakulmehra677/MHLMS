@@ -12,6 +12,7 @@ import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
 import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
 import com.mudrahome.MHLMS.Interfaces.OnRemoveAd;
 import com.mudrahome.MHLMS.Interfaces.OnUpdateLeadListener;
+import com.mudrahome.MHLMS.Interfaces.OnUpdateUser;
 import com.mudrahome.MHLMS.Interfaces.OnUploadCustomerDetailsListener;
 import com.mudrahome.MHLMS.Interfaces.OnUploadOfferListener;
 import com.mudrahome.MHLMS.Models.LeadDetails;
@@ -269,6 +270,25 @@ public class Firestore {
             @Override
             public void onFailure(@NonNull Exception e) {
                 removeAd.onFail();
+            }
+        });
+    }
+
+    public void updateUserDetails(final OnUpdateUser updateUser, UserDetails details) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("userList").document(details.getuId());
+
+        dRef.update("contactNumber", details.getContactNumber())
+
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        updateUser.onSuccess();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                updateUser.onFail();
             }
         });
     }

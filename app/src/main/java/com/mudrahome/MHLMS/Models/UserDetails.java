@@ -9,7 +9,7 @@ public class UserDetails {
         this.key = key;
     }
 
-    private String uId, userName, mail, location, userType, key, deviceToken;
+    private String uId, userName, mail, location, userType, key, deviceToken,contactNumber;
 
     public UserDetails() {
     }
@@ -23,6 +23,14 @@ public class UserDetails {
         this.userType = userType;
         this.key = key;
         this.deviceToken = deviceToken;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
     }
 
     public String getDeviceToken() {

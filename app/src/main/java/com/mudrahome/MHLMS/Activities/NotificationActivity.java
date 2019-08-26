@@ -88,37 +88,39 @@ public class NotificationActivity extends BaseActivity {
             }
         }, currentUserName, currentUserType, false);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
+        if (currentUserType.equals(getString(R.string.admin))) {
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {
 
-                AlertDialog.Builder adb = new AlertDialog.Builder(NotificationActivity.this);
-                adb.setTitle("Delete?");
-                adb.setMessage("Are you sure you want to delete this ad?");
+                    AlertDialog.Builder adb = new AlertDialog.Builder(NotificationActivity.this);
+                    adb.setTitle("Delete?");
+                    adb.setMessage("Are you sure you want to delete this ad?");
 
-                adb.setNegativeButton("Cancel", null);
-                adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (isNetworkConnected()) {
-                            firestore.removeAd(new OnRemoveAd() {
-                                @Override
-                                public void onSuccess() {
-                                    data.remove(i);
-                                    adapter.notifyDataSetChanged();
-                                    showToastMessage(R.string.deleted);
-                                }
+                    adb.setNegativeButton("Cancel", null);
+                    adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (isNetworkConnected()) {
+                                firestore.removeAd(new OnRemoveAd() {
+                                    @Override
+                                    public void onSuccess() {
+                                        data.remove(i);
+                                        adapter.notifyDataSetChanged();
+                                        showToastMessage(R.string.deleted);
+                                    }
 
-                                @Override
-                                public void onFail() {
-                                    showToastMessage(R.string.error_occur);
-                                }
-                            }, offerDetails.get(i));
-                        } else
-                            showToastMessage(R.string.no_internet);
-                    }
-                });
-                adb.show();
-            }
-        });
+                                    @Override
+                                    public void onFail() {
+                                        showToastMessage(R.string.error_occur);
+                                    }
+                                }, offerDetails.get(i));
+                            } else
+                                showToastMessage(R.string.no_internet);
+                        }
+                    });
+                    adb.show();
+                }
+            });
+        }
     }
 }

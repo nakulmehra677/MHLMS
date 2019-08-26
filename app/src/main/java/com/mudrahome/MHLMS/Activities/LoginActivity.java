@@ -12,9 +12,14 @@ import android.widget.ScrollView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 import com.mudrahome.MHLMS.Firebase.Authentication;
 import com.mudrahome.MHLMS.Firebase.Firestore;
+import com.mudrahome.MHLMS.Fragments.MobileFragment;
 import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
+import com.mudrahome.MHLMS.Interfaces.OnUpdateUser;
 import com.mudrahome.MHLMS.Interfaces.OnUserLogin;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.UserDetails;
@@ -27,6 +32,8 @@ import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
 public class LoginActivity extends BaseActivity {
@@ -38,6 +45,7 @@ public class LoginActivity extends BaseActivity {
     private Authentication authentication;
     private Firestore firestore;
     private ProfileManager profileManager;
+    private String contactNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +138,11 @@ public class LoginActivity extends BaseActivity {
                 dismissProgressDialog();
                 showToastMessage(R.string.logged_in);
 
-                startActivityForResult(new Intent(
-                        LoginActivity.this, LeadListActivity.class), 101);
+                if (currentUserDetails.getContactNumber() == null ||
+                        currentUserDetails.getContactNumber().isEmpty()) {
+                    openMobileFragment();
+                } else
+                    startLeadsPage();
             }
 
             @Override
@@ -140,6 +151,21 @@ public class LoginActivity extends BaseActivity {
                 firestore.setCurrentDeviceToken("", profileManager.getuId());
             }
         };
+    }
+
+    private void startLeadsPage() {
+        startActivityForResult(new Intent(
+                LoginActivity.this, LeadListActivity.class), 101);
+    }
+
+    private void openMobileFragment() {
+        MobileFragment.newInstance(new MobileFragment.OnNumberClickListener() {
+            @Override
+            public void onSubmitClicked(String number) {
+                contactNumber = number;
+                sendVerificationCode(number);
+            }
+        }).show(getSupportFragmentManager(), "promo");
     }
 
     @Override
@@ -239,4 +265,57 @@ public class LoginActivity extends BaseActivity {
             }
         });
     }
+
+    private void sendVerificationCode(String number) {
+        showProgressDialog("Waiting for otp, wait for a while.", this);
+        startCountdown(60);
+
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                number,
+                60,
+                TimeUnit.SECONDS,
+                this,
+                mCallbacks);
+
+    }
+
+    private String verificationId;
+
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
+            mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        @Override
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            Log.d("CODEE", "sent : " + s);
+            verificationId = s;
+        }
+
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+            String code = phoneAuthCredential.getSmsCode();
+            flag = true;
+
+            currentUserDetails.setContactNumber(contactNumber);
+            firestore.updateUserDetails(new OnUpdateUser() {
+                @Override
+                public void onSuccess() {
+                    startLeadsPage();
+                }
+
+                @Override
+                public void onFail() {
+                    openMobileFragment();
+                }
+            }, currentUserDetails);
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            Log.d("CODEE", "fail");
+            dismissProgressDialog();
+            flag = true;
+            openMobileFragment();
+        }
+    };
 }
