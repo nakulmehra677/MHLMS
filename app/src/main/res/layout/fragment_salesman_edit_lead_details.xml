@@ -29,6 +29,70 @@
 
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Select Banks" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginVertical="8dp">
+
+            <LinearLayout
+                android:id="@+id/bank_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <CheckBox
+                    android:id="@+id/hdfc_ltd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="HDFC Ltd." />
+
+                <CheckBox
+                    android:id="@+id/hdfc_bank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="HDFC Bank" />
+
+                <CheckBox
+                    android:id="@+id/india_bulls"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="India Bulls Finance Company NBC" />
+
+                <CheckBox
+                    android:id="@+id/india_infoline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="India Infoline Finance Company NBC" />
+
+                <CheckBox
+                    android:id="@+id/cholla_mandlam"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cholla Mandlam NBC" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/reminder_layout"
         android:layout_width="match_parent"
@@ -41,7 +105,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
         <TextView
             android:layout_width="match_parent"

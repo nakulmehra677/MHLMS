@@ -162,8 +162,8 @@ public class LoginActivity extends BaseActivity {
         MobileFragment.newInstance(new MobileFragment.OnNumberClickListener() {
             @Override
             public void onSubmitClicked(String number) {
-                contactNumber = number;
-                sendVerificationCode(number);
+                contactNumber = "+91" + number;
+                sendVerificationCode(contactNumber);
             }
         }).show(getSupportFragmentManager(), "promo");
     }

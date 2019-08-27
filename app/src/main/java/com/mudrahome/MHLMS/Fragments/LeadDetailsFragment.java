@@ -24,6 +24,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,6 +80,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String customerNotContactable = "Customer Not Contactable";
     private String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
     private String notDoable = "Not Doable";
+    private String documentPickedButNotLogged = "Document Picked but not Logged in";
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context) {
         this.leadDetails = leadDetails;
@@ -263,19 +265,21 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 leadDetails.setSalesmanReason(dialogSalesmanReason);
 
                 if (dialogSalesmanRemarks.equals(customerNotInterested))
-                    leadDetails.setStatus("Inactive");
+                    leadDetails.setStatus(getString(R.string.inactive));
                 else if (dialogSalesmanRemarks.equals(documentPicked))
-                    leadDetails.setStatus("Closed");
+                    leadDetails.setStatus(getString(R.string.closed));
+                else if (dialogSalesmanRemarks.equals(documentPickedButNotLogged))
+                    leadDetails.setStatus(getString(R.string.work_in_progress));
                 else if (dialogSalesmanRemarks.equals(customerFollowUp))
-                    leadDetails.setStatus("Follow Up");
+                    leadDetails.setStatus(getString(R.string.follow_up));
                 else if (dialogSalesmanRemarks.equals(customerNotContactable))
-                    leadDetails.setStatus("Inactive");
+                    leadDetails.setStatus(getString(R.string.inactive));
                 else if (dialogSalesmanRemarks.equals(customerInterestedButDocumentPending))
-                    leadDetails.setStatus("Work in Progress");
+                    leadDetails.setStatus(getString(R.string.work_in_progress));
                 else if (dialogSalesmanRemarks.equals(notDoable))
-                    leadDetails.setStatus("Not Doable");
+                    leadDetails.setStatus(getString(R.string.not_doable));
                 else
-                    leadDetails.setStatus("Active");
+                    leadDetails.setStatus(getString(R.string.active));
 
                 progress = new ProgressDialog(context);
                 progress.setMessage("Loading..");
@@ -310,6 +314,31 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
         startActivity(callIntent);
     }
+
+
+    private CompoundButton.OnCheckedChangeListener myCheckboxListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            switch (buttonView.getId()) {
+                case R.id.hdfc_ltd:
+                    Log.d("Bank", buttonView.getText().toString());
+                    break;
+                case R.id.hdfc_bank:
+                    Log.d("Bank", buttonView.getText().toString());
+                    break;
+                case R.id.india_bulls:
+                    Log.d("Bank", buttonView.getText().toString());
+                    break;
+                case R.id.india_infoline:
+                    Log.d("Bank", buttonView.getText().toString());
+                    break;
+                default:
+                    Log.d("Bank", buttonView.getText().toString());
+                    break;
+            }
+        }
+    };
+
 
 //    @Override
 //    public void onDestroy() {

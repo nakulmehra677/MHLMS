@@ -40,6 +40,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
     private TextView timeTextView;
 
     private LinearLayout reminderLayout;
+    private LinearLayout bankLayout;
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinute;
@@ -70,6 +71,8 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
         dateTextView = v.findViewById(R.id.date);
         timeTextView = v.findViewById(R.id.time);
         reminderLayout = v.findViewById(R.id.reminder_layout);
+        bankLayout = v.findViewById(R.id.linearLayout2);
+
 
         remarksAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.remarks, android.R.layout.simple_spinner_item);
@@ -80,11 +83,22 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 strRemarks = parent.getItemAtPosition(position).toString();
+
                 if (strRemarks.equals("Customer Interested but Document Pending") ||
                         strRemarks.equals("Customer follow Up")) {
                     reminderLayout.setVisibility(View.VISIBLE);
+                    bankLayout.setVisibility(View.GONE);
+
+                } else if (strRemarks.equals("Document Picked but not Loggged in")) {
+                    bankLayout.setVisibility(View.VISIBLE);
+                    reminderLayout.setVisibility(View.GONE);
+
+                    dateTextView.setText("DD/MM/YYYY");
+                    timeTextView.setText("hh:mm");
+
                 } else {
                     reminderLayout.setVisibility(View.GONE);
+                    bankLayout.setVisibility(View.GONE);
 
                     dateTextView.setText("DD/MM/YYYY");
                     timeTextView.setText("hh:mm");

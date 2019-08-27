@@ -28,8 +28,6 @@
     <string name="loan_against_property">Loan Against Property</string>
     <string name="over_draft">Over Draft</string>
 
-    <string name="active">Active</string>
-
     <!--  Nature of employment -->
     <string name="salaried">Salaried</string>
     <string name="self_employed">Self Employed</string>
@@ -53,6 +51,14 @@
     <string name="jaipur">Jaipur</string>
     <string name="gwalior">Gwalior</string>
     <string name="ahmedabad">Ahemdabad</string>
+
+    <!-- Salesman status-->
+    <string name="inactive">Inactive</string>
+    <string name="closed">Closed</string>
+    <string name="work_in_progress">Work in Progress</string>
+    <string name="follow_up">Follow Up</string>
+    <string name="not_doable">Not Doable</string>
+    <string name="active">Active</string>
 
     <string-array name="property_type">
         <item>Self Occupied Residential Property</item>
@@ -97,6 +103,7 @@
     <string-array name="remarks">
         <item>Customer Not Interested</item>
         <item>Document Picked</item>
+        <item>Document Picked but not Loggged in</item>
         <item>Customer follow Up</item>
         <item>Customer Not Contactable</item>
         <item>Customer Interested but Document Pending</item>

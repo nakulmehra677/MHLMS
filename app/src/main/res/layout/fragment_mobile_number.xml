@@ -2,14 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:text="Number" />
 
     <EditText
         android:id="@+id/mobile_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Mobile number"
-        android:inputType="phone"/>
-        <!--android:maxLength="10" />-->
+        android:layout_margin="4dp"
+        android:hint="10-digit Mobile number"
+        android:inputType="phone"
+        android:maxLength="10"
+        android:padding="12dp" />
 
 </LinearLayout>
