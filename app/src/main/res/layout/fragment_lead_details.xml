@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -14,23 +15,49 @@
             android:layout_margin="4dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="Lead Details"
+                android:textColor="@color/coloBlack"
+                android:textSize="24dp"
+                android:textStyle="bold" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="4dp">
 
                 <TextView
+                    android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Customer Details" />
+                    android:text="Customer Details"
+                    android:textColor="@color/coloBlack"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/call_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="18dp"
+                    android:background="@drawable/call_button_background"
+                    android:drawableLeft="@drawable/ic_call_white_24dp"
+                    android:padding="8dp"
+                    android:text="Call"
+                    android:textColor="@color/colorWhite"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/lead_details_background"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@+id/textView2">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -82,26 +109,13 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0"
                             android:text="Contact Number : " />
 
                         <TextView
                             android:id="@+id/contact_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:textColor="@color/coloBlack" />
-
-                        <Button
-                            android:id="@+id/call_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0"
-                            android:background="@color/colorPrimaryDark"
-                            android:drawableLeft="@drawable/ic_call_white_24dp"
-                            android:padding="8dp"
-                            android:text="Call"
-                            android:textColor="@color/colorWhite" />
 
                     </LinearLayout>
 
@@ -207,25 +221,43 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="4dp">
 
+
+                <Button
+                    android:id="@+id/assigner_call_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="18dp"
+                    android:background="@drawable/call_button_background"
+                    android:drawableLeft="@drawable/ic_call_white_24dp"
+                    android:padding="8dp"
+                    android:text="Call"
+                    android:textColor="@color/colorWhite"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
                 <TextView
+                    android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Assigner's Details" />
+                    android:text="Assigner's Details"
+                    android:textColor="@color/coloBlack"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/lead_details_background"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@+id/textView3">
 
                     <LinearLayout
                         android:id="@+id/assigner_layout"
@@ -258,26 +290,13 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0"
                             android:text="Contact Number : " />
 
                         <TextView
                             android:id="@+id/assigner_contact_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:textColor="@color/coloBlack" />
-
-                        <Button
-                            android:id="@+id/assigner_call_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0"
-                            android:background="@color/colorPrimaryDark"
-                            android:drawableLeft="@drawable/ic_call_white_24dp"
-                            android:padding="8dp"
-                            android:text="Call"
-                            android:textColor="@color/colorWhite" />
 
                     </LinearLayout>
 
@@ -303,25 +322,44 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="4dp">
 
                 <TextView
+                    android:id="@+id/textView4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Assignee's Details" />
+                    android:text="Assignee's Details"
+                    android:textColor="@color/coloBlack"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/assignee_call_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="18dp"
+                    android:layout_weight="0"
+                    android:background="@drawable/call_button_background"
+                    android:drawableLeft="@drawable/ic_call_white_24dp"
+                    android:padding="8dp"
+                    android:text="Call"
+                    android:textColor="@color/colorWhite"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/lead_details_background"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView4">
 
                     <LinearLayout
                         android:id="@+id/assigned_to_layout"
@@ -364,17 +402,6 @@
                             android:layout_weight="1"
                             android:textColor="@color/coloBlack" />
 
-                        <Button
-                            android:id="@+id/assignee_call_button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0"
-                            android:background="@color/colorPrimaryDark"
-                            android:drawableLeft="@drawable/ic_call_white_24dp"
-                            android:padding="8dp"
-                            android:text="Call"
-                            android:textColor="@color/colorWhite" />
-
                     </LinearLayout>
 
                     <LinearLayout
@@ -399,7 +426,7 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -411,7 +438,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="Lead's Status" />
+                    android:text="Lead's Status"
+                    android:textColor="@color/coloBlack" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -547,6 +575,7 @@
                 android:id="@+id/edit_lead_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="16dp"
                 android:layout_marginVertical="8dp"
                 android:background="@color/colorPrimary"
                 android:text="Edit details"

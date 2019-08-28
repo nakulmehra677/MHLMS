@@ -63,7 +63,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView workDate;
     private TextView workTime;
 
-    private Button button, callButton;
+    private Button button, callButton, assigneeCallbutton, assignerCallButton;
     private SharedPreferences sharedPreferences;
     private LinearLayout assignedToLayout, assignerLayout;
     private ProgressDialog progress;
@@ -127,6 +127,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignerLayout = view.findViewById(R.id.assigner_layout);
         button = view.findViewById(R.id.edit_lead_details);
         callButton = view.findViewById(R.id.call_button);
+        assignerCallButton = view.findViewById(R.id.assigner_call_button);
+        assigneeCallbutton = view.findViewById(R.id.assignee_call_button);
 
         setLayoutFields();
 
