@@ -80,7 +80,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String customerNotContactable = "Customer Not Contactable";
     private String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
     private String notDoable = "Not Doable";
-    private String documentPickedButNotLogged = "Document Picked but not Logged in";
+    private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context) {
         this.leadDetails = leadDetails;
@@ -269,9 +269,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 if (dialogSalesmanRemarks.equals(customerNotInterested))
                     leadDetails.setStatus(getString(R.string.inactive));
                 else if (dialogSalesmanRemarks.equals(documentPicked))
-                    leadDetails.setStatus(getString(R.string.closed));
-                else if (dialogSalesmanRemarks.equals(documentPickedButNotLogged))
                     leadDetails.setStatus(getString(R.string.work_in_progress));
+                else if (dialogSalesmanRemarks.equals(documentPickedFileLoggedIn))
+                    leadDetails.setStatus(getString(R.string.closed));
                 else if (dialogSalesmanRemarks.equals(customerFollowUp))
                     leadDetails.setStatus(getString(R.string.follow_up));
                 else if (dialogSalesmanRemarks.equals(customerNotContactable))
@@ -316,31 +316,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
         startActivity(callIntent);
     }
-
-
-    private CompoundButton.OnCheckedChangeListener myCheckboxListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            switch (buttonView.getId()) {
-                case R.id.hdfc_ltd:
-                    Log.d("Bank", buttonView.getText().toString());
-                    break;
-                case R.id.hdfc_bank:
-                    Log.d("Bank", buttonView.getText().toString());
-                    break;
-                case R.id.india_bulls:
-                    Log.d("Bank", buttonView.getText().toString());
-                    break;
-                case R.id.india_infoline:
-                    Log.d("Bank", buttonView.getText().toString());
-                    break;
-                default:
-                    Log.d("Bank", buttonView.getText().toString());
-                    break;
-            }
-        }
-    };
-
 
 //    @Override
 //    public void onDestroy() {

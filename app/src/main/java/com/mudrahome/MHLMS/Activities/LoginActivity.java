@@ -207,6 +207,7 @@ public class LoginActivity extends BaseActivity {
         editor.putString(getString(R.string.SH_user_location), currentUserDetails.getLocation());
         editor.putString(getString(R.string.SH_user_key), currentUserDetails.getKey());
         editor.putString(getString(R.string.SH_user_uid), currentUserDetails.getuId());
+        editor.putString(getString(R.string.SH_user_number), currentUserDetails.getContactNumber());
 
         editor.commit();
     }

@@ -6,10 +6,12 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -20,11 +22,15 @@ import android.widget.TimePicker;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.mudrahome.MHLMS.Firebase.Firestore;
+import com.mudrahome.MHLMS.Interfaces.OnFetchBankList;
 import com.mudrahome.MHLMS.Managers.Alarm;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.R;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 @SuppressLint("ValidFragment")
@@ -41,6 +47,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
 
     private LinearLayout reminderLayout;
     private LinearLayout bankLayout;
+    private LinearLayout bankListLayout;
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinute;
@@ -72,6 +79,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
         timeTextView = v.findViewById(R.id.time);
         reminderLayout = v.findViewById(R.id.reminder_layout);
         bankLayout = v.findViewById(R.id.linearLayout2);
+        bankListLayout = v.findViewById(R.id.bank_layout);
 
 
         remarksAdapter = ArrayAdapter.createFromResource(getContext(),
@@ -90,6 +98,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                     bankLayout.setVisibility(View.GONE);
 
                 } else if (strRemarks.equals("Document Picked but not Loggged in")) {
+                    getBankList();
                     bankLayout.setVisibility(View.VISIBLE);
                     reminderLayout.setVisibility(View.GONE);
 
@@ -210,6 +219,47 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                 .setCancelable(false);
 
         return builder.create();
+    }
+
+    private void getBankList() {
+        Firestore firestore = new Firestore();
+        firestore.getBankList(new OnFetchBankList() {
+            @Override
+            public void onSuccess(ArrayList list) {
+                if (list.size() != 0) {
+                    for (int i = 0; i < list.size(); i++) {
+                        CheckBox checkBox = addCheckBox((String) list.get(i));
+                        bankListLayout.addView(checkBox);
+                    }
+                }
+            }
+
+            @Override
+            public void onFail() {
+
+            }
+        });
+    }
+
+    private List<String> banks = new ArrayList<>();
+
+    private CheckBox addCheckBox(String bank) {
+        CheckBox checkBox = new CheckBox(getContext());
+        checkBox.setPadding(24, 24, 24, 24);
+        checkBox.setText(bank);
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (((CheckBox) view).isChecked()) {
+                    banks.add((String) ((CheckBox) view).getText());
+                } else {
+                    banks.remove((String) ((CheckBox) view).getText());
+                }
+                Log.d("Bankk", String.valueOf(banks));
+            }
+        });
+        return checkBox;
     }
 
     public interface OnSalesmanSubmitClickListener {

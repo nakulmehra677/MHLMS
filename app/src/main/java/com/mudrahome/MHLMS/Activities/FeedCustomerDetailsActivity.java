@@ -1,11 +1,15 @@
 package com.mudrahome.MHLMS.Activities;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,9 +22,12 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
@@ -62,7 +69,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private String strName, strContactNumber, strLoanAmount, strRemarks,
             strEmployment = "None", strEmploymentType = "None",
-            strLoanType, strPropertyType = "None", strLocation, strAssignTo = "None", strAssignToUId;
+            strLoanType, strPropertyType = "None", strLocation, strAssignTo = "None",
+            strAssignToUId, strAssigneeContact;
 
     private String strDate, strTime;
     private ProgressDialog progress;
@@ -222,8 +230,10 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 Log.i("TAGG", "Assignto called" + parent.getItemAtPosition(position).toString());
                 strAssignTo = parent.getItemAtPosition(position).toString();
                 for (UserDetails user : salesPersonList) {
-                    if (user.getUserName().equals(strAssignTo))
+                    if (user.getUserName().equals(strAssignTo)) {
                         strAssignToUId = user.getuId();
+                        strAssigneeContact = user.getContactNumber();
+                    }
                 }
                 break;
 
@@ -244,7 +254,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 if (isNetworkConnected()) {
                     getDetails();
                     if (checkEmpty()) {
-                        uploadDetails();
+                        checkSMSPermission();
                     } else
                         showToastMessage(R.string.fill_details_correctly);
                 } else
@@ -301,6 +311,47 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
             default:
 
+        }
+    }
+
+    private void checkSMSPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) !=
+                PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.SEND_SMS}, 0);
+
+        } else {
+            sendSMS();
+        }
+    }
+
+    private void sendSMS() {
+        String currentUserName = sharedPreferences.getString(getString(R.string.SH_user_name), "");
+        String currentUserNumber = sharedPreferences.getString(getString(R.string.SH_user_number), "");
+
+        String[] currentUserFirstName = currentUserName.split(" ");
+        String[] assigneeUserFirstName = strAssignTo.split(" ");
+
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(strContactNumber,
+                null, "Thanks for connecting mudrahome.com. You were speaking with " +
+                        currentUserFirstName[0] + " " + currentUserNumber + ". " + assigneeUserFirstName[0] + " " +
+                        strAssigneeContact + " will connect you for further processing your loan.", null, null);
+        uploadDetails();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 0: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    sendSMS();
+
+                } else {
+                    return;
+                }
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.mudrahome.MHLMS.Interfaces.FetchOffer;
+import com.mudrahome.MHLMS.Interfaces.OnFetchBankList;
 import com.mudrahome.MHLMS.Interfaces.OnFetchLeadListListener;
 import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
 import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
@@ -289,6 +290,21 @@ public class Firestore {
             @Override
             public void onFailure(@NonNull Exception e) {
                 updateUser.onFail();
+            }
+        });
+    }
+
+    public void getBankList(final OnFetchBankList list) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("bankList").document("banks");
+
+        dRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot snapshot) {
+                ArrayList arrList = new ArrayList<String>();
+                arrList = (ArrayList) snapshot.get("bankName");
+
+                list.onSuccess(arrList);
             }
         });
     }
