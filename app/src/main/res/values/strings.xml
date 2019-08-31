@@ -20,7 +20,7 @@
     <string name="something_wrong">Something went wrong.</string>
     <string name="uploaded">Uploaded…</string>
     <string name="deleted">Deleted.</string>
-    <string name="error_occur">An Error occured.</string>
+    <string name="error_occur">An Error occurred.</string>
 
     <string name="home_loan">Home Loan</string>
     <string name="business_loan">Business Loan</string>
@@ -104,7 +104,7 @@
     <string-array name="remarks">
         <item>Customer Not Interested</item>
         <item>Document Picked</item>
-        <item>Document Picked but not Loggged in</item>
+        <item>Document Picked and File Logged in</item>
         <item>Customer follow Up</item>
         <item>Customer Not Contactable</item>
         <item>Customer Interested but Document Pending</item>

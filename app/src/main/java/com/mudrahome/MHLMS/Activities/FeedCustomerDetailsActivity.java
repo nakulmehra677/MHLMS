@@ -70,7 +70,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     private String strName, strContactNumber, strLoanAmount, strRemarks,
             strEmployment = "None", strEmploymentType = "None",
             strLoanType, strPropertyType = "None", strLocation, strAssignTo = "None",
-            strAssignToUId, strAssigneeContact;
+            strAssignToUId, strAssigneeContact, strAssignerContact;
 
     private String strDate, strTime;
     private ProgressDialog progress;
@@ -422,12 +422,14 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     private void makeObject(TimeModel timeModel) {
         String assigner = sharedPreferences.getString(getString(R.string.SH_user_name), "");
         String assignerUId = sharedPreferences.getString(getString(R.string.SH_user_uid), "");
+        String assignerContact = sharedPreferences.getString(getString(R.string.SH_user_number), "");
 
-        leadDetails = new LeadDetails(strName, strContactNumber, strLoanAmount, strEmployment,
-                strEmploymentType, strLoanType, strPropertyType, strLocation, strRemarks,
-                timeModel.getDate(), strAssignTo, "Active", assigner, "",
-                "None", strAssignToUId, assignerUId, "None",
-                timeModel.getTime(), timeModel.getDate(), timeModel.getTime(), timeModel.getTimeStamp());
+        leadDetails = new LeadDetails(strName, strContactNumber, assignerContact,
+                strAssigneeContact, strLoanAmount, strEmployment, strEmploymentType, strLoanType,
+                strPropertyType, strLocation, strRemarks, timeModel.getDate(), strAssignTo,
+                "Active", assigner, "", "None", strAssignToUId,
+                assignerUId, "None", timeModel.getTime(), timeModel.getDate(),
+                timeModel.getTime(), timeModel.getTimeStamp());
     }
 
     private OnUploadCustomerDetailsListener onUploadCustomerdetails() {

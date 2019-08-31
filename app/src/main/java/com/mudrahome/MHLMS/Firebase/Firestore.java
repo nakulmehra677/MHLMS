@@ -119,7 +119,8 @@ public class Firestore {
                 "status", updateLead.getStatus(),
                 "date", updateLead.getDate(),
                 "time", updateLead.getTime(),
-                "timeStamp", updateLead.getTimeStamp())
+                "timeStamp", updateLead.getTimeStamp(),
+                "banks", updateLead.getBanks())
 
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

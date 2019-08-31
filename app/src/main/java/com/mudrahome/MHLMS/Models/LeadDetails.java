@@ -1,11 +1,40 @@
 package com.mudrahome.MHLMS.Models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LeadDetails {
-    String name, contactNumber, loanAmount, loanType, propertyType, employment,
+    String name, contactNumber, assignerContact, assigneeContact, loanAmount, loanType, propertyType, employment,
             employmentType, location, salesmanRemarks, date, assignedTo, status, key,
             assigner, telecallerRemarks, assignedToUId, assignerUId, salesmanReason,
             time, assignDate, assignTime;
     long timeStamp;
+
+    public String getAssignerContact() {
+        return assignerContact;
+    }
+
+    public void setAssignerContact(String assignerContact) {
+        this.assignerContact = assignerContact;
+    }
+
+    public String getAssigneeContact() {
+        return assigneeContact;
+    }
+
+    public void setAssigneeContact(String assigneeContact) {
+        this.assigneeContact = assigneeContact;
+    }
+
+    List<String> banks = new ArrayList<>();
+
+    public List<String> getBanks() {
+        return banks;
+    }
+
+    public void setBanks(List<String> banks) {
+        this.banks = banks;
+    }
 
     public long getTimeStamp() {
         return timeStamp;
@@ -191,7 +220,8 @@ public class LeadDetails {
         this.time = time;
     }
 
-    public LeadDetails(String name, String contactNumber, String loanAmount, String employment,
+    public LeadDetails(String name, String contactNumber, String assignerContact,
+                       String assigneeContact, String loanAmount, String employment,
                        String employmentType, String loanType, String propertyType, String location,
                        String telecallerRemarks, String date, String assignedTo, String status,
                        String assigner, String key, String salesmanRemarks, String assignedToUId,
@@ -199,6 +229,8 @@ public class LeadDetails {
                        String assignTime, long timeStamp) {
         this.name = name;
         this.contactNumber = contactNumber;
+        this.assignerContact = assignerContact;
+        this.assigneeContact = assigneeContact;
         this.propertyType = propertyType;
         this.employment = employment;
         this.loanType = loanType;

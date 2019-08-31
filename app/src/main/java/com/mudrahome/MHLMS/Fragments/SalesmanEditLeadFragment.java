@@ -15,19 +15,24 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.OnFetchBankList;
 import com.mudrahome.MHLMS.Managers.Alarm;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.R;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -48,6 +53,8 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
     private LinearLayout reminderLayout;
     private LinearLayout bankLayout;
     private LinearLayout bankListLayout;
+
+    private ProgressBar bankProgress;
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinute;
@@ -80,6 +87,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
         reminderLayout = v.findViewById(R.id.reminder_layout);
         bankLayout = v.findViewById(R.id.linearLayout2);
         bankListLayout = v.findViewById(R.id.bank_layout);
+        bankProgress = v.findViewById(R.id.bank_progress);
 
 
         remarksAdapter = ArrayAdapter.createFromResource(getContext(),
@@ -97,7 +105,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                     reminderLayout.setVisibility(View.VISIBLE);
                     bankLayout.setVisibility(View.GONE);
 
-                } else if (strRemarks.equals("Document Picked but not Loggged in")) {
+                } else if (strRemarks.equals("Document Picked and File Logged in")) {
                     getBankList();
                     bankLayout.setVisibility(View.VISIBLE);
                     reminderLayout.setVisibility(View.GONE);
@@ -206,7 +214,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                             } else {
                                 alarm.cancelAlarm(leadDetails.getName());
                             }
-                            listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString());
+                            listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString(), banks);
                         }
                     }
                 })
@@ -232,6 +240,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                         bankListLayout.addView(checkBox);
                     }
                 }
+                bankProgress.setVisibility(View.GONE);
             }
 
             @Override
@@ -256,13 +265,12 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
                 } else {
                     banks.remove((String) ((CheckBox) view).getText());
                 }
-                Log.d("Bankk", String.valueOf(banks));
             }
         });
         return checkBox;
     }
 
     public interface OnSalesmanSubmitClickListener {
-        void onSubmitClicked(String dialogStatus, String dialogSalesmanReason);
+        void onSubmitClicked(String dialogStatus, String dialogSalesmanReason, List<String> banks);
     }
 }

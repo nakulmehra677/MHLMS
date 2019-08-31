@@ -268,7 +268,8 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void sendVerificationCode(String number) {
-        showProgressDialog("Waiting for otp, wait for a while.", this);
+        showProgressDialog("Waiting for otp, wait for a while. Don't close the app.", this);
+        hideKeyboard(this);
         startCountdown(60);
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
@@ -295,6 +296,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
             String code = phoneAuthCredential.getSmsCode();
+            Log.d("Timer", "verificationCompleted");
             flag = true;
 
             currentUserDetails.setContactNumber(contactNumber);
@@ -314,9 +316,39 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onVerificationFailed(FirebaseException e) {
             Log.d("CODEE", "fail");
-            dismissProgressDialog();
             flag = true;
             openMobileFragment();
         }
     };
+
+    protected void startCountdown(final int i) {
+        flag = false;
+        Log.d("Timer", " o");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("Timer", " i");
+                for (int j = i; j > 0; j--) {
+                    if (!flag) {
+                        try {
+                            Thread.sleep(1000);
+                            Log.d("Timer", " " + j);
+                        } catch (InterruptedException e) {
+                            System.out.println("got interrupted!");
+                        }
+                    } else
+                        break;
+                }
+                Log.d("Timer", "finished " + flag);
+                dismissProgressDialog();
+                if (!flag) {
+                    profileManager.signOut();
+                    scrollView.setVisibility(View.VISIBLE);
+                }
+            }
+        }).start();
+    }
+
+    private boolean flag;
 }

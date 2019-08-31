@@ -3,6 +3,7 @@ package com.mudrahome.MHLMS.Activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -46,25 +47,5 @@ public class BaseActivity extends AppCompatActivity {
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    protected boolean flag;
-
-    protected void startCountdown(final int i) {
-        flag = false;
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int j = i; j > 0; j--) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        System.out.println("got interrupted!");
-                    }
-                }
-                dismissProgressDialog();
-            }
-        });
     }
 }

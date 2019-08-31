@@ -38,6 +38,7 @@ import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 @SuppressLint("ValidFragment")
@@ -62,6 +63,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView customerRemarks;
     private TextView workDate;
     private TextView workTime;
+    private TextView bankNames;
+    private TextView assignerContact;
+    private TextView assigneeContact;
 
     private Button button, callButton, assigneeCallbutton, assignerCallButton;
     private SharedPreferences sharedPreferences;
@@ -85,6 +89,33 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     public LeadDetailsFragment(LeadDetails leadDetails, Context context) {
         this.leadDetails = leadDetails;
         this.context = context;
+    }
+
+    @Override
+    public void setupDialog(Dialog dialog, int style) {
+        BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialog;
+        try {
+            Field behaviorField = bottomSheetDialog.getClass().getDeclaredField("behavior");
+            behaviorField.setAccessible(true);
+            final BottomSheetBehavior behavior = (BottomSheetBehavior) behaviorField.get(bottomSheetDialog);
+            behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }
+                }
+
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                }
+            });
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @NonNull
@@ -122,6 +153,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         workTime = view.findViewById(R.id.time);
         assignedOn = view.findViewById(R.id.assign_date);
         assignedAt = view.findViewById(R.id.assign_time);
+        bankNames = view.findViewById(R.id.bank_names);
+        assignerContact = view.findViewById(R.id.assigner_contact_number);
+        assigneeContact = view.findViewById(R.id.assignee_contact_number);
 
         assignedToLayout = view.findViewById(R.id.assigned_to_layout);
         assignerLayout = view.findViewById(R.id.assigner_layout);
@@ -132,6 +166,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         setLayoutFields();
 
+        if (leadDetails.getAssignerContact() == null) {
+            assignerCallButton.setVisibility(View.GONE);
+
+        }
+        if (leadDetails.getAssigneeContact() == null) {
+            assigneeCallbutton.setVisibility(View.GONE);
+        }
+
         callButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,7 +183,45 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 if (permission.checkCallPhone()) {
 //                    if (permission.checkReadPhoneState()) {
 //                        if (permission.checkRecordAudio()) {
-                    callCustomer();
+                    callCustomer(leadDetails.getContactNumber());
+//                        } else
+//                            permission.requestRecordAudio();
+//                    } else
+//                        permission.requestReadPhoneState();
+                } else
+                    permission.requestCallPhone();
+            }
+        });
+
+        assignerCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                PermissionManager permission = new PermissionManager(getContext());
+
+                if (permission.checkCallPhone()) {
+//                    if (permission.checkReadPhoneState()) {
+//                        if (permission.checkRecordAudio()) {
+                    callCustomer(leadDetails.getAssignerContact());
+//                        } else
+//                            permission.requestRecordAudio();
+//                    } else
+//                        permission.requestReadPhoneState();
+                } else
+                    permission.requestCallPhone();
+            }
+        });
+
+        assigneeCallbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                PermissionManager permission = new PermissionManager(getContext());
+
+                if (permission.checkCallPhone()) {
+//                    if (permission.checkReadPhoneState()) {
+//                        if (permission.checkRecordAudio()) {
+                    callCustomer(leadDetails.getAssigneeContact());
 //                        } else
 //                            permission.requestRecordAudio();
 //                    } else
@@ -208,6 +288,16 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         workTime.setText(leadDetails.getTime());
         assignedOn.setText(leadDetails.getAssignDate());
         assignedAt.setText(leadDetails.getAssignTime());
+        assignerContact.setText(leadDetails.getAssignerContact());
+        assigneeContact.setText(leadDetails.getAssigneeContact());
+
+        StringBuilder csvBuilder = new StringBuilder();
+        for (String bank : leadDetails.getBanks()) {
+            csvBuilder.append(bank);
+            csvBuilder.append(", ");
+        }
+        String bankList = csvBuilder.toString();
+        bankNames.setText(bankList);
     }
 
     @Override
@@ -254,7 +344,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private void openSalesmanFragment() {
         SalesmanEditLeadFragment.newInstance(leadDetails, new SalesmanEditLeadFragment.OnSalesmanSubmitClickListener() {
             @Override
-            public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason) {
+            public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason, List<String> banks) {
 
                 TimeManager timeManager = new TimeManager();
                 TimeModel timeModel = timeManager.getTime();
@@ -262,6 +352,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 leadDetails.setDate(timeModel.getDate());
                 leadDetails.setTime(timeModel.getTime());
                 leadDetails.setTimeStamp(timeModel.getTimeStamp());
+                leadDetails.setBanks(banks);
 
                 leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
                 leadDetails.setSalesmanReason(dialogSalesmanReason);
@@ -311,9 +402,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         };
     }
 
-    private void callCustomer() {
+    private void callCustomer(String number) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + leadDetails.getContactNumber()));
+        callIntent.setData(Uri.parse("tel:" + number));
         startActivity(callIntent);
     }
 
