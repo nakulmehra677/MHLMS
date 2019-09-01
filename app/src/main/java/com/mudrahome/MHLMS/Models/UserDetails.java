@@ -9,7 +9,7 @@ public class UserDetails {
         this.key = key;
     }
 
-    private String uId, userName, mail, location, userType, key, deviceToken,contactNumber;
+    private String uId, userName, mail, location, userType, key, deviceToken, contactNumber;
 
     public UserDetails() {
     }

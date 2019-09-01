@@ -2,7 +2,6 @@ package com.mudrahome.MHLMS.Activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +30,7 @@ import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +47,8 @@ public class LoginActivity extends BaseActivity {
     private ProfileManager profileManager;
     private String contactNumber;
 
+    private boolean flag = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +64,6 @@ public class LoginActivity extends BaseActivity {
         firestore = new Firestore(this);
         profileManager = new ProfileManager();
 
-        Log.d("API level", String.valueOf(Build.VERSION.SDK_INT));
         if (isNetworkConnected()) {
             if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 checkLogin();
@@ -82,7 +83,21 @@ public class LoginActivity extends BaseActivity {
 
             if (!strMail.isEmpty() && !strPassword.isEmpty()) {
                 showProgressDialog("Loading..", LoginActivity.this);
-                authentication.loginUser(onUserLogin(), strMail, strPassword);
+
+                authentication.loginUser(new OnUserLogin() {
+                    @Override
+                    public void onSuccess(String uId) {
+                        profileManager = new ProfileManager();
+                        firestore.getUsers(onGetUserDetails(), uId);
+                    }
+
+                    @Override
+                    public void onFailer() {
+                        if (progress.isShowing())
+                            dismissProgressDialog();
+                        showToastMessage(R.string.authentication_failed);
+                    }
+                }, strMail, strPassword);
 
             } else
                 showToastMessage(R.string.fill_all_fields);
@@ -102,39 +117,20 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private OnUserLogin onUserLogin() {
-        return new OnUserLogin() {
-            @Override
-            public void onSuccess(String uId) {
-                profileManager = new ProfileManager();
-                firestore.getUsers(onGetUserDetails(), uId);
-            }
-
-            @Override
-            public void onFailer() {
-                if (progress.isShowing())
-                    dismissProgressDialog();
-                showToastMessage(R.string.authentication_failed);
-            }
-        };
-    }
-
     private OnGetUserDetails onGetUserDetails() {
         return new OnGetUserDetails() {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 String strDeviceToken = FirebaseInstanceId.getInstance().getToken();
 
-                if (userDetails.getDeviceToken() == null ||
-                        !userDetails.getDeviceToken().equals(strDeviceToken)) {
-                    userDetails.setDeviceToken(strDeviceToken);
+                userDetails.setDeviceToken(strDeviceToken);
+                firestore.setCurrentDeviceToken(strDeviceToken, profileManager.getuId());
 
-                    firestore.setCurrentDeviceToken(
-                            strDeviceToken, profileManager.getuId());
-                }
                 currentUserDetails = userDetails;
 
-                storeInSharedPreferences();
+                UserDataSharedPreference preference = new UserDataSharedPreference(LoginActivity.this);
+                preference.setUserDetails(currentUserDetails);
+
                 dismissProgressDialog();
                 showToastMessage(R.string.logged_in);
 
@@ -162,8 +158,24 @@ public class LoginActivity extends BaseActivity {
         MobileFragment.newInstance(new MobileFragment.OnNumberClickListener() {
             @Override
             public void onSubmitClicked(String number) {
-                contactNumber = "+91" + number;
-                sendVerificationCode(contactNumber);
+                contactNumber = "+91" + number.trim();
+                if (isNetworkConnected()) {
+                    currentUserDetails.setContactNumber(contactNumber);
+                    firestore.updateUserDetails(new OnUpdateUser() {
+                        @Override
+                        public void onSuccess() {
+                            startLeadsPage();
+                        }
+
+                        @Override
+                        public void onFail() {
+                            openMobileFragment();
+                        }
+                    }, currentUserDetails);
+                } else {
+                    showToastMessage(R.string.no_internet);
+                    openMobileFragment();
+                }
             }
         }).show(getSupportFragmentManager(), "promo");
     }
@@ -195,21 +207,6 @@ public class LoginActivity extends BaseActivity {
                 finish();
             }
         }
-    }
-
-    private void storeInSharedPreferences() {
-        SharedPreferences sharedPreferences = getSharedPreferences(
-                getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(getString(R.string.SH_user_name), currentUserDetails.getUserName());
-        editor.putString(getString(R.string.SH_user_type), currentUserDetails.getUserType());
-        editor.putString(getString(R.string.SH_user_location), currentUserDetails.getLocation());
-        editor.putString(getString(R.string.SH_user_key), currentUserDetails.getKey());
-        editor.putString(getString(R.string.SH_user_uid), currentUserDetails.getuId());
-        editor.putString(getString(R.string.SH_user_number), currentUserDetails.getContactNumber());
-
-        editor.commit();
     }
 
     private void checkUpdate() {
@@ -267,88 +264,83 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    private void sendVerificationCode(String number) {
-        showProgressDialog("Waiting for otp, wait for a while. Don't close the app.", this);
-        hideKeyboard(this);
-        startCountdown(60);
-
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                number,
-                60,
-                TimeUnit.SECONDS,
-                this,
-                mCallbacks);
-
-    }
-
-    private String verificationId;
-
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
-            mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-        @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            super.onCodeSent(s, forceResendingToken);
-            Log.d("CODEE", "sent : " + s);
-            verificationId = s;
-        }
-
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-            String code = phoneAuthCredential.getSmsCode();
-            Log.d("Timer", "verificationCompleted");
-            flag = true;
-
-            currentUserDetails.setContactNumber(contactNumber);
-            firestore.updateUserDetails(new OnUpdateUser() {
-                @Override
-                public void onSuccess() {
-                    startLeadsPage();
-                }
-
-                @Override
-                public void onFail() {
-                    openMobileFragment();
-                }
-            }, currentUserDetails);
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            Log.d("CODEE", "fail");
-            flag = true;
-            openMobileFragment();
-        }
-    };
-
-    protected void startCountdown(final int i) {
-        flag = false;
-        Log.d("Timer", " o");
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("Timer", " i");
-                for (int j = i; j > 0; j--) {
-                    if (!flag) {
-                        try {
-                            Thread.sleep(1000);
-                            Log.d("Timer", " " + j);
-                        } catch (InterruptedException e) {
-                            System.out.println("got interrupted!");
-                        }
-                    } else
-                        break;
-                }
-                Log.d("Timer", "finished " + flag);
-                dismissProgressDialog();
-                if (!flag) {
-                    profileManager.signOut();
-                    scrollView.setVisibility(View.VISIBLE);
-                }
-            }
-        }).start();
-    }
-
-    private boolean flag;
+//    private void sendVerificationCode() {
+//        showProgressDialog("Waiting for otp, wait for a while. Don't close the app.", this);
+//        hideKeyboard(this);
+//        startCountdown(60);
+//
+//        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+//                contactNumber,
+//                60,
+//                TimeUnit.SECONDS,
+//                this,
+//                mCallbacks);
+//
+//    }
+//
+//    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
+//            mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+//
+//        @Override
+//        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+//            super.onCodeSent(s, forceResendingToken);
+//            Log.d("timer", "sent : " + s);
+//        }
+//
+//        @Override
+//        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+//            String code = phoneAuthCredential.getSmsCode();
+//            Log.d("Timer", "verificationCompleted");
+//            flag = true;
+//
+//            currentUserDetails.setContactNumber(contactNumber);
+//            firestore.updateUserDetails(new OnUpdateUser() {
+//                @Override
+//                public void onSuccess() {
+//                    startLeadsPage();
+//                }
+//
+//                @Override
+//                public void onFail() {
+//                    openMobileFragment();
+//                }
+//            }, currentUserDetails);
+//        }
+//
+//        @Override
+//        public void onVerificationFailed(FirebaseException e) {
+//            Log.d("timer", "fail");
+//            flag = true;
+//            openMobileFragment();
+//        }
+//    };
+//
+//    protected void startCountdown(final int i) {
+//        flag = false;
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                for (int j = i; j > 0; j--) {
+//                    if (!flag) {
+//                        try {
+//                            Thread.sleep(1000);
+//                            Log.d("Timer", " " + j);
+//                        } catch (InterruptedException e) {
+//                            System.out.println("got interrupted!");
+//                        }
+//                    } else
+//                        break;
+//                }
+//
+//                dismissProgressDialog();
+//                if (!flag) {
+//                    profileManager.signOut();
+//                    scrollView.setVisibility(View.VISIBLE);
+//                    showToastMessage(R.string.otp_verification_failed);
+//                }
+//            }
+//        }).start();
+//    }
 }

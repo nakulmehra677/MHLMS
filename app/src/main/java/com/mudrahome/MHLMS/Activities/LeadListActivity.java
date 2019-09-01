@@ -173,9 +173,9 @@ public class LeadListActivity extends BaseActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(isNetworkConnected()){
-                    startActivity(new Intent(LeadListActivity.this, StartOfferActivity.class));}
-                    else
+                    if (isNetworkConnected()) {
+                        startActivity(new Intent(LeadListActivity.this, StartOfferActivity.class));
+                    } else
                         showToastMessage(R.string.no_internet);
                 }
             });
@@ -253,7 +253,7 @@ public class LeadListActivity extends BaseActivity {
             case R.id.logout:
                 if (isNetworkConnected()) {
 
-                    AlertDialog.Builder build = new androidx.appcompat.app.AlertDialog.Builder(LeadListActivity.this);
+                    AlertDialog.Builder build = new AlertDialog.Builder(LeadListActivity.this);
                     build.setMessage("Are you sure you want to logout?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override

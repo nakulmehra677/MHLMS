@@ -21,6 +21,7 @@
     <string name="uploaded">Uploaded…</string>
     <string name="deleted">Deleted.</string>
     <string name="error_occur">An Error occurred.</string>
+    <string name="otp_verification_failed">OTP verification failed.</string>
 
     <string name="home_loan">Home Loan</string>
     <string name="business_loan">Business Loan</string>

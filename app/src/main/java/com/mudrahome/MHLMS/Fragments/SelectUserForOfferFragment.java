@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -75,10 +77,14 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
     private LinearLayout gwaliorSalesmanLayout;
     private LinearLayout ahmedabadSalesmanLayout;
 
+    private LinearLayout selectUsersLayout;
+    private Switch allCallerSwitch;
+
     private Button startOffer;
     private Button editOfferDetails;
 
     private List<String> userNames = new ArrayList<>();
+    private List<String> allCallers = new ArrayList<>();
     private OfferDetails details;
     private Firestore firestore;
 
@@ -127,6 +133,9 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         gwaliorSalesmanLayout = v.findViewById(R.id.gwalior_salesman_layout);
         ahmedabadSalesmanLayout = v.findViewById(R.id.ahmedabad_salesman_layout);
 
+        selectUsersLayout = v.findViewById(R.id.select_user_layout);
+        allCallerSwitch = v.findViewById(R.id.switch1);
+
         startOffer = v.findViewById(R.id.start_offer_button);
         editOfferDetails = v.findViewById(R.id.edit_offer_details_button);
 
@@ -142,11 +151,40 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
             }
         });
 
+        allCallerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    selectUsersLayout.setVisibility(View.INVISIBLE);
+                    if (allCallers.size() == 0) {
+                        extraViews.startProgressDialog("Loading...", getContext());
+                        firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+                            @Override
+                            public void onListFetched(UserList userList) {
+                                for (UserDetails details : userList.getUserList()) {
+                                    allCallers.add((details.getUserName()));
+                                }
+                                extraViews.dismissProgressDialog();
+                            }
+                        }, "All", getString(R.string.telecaller));
+                    }
+                } else {
+                    selectUsersLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         startOffer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (userNames.size() != 0) {
-                    details = new OfferDetails(strOfferTitle, strOfferDescription, userNames, Timestamp.now());
+                if (userNames.size() != 0 || allCallers.size() != 0) {
+                    if (allCallerSwitch.isEnabled())
+                        details = new OfferDetails(strOfferTitle,
+                                strOfferDescription, allCallers, Timestamp.now());
+                    else
+                        details = new OfferDetails(strOfferTitle,
+                                strOfferDescription, userNames, Timestamp.now());
+
 
                     if (isNetworkConnected()) {
                         final ExtraViews extraViews = new ExtraViews();
