@@ -27,6 +27,7 @@ public class NotificationService extends FirebaseMessagingService {
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
                 .setContentText(message);
 
         NotificationManagerCompat managerCompat =NotificationManagerCompat.from(this);
