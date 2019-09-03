@@ -17,6 +17,9 @@ import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class FilterActivity extends BaseActivity {
 
@@ -25,7 +28,7 @@ public class FilterActivity extends BaseActivity {
     private String strAssignee;
     private String strStatus;
     private String strLoanType;
-    private String currentUserType;
+    private Set<String> currentUserType;
 
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private SharedPreferences sharedPreferences;
@@ -76,7 +79,11 @@ public class FilterActivity extends BaseActivity {
 
         sharedPreferences = getSharedPreferences(
                 getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
-        currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
+        // Default User In Hash Set
+        HashSet<String> hashSet = new HashSet<>();
+        hashSet.add("Salesman");
+
+        currentUserType = sharedPreferences.getStringSet(getString(R.string.SH_user_type), hashSet);
 
         if (currentUserType.equals(getString(R.string.telecaller))) {
             assignerButton.setVisibility(View.GONE);
