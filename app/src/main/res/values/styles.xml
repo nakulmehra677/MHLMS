@@ -10,6 +10,7 @@
     </style>
 
     <style name="AppTheme.NoActionBar">
+        <item name="android:textColorSecondary">@color/colorWhite</item>
         <item name="android:windowDisablePreview">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
