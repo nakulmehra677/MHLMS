@@ -23,7 +23,7 @@ public class UserDataSharedPreference {
     public void setUserDetails(UserDetails details) {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(context.getString(R.string.SH_user_name), details.getUserName());
-        editor.putString(context.getString(R.string.SH_user_type), details.getUserType());
+        editor.putStringSet(context.getString(R.string.SH_user_type), details.getUserType());
         editor.putString(context.getString(R.string.SH_user_location), details.getLocation());
         editor.putString(context.getString(R.string.SH_user_key), details.getKey());
         editor.putString(context.getString(R.string.SH_user_uid), details.getuId());

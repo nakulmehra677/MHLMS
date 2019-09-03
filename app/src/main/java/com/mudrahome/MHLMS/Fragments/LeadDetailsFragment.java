@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -15,6 +14,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Managers.PermissionManager;
 import com.mudrahome.MHLMS.Models.TimeModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -24,14 +24,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mudrahome.MHLMS.Firebase.Firestore;
-import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
-import com.mudrahome.MHLMS.Interfaces.OnUpdateLeadListener;
 import com.mudrahome.MHLMS.Managers.TimeManager;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
@@ -75,7 +71,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
     private LeadDetails leadDetails;
     private String currentUserType;
-    private Firestore firestore;
+    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private BroadcastReceiver br;
 
     private String customerNotInterested = "Customer Not Interested";
@@ -133,7 +129,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
 
 //        br = new CallStatus();
-        firestore = new Firestore();
+        firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
 
         name = view.findViewById(R.id.customer_name);
         loan = view.findViewById(R.id.loan_amount);
@@ -246,7 +242,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         progress.show();
 
                         firestore.fetchUsersByUserType(
-                                onFetchSalesPersonListListener(),
+                                onFetchSalesPersonList(),
                                 leadDetails.getLocation(),
                                 getString(R.string.salesman));
                     } else {
@@ -309,8 +305,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 //        Log.d("State", "onStart");
     }
 
-    private OnFetchUsersListListener onFetchSalesPersonListListener() {
-        return new OnFetchUsersListListener() {
+    private Firestore.OnFetchUsersList onFetchSalesPersonList() {
+        return new Firestore.OnFetchUsersList() {
             @Override
             public void onListFetched(UserList userList) {
                 progress.dismiss();
@@ -335,7 +331,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                             progress.setCanceledOnTouchOutside(false);
                             progress.show();
 
-                            firestore.updateLeadDetails(onUpdateLeadListener(), dialogLeadDetails);
+                            firestore.updateLeadDetails(onUpdateLead(), dialogLeadDetails);
                         }
                     }).show(getFragmentManager(), "promo");
         }
@@ -380,13 +376,13 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 progress.setCanceledOnTouchOutside(false);
                 progress.show();
 
-                firestore.updateLeadDetails(onUpdateLeadListener(), leadDetails);
+                firestore.updateLeadDetails(onUpdateLead(), leadDetails);
             }
         }).show(getFragmentManager(), "promo");
     }
 
-    private OnUpdateLeadListener onUpdateLeadListener() {
-        return new OnUpdateLeadListener() {
+    private Firestore.OnUpdateLead onUpdateLead() {
+        return new Firestore.OnUpdateLead() {
             @Override
             public void onLeadUpdated() {
                 Toast.makeText(context, R.string.lead_update, Toast.LENGTH_SHORT).show();

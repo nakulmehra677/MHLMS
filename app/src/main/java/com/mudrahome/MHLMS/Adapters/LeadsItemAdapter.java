@@ -26,17 +26,18 @@ import com.mudrahome.MHLMS.ViewHolders.OfferViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 
 public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<Object> items;
     private Context context;
-    private String currentUserType;
+    private Set<String> currentUserType;
     private List<LeadDetails> allLeads;
 
     private final int OFFER = 0, LEADS = 1;
 
-    public LeadsItemAdapter(List<Object> leadDetails, Context context, String currentUserType) {
+    public LeadsItemAdapter(List<Object> leadDetails, Context context, Set<String> currentUserType) {
         this.items = leadDetails;
         this.context = context;
         this.currentUserType = currentUserType;

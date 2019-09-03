@@ -12,8 +12,7 @@ import android.widget.ScrollView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mudrahome.MHLMS.Firebase.Firestore;
-import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
+import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
@@ -28,7 +27,7 @@ public class FilterActivity extends BaseActivity {
     private String strLoanType;
     private String currentUserType;
 
-    private Firestore firestore;
+    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private SharedPreferences sharedPreferences;
 
     private RadioGroup locationRadioGroup;
@@ -86,7 +85,7 @@ public class FilterActivity extends BaseActivity {
             assigneeButton.setVisibility(View.GONE);
         }
 
-        firestore = new Firestore();
+        firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
         initAllValues();
         showLocationList();
 
@@ -230,7 +229,7 @@ public class FilterActivity extends BaseActivity {
             showProgressDialog("Loading...", this);
             assignerRadioGroup.removeAllViews();
 
-            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
                     RadioButton rb = new RadioButton(FilterActivity.this);
@@ -262,7 +261,7 @@ public class FilterActivity extends BaseActivity {
             showProgressDialog("Loading...", this);
             assigneeRadioGroup.removeAllViews();
 
-            firestore.fetchUsersByUserType(new OnFetchUsersListListener() {
+            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
                     RadioButton rb = new RadioButton(FilterActivity.this);

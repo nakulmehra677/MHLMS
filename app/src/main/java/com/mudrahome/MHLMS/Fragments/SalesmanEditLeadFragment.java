@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,19 +19,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.mudrahome.MHLMS.Firebase.Firestore;
-import com.mudrahome.MHLMS.Interfaces.OnFetchBankList;
+import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Managers.Alarm;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.R;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -230,8 +224,8 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
     }
 
     private void getBankList() {
-        Firestore firestore = new Firestore();
-        firestore.getBankList(new OnFetchBankList() {
+        com.mudrahome.MHLMS.Firebase.Firestore firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
+        firestore.getBankList(new Firestore.OnFetchBankList() {
             @Override
             public void onSuccess(ArrayList list) {
                 if (list.size() != 0) {

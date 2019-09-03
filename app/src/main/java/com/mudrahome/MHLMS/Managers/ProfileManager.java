@@ -6,6 +6,9 @@ import com.mudrahome.MHLMS.Models.UserDetails;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
+import java.util.Set;
+
 public class ProfileManager extends BaseActivity {
 
     private FirebaseAuth mAuth;
@@ -40,7 +43,7 @@ public class ProfileManager extends BaseActivity {
         return currentUser;
     }
 
-    public String getCurrentUserType() {
+    public Set<String> getCurrentUserType() {
         return currentUserDetails.getUserType();
     }
 

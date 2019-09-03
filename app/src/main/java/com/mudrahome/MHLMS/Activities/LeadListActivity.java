@@ -15,18 +15,13 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.mudrahome.MHLMS.Adapters.LeadsItemAdapter;
-import com.mudrahome.MHLMS.Firebase.Firestore;
-import com.mudrahome.MHLMS.Interfaces.FetchOffer;
-import com.mudrahome.MHLMS.Interfaces.OnFetchLeadListListener;
-import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
+import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.OfferDetails;
@@ -37,6 +32,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class LeadListActivity extends BaseActivity {
 
@@ -46,7 +42,7 @@ public class LeadListActivity extends BaseActivity {
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ProgressBar progressBar, firstPageProgressBar;
 
-    private Firestore firestore;
+    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
 
     private SharedPreferences sharedPreferences;
     private ProfileManager profileManager;
@@ -77,7 +73,7 @@ public class LeadListActivity extends BaseActivity {
         //showProgressDialog("Loading..", this);
 
         profileManager = new ProfileManager();
-        firestore = new Firestore(this);
+        firestore = new com.mudrahome.MHLMS.Firebase.Firestore(this);
 
         firestore.getUsers(onFetchUserDetailsByUId(), profileManager.getuId());
 
@@ -185,7 +181,7 @@ public class LeadListActivity extends BaseActivity {
     }
 
     private void getOffer() {
-        firestore.getOffers(new FetchOffer() {
+        firestore.getOffers(new Firestore.FetchOffer() {
                                 @Override
                                 public void onSuccess(List<OfferDetails> details) {
                                     if (details.size() > 0) {
@@ -206,7 +202,7 @@ public class LeadListActivity extends BaseActivity {
     }
 
     private void fetchLeads() {
-        String currentUserType = profileManager.getCurrentUserType();
+        Set<String> currentUserType = profileManager.getCurrentUserType();
         String s;
         if (currentUserType.equals(getString(R.string.telecaller)))
             s = "assigner";
@@ -215,7 +211,7 @@ public class LeadListActivity extends BaseActivity {
         else
             s = "Admin";
 
-        firestore.getLeadList(onFetchLeadListListener(),
+        firestore.getLeadList(onFetchLeadList(),
                 s, profileManager.getCurrentUserDetails().getUserName(), bottomVisibleItem,
                 locationFilter, assignerFilter, assigneeFilter, loanTypeFilter, statusFilter);
     }
@@ -288,8 +284,8 @@ public class LeadListActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private OnGetUserDetails onFetchUserDetailsByUId() {
-        return new OnGetUserDetails() {
+    private Firestore.OnGetUserDetails onFetchUserDetailsByUId() {
+        return new Firestore.OnGetUserDetails() {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 profileManager.setCurrentUserDetails(userDetails);
@@ -305,8 +301,8 @@ public class LeadListActivity extends BaseActivity {
         };
     }
 
-    private OnFetchLeadListListener onFetchLeadListListener() {
-        return new OnFetchLeadListListener() {
+    private Firestore.OnFetchLeadList onFetchLeadList() {
+        return new Firestore.OnFetchLeadList() {
             @Override
             public void onLeadAdded(List<LeadDetails> l, DocumentSnapshot lastVisible) {
                 if (l.size() < 20)

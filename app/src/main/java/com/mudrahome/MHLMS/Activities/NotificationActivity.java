@@ -1,7 +1,5 @@
 package com.mudrahome.MHLMS.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -14,24 +12,24 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.mudrahome.MHLMS.ExtraViews;
-import com.mudrahome.MHLMS.Firebase.Firestore;
-import com.mudrahome.MHLMS.Interfaces.FetchOffer;
-import com.mudrahome.MHLMS.Interfaces.OnRemoveAd;
+import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class NotificationActivity extends BaseActivity {
 
-    private Firestore firestore;
+    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private List<Map<String, String>> data;
     private SimpleAdapter adapter;
     private SharedPreferences sharedPreferences;
-    private String currentUserType;
+    private Set<String> currentUserType;
     private String currentUserName;
     private List<String> list = new ArrayList<>();
     private ExtraViews extraViews;
@@ -45,17 +43,17 @@ public class NotificationActivity extends BaseActivity {
 
         listView = findViewById(R.id.listView);
 
-        firestore = new Firestore();
+        firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
         extraViews = new ExtraViews();
 
         sharedPreferences = getSharedPreferences(getString(R.string.SH_user_details), Activity.MODE_PRIVATE);
 
-        currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
+        currentUserType = sharedPreferences.getStringSet(getString(R.string.SH_user_type), Collections.singleton("Salesman"));
         currentUserName = sharedPreferences.getString(getString(R.string.SH_user_name), "");
 
         extraViews.startProgressDialog("Loading...", this);
 
-        firestore.getOffers(new FetchOffer() {
+        firestore.getOffers(new Firestore.FetchOffer() {
             @Override
             public void onSuccess(List<OfferDetails> details) {
 
@@ -101,7 +99,7 @@ public class NotificationActivity extends BaseActivity {
                     adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             if (isNetworkConnected()) {
-                                firestore.removeAd(new OnRemoveAd() {
+                                firestore.removeAd(new Firestore.OnRemoveAd() {
                                     @Override
                                     public void onSuccess() {
                                         data.remove(i);

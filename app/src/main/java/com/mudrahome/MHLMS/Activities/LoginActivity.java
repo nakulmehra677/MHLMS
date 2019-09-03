@@ -9,16 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.mudrahome.MHLMS.Firebase.Authentication;
-import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Fragments.MobileFragment;
-import com.mudrahome.MHLMS.Interfaces.OnGetUserDetails;
-import com.mudrahome.MHLMS.Interfaces.OnUpdateUser;
+import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Interfaces.OnUserLogin;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.UserDetails;
@@ -32,8 +25,6 @@ import com.google.android.play.core.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
-import java.util.concurrent.TimeUnit;
-
 import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
 public class LoginActivity extends BaseActivity {
@@ -43,7 +34,7 @@ public class LoginActivity extends BaseActivity {
     private ScrollView scrollView;
 
     private Authentication authentication;
-    private Firestore firestore;
+    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private ProfileManager profileManager;
     private String contactNumber;
 
@@ -61,7 +52,7 @@ public class LoginActivity extends BaseActivity {
         password = findViewById(R.id.password);
 
         authentication = new Authentication(this);
-        firestore = new Firestore(this);
+        firestore = new com.mudrahome.MHLMS.Firebase.Firestore(this);
         profileManager = new ProfileManager();
 
         if (isNetworkConnected()) {
@@ -117,8 +108,8 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private OnGetUserDetails onGetUserDetails() {
-        return new OnGetUserDetails() {
+    private Firestore.OnGetUserDetails onGetUserDetails() {
+        return new Firestore.OnGetUserDetails() {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 String strDeviceToken = FirebaseInstanceId.getInstance().getToken();
@@ -161,7 +152,7 @@ public class LoginActivity extends BaseActivity {
                 contactNumber = "+91" + number.trim();
                 if (isNetworkConnected()) {
                     currentUserDetails.setContactNumber(contactNumber);
-                    firestore.updateUserDetails(new OnUpdateUser() {
+                    firestore.updateUserDetails(new Firestore.OnUpdateUser() {
                         @Override
                         public void onSuccess() {
                             startLeadsPage();
@@ -294,7 +285,7 @@ public class LoginActivity extends BaseActivity {
 //            flag = true;
 //
 //            currentUserDetails.setContactNumber(contactNumber);
-//            firestore.updateUserDetails(new OnUpdateUser() {
+//            firestore.updateUserDetails(new Firestore.OnUpdateUser() {
 //                @Override
 //                public void onSuccess() {
 //                    startLeadsPage();

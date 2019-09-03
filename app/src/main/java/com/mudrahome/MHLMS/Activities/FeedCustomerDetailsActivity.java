@@ -1,7 +1,6 @@
 package com.mudrahome.MHLMS.Activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
@@ -22,16 +21,13 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.mudrahome.MHLMS.Firebase.Firestore;
-import com.mudrahome.MHLMS.Interfaces.OnFetchUsersListListener;
-import com.mudrahome.MHLMS.Interfaces.OnUploadCustomerDetailsListener;
+import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Managers.Alarm;
 import com.mudrahome.MHLMS.Managers.TimeManager;
 import com.mudrahome.MHLMS.Models.LeadDetails;
@@ -78,7 +74,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     private RadioGroup selfEmploymentTypeRadioGroup;
 
     private LeadDetails leadDetails;
-    private Firestore firestore;
+    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private SharedPreferences sharedPreferences;
 
     private List<UserDetails> salesPersonList;
@@ -103,7 +99,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         dateTextView = findViewById(R.id.date);
         timeTextView = findViewById(R.id.time);
 
-        firestore = new Firestore(this);
+        firestore = new com.mudrahome.MHLMS.Firebase.Firestore(this);
         sharedPreferences = getSharedPreferences(
                 getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
 
@@ -254,7 +250,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 if (isNetworkConnected()) {
                     getDetails();
                     if (checkEmpty()) {
-                        checkSMSPermission();
+                        uploadDetails();
+//                        checkSMSPermission();
                     } else
                         showToastMessage(R.string.fill_details_correctly);
                 } else
@@ -399,7 +396,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
 
-                        firestore.uploadCustomerDetails(onUploadCustomerdetails(), leadDetails);
+                        firestore.uploadCustomerDetails(onUploadCustomerDetails(), leadDetails);
                     }
                 })
 
@@ -432,8 +429,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 timeModel.getTime(), timeModel.getTimeStamp());
     }
 
-    private OnUploadCustomerDetailsListener onUploadCustomerdetails() {
-        return new OnUploadCustomerDetailsListener() {
+    private Firestore.OnUploadCustomerDetails onUploadCustomerDetails() {
+        return new Firestore.OnUploadCustomerDetails() {
             @Override
             public void onDataUploaded() {
                 Log.i("No of Nodes", "Uploaded");
@@ -453,8 +450,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         };
     }
 
-    private OnFetchUsersListListener onFetchUsersListListener() {
-        return new OnFetchUsersListListener() {
+    private Firestore.OnFetchUsersList onFetchUsersListListener() {
+        return new Firestore.OnFetchUsersList() {
             @Override
             public void onListFetched(UserList userList) {
 
