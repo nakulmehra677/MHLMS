@@ -15,6 +15,10 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Calendar;
 
 public class NotificationService extends FirebaseMessagingService {
+
+    int id = 12;
+
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -31,7 +35,8 @@ public class NotificationService extends FirebaseMessagingService {
                 .setContentText(message);
 
         NotificationManagerCompat managerCompat =NotificationManagerCompat.from(this);
-        managerCompat.notify(999,builder.build());
+        managerCompat.notify(id,builder.build());
+        id++;
 
         //if(title.equals("New Lead")){
            // startTimer();
