@@ -69,8 +69,11 @@ public class LeadListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leads_list);
 
+
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
+        setSupportActionBar(toolbar);
+        
 
         recyclerView = findViewById(R.id.recycler_view);
         fab = findViewById(R.id.fab);
