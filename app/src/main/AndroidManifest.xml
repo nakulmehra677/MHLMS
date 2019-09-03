@@ -34,7 +34,8 @@
 
         <activity
             android:name=".Activities.LeadListActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".Activities.FeedCustomerDetailsActivity"

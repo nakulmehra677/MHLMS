@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -61,10 +62,15 @@ public class LeadListActivity extends BaseActivity {
     private String statusFilter = "All";
     private String loanTypeFilter = "All";
 
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leads_list);
+
+        toolbar = findViewById(R.id.toolbarLeadList);
+        toolbar.inflateMenu(R.menu.lead_list_menu);
 
         recyclerView = findViewById(R.id.recycler_view);
         fab = findViewById(R.id.fab);
