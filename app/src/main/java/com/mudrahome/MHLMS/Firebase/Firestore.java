@@ -1,5 +1,6 @@
 package com.mudrahome.MHLMS.Firebase;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static com.firebase.ui.auth.AuthUI.TAG;
 
 public class Firestore {
     Context context;
@@ -214,8 +217,11 @@ public class Firestore {
         DocumentReference dRef = db.collection("userList").document(uId);
 
         dRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @SuppressLint("RestrictedApi")
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                Log.d(TAG, "onSuccess: UserDetails : " + documentSnapshot.toString());
                 UserDetails userDetails = documentSnapshot.toObject(UserDetails.class);
                 onGetUserDetails.onSuccess(userDetails);
             }

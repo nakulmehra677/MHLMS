@@ -43,7 +43,7 @@ public class ProfileManager extends BaseActivity {
         return currentUser;
     }
 
-    public Set<String> getCurrentUserType() {
+    public List<String> getCurrentUserType() {
         return currentUserDetails.getUserType();
     }
 

@@ -31,6 +31,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -181,6 +182,13 @@ public class LeadListActivity extends BaseActivity {
     }
 
     private void getOffer() {
+
+        Set<String> list = new HashSet<>();
+        for(int i = 0 ; i < profileManager.getCurrentUserType().size(); i++){
+            list.add(profileManager.getCurrentUserType().get(i));
+
+        }
+
         firestore.getOffers(new Firestore.FetchOffer() {
                                 @Override
                                 public void onSuccess(List<OfferDetails> details) {
@@ -197,12 +205,13 @@ public class LeadListActivity extends BaseActivity {
                                 }
                             },
                 profileManager.getCurrentUserDetails().getUserName(),
-                profileManager.getCurrentUserType(),
+                list,
                 true);
     }
 
     private void fetchLeads() {
-        Set<String> currentUserType = profileManager.getCurrentUserType();
+        List<String> currentUserType = profileManager.getCurrentUserType();
+
         String s;
         if (currentUserType.equals(getString(R.string.telecaller)))
             s = "assigner";
@@ -289,7 +298,15 @@ public class LeadListActivity extends BaseActivity {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 profileManager.setCurrentUserDetails(userDetails);
-                adapter = new LeadsItemAdapter(leadDetailsList, LeadListActivity.this, profileManager.getCurrentUserType());
+
+                Set<String> set = new HashSet<>();
+
+
+                for(int i =0;i<profileManager.getCurrentUserType().size();i++){
+                    set.add(profileManager.getCurrentUserType().get(i));
+                }
+
+                adapter = new LeadsItemAdapter(leadDetailsList, LeadListActivity.this, set);
                 recyclerView.setAdapter(adapter);
                 setLayoutByUser();
             }
