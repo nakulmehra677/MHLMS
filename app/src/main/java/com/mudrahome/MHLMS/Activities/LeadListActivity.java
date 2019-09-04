@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -63,6 +64,7 @@ public class LeadListActivity extends BaseActivity {
     private String loanTypeFilter = "All";
 
     private Toolbar toolbar;
+    boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +75,7 @@ public class LeadListActivity extends BaseActivity {
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
         setSupportActionBar(toolbar);
-        
+
 
         recyclerView = findViewById(R.id.recycler_view);
         fab = findViewById(R.id.fab);
@@ -245,14 +247,11 @@ public class LeadListActivity extends BaseActivity {
         }
     }
 
-    @Override
+  /*  @Override
     public void onBackPressed() {
         //super.onBackPressed();
-        Intent intent = new Intent();
-        intent.putExtra("loggedIn", profileManager.checkUserExist());
-        setResult(101, intent);
-        finish();
-    }
+
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -277,7 +276,9 @@ public class LeadListActivity extends BaseActivity {
                                     showToastMessage(R.string.logged_out);
                                     //SharedPreferences.Editor editor = sharedPreferences.edit();
                                     //editor.clear();
-                                    onBackPressed();
+                                    /*onBackPressed();*/
+                                    startActivity(new Intent(LeadListActivity.this,LoginActivity.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                                 }
                             }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
@@ -390,5 +391,28 @@ public class LeadListActivity extends BaseActivity {
 
             fetchLeads();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            Intent intent = new Intent();
+            intent.putExtra("loggedIn", profileManager.checkUserExist());
+            setResult(101, intent);
+            finish();
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }
