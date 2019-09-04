@@ -32,12 +32,12 @@ import java.util.Set;
 public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<Object> items;
     private Context context;
-    private Set<String> currentUserType;
+    private /*Set<String>*/String currentUserType;
     private List<LeadDetails> allLeads;
 
     private final int OFFER = 0, LEADS = 1;
 
-    public LeadsItemAdapter(List<Object> leadDetails, Context context, Set<String> currentUserType) {
+    public LeadsItemAdapter(List<Object> leadDetails, Context context, /*Set<String>*/String currentUserType) {
         this.items = leadDetails;
         this.context = context;
         this.currentUserType = currentUserType;
@@ -59,7 +59,13 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 break;
 
             default:
-                View v1 = inflater.inflate(R.layout.lead_list_item, parent, false);
+                /*View v1 = inflater.inflate(R.layout.lead_list_item, parent, false);*/
+                /**
+                 * Change by Himanshu
+                 */
+
+                View v1 = inflater.inflate(R.layout.list_lead_item_version,parent,false);
+
                 viewHolder = new LeadListViewHolder(v1);
                 break;
         }
