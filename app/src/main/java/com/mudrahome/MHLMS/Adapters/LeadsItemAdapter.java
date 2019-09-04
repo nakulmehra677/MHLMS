@@ -5,9 +5,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -100,12 +103,42 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 final LeadDetails model = (LeadDetails) items.get(i);
 
+                vh2.status.setText(model.getStatus());
+
+                if(model.getStatus().matches("Closed")){
+
+                    /*vh2.cardView.setCardBackgroundColor(Color.rgb(245, 245, 245));
+                    vh2.name.setTextColor(context.getResources().getColor(R.color.greycolor));
+                    vh2.loanType.setTextColor(context.getResources().getColor(R.color.greycolor));
+                    vh2.location.setTextColor(context.getResources().getColor(R.color.greycolor));
+                    vh2.name.setTextColor(context.getResources().getColor(R.color.greycolor));
+                    vh2.date.setTextColor(context.getResources().getColor(R.color.greycolor));
+                    vh2.status.setTextColor(context.getResources().getColor(R.color.greycolor));
+                    vh2.loanAmount.setTextColor(context.getResources().getColor(R.color.greycolor));*/
+                    /*vh2.locationtextview.setCompoundDrawableTintList(Color.rgb(162,162,162));*/
+                    vh2.status.setTextColor(Color.RED);
+
+
+                }else {
+                   /* vh2.cardView.setCardBackgroundColor(Color.WHITE);
+                    vh2.name.setTextColor(context.getResources().getColor(R.color.coloBlack));
+                    vh2.loanType.setTextColor(context.getResources().getColor(R.color.coloBlack));
+                    vh2.location.setTextColor(context.getResources().getColor(R.color.coloBlack));
+                    vh2.name.setTextColor(context.getResources().getColor(R.color.coloBlack));
+                    vh2.date.setTextColor(context.getResources().getColor(R.color.coloBlack));
+                    vh2.status.setTextColor(context.getResources().getColor(R.color.coloBlack));
+                    vh2.loanAmount.setTextColor(context.getResources().getColor(R.color.coloBlack));*/
+
+                    vh2.status.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+
+                }
+
                 vh2.name.setText(model.getName());
                 vh2.loanAmount.setText(model.getLoanAmount());
                 vh2.loanType.setText(model.getLoanType());
                 vh2.location.setText(model.getLocation());
 
-                vh2.status.setText(model.getStatus());
+
                 vh2.date.setText(model.getDate());
 
                 if (currentUserType.equals(context.getString(R.string.telecaller)))
