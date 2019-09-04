@@ -22,4 +22,14 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="InputText_Border" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor" >@color/colorPrimary</item>
+        <!--<item name="android:textColorPrimary">@color/inputColor</item>-->
+        <!-- <item name="android:colorAccent">@color/inputColor</item>-->
+        <item name="colorControlNormal">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <!--   <item name="android:textColorHint">@color/inputColor</item>-->
+
+    </style>
+
 </resources>
