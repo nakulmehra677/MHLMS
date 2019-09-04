@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -66,11 +67,32 @@ public class LeadListActivity extends BaseActivity {
     private Toolbar toolbar;
     boolean doubleBackToExitPressedOnce = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leads_list);
 
+        sharedPreferences = getApplicationContext().getSharedPreferences("com.mudrahome.MHLMS", MODE_PRIVATE);
+
+        if(sharedPreferences.getBoolean("UpdateAvlb",false)){
+            new AlertDialog.Builder(LeadListActivity.this, R.style.AppCompatAlertDialogStyle)
+                    .setTitle("Update Available")
+                    .setMessage("It looks like you are missing out some new features, kindly Update app to get a better experience")
+                    .setPositiveButton("Update now", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                            try {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                            } catch (android.content.ActivityNotFoundException anfe) {
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                            }
+                        }
+                    })
+                    .setNegativeButton("Later", null)
+                    .show();
+        }
 
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
