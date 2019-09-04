@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="#ECECEC"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.LeadListActivity">
@@ -79,6 +80,8 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/filter"
         app:layout_constraintEnd_toEndOf="parent" />
+
+
 
     <Button
         android:id="@+id/filter"

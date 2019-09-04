@@ -9,11 +9,6 @@
         app:showAsAction="always" />
 
 
-    <item
-        android:id="@+id/startadd"
-        android:title="Start Ad"
-        app:showAsAction="never"
-        />
 
     <item
         android:id="@+id/logout"

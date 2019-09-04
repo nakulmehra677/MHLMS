@@ -2,6 +2,7 @@ package com.mudrahome.MHLMS.Activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,10 @@ import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
+
+import org.jsoup.Jsoup;
+
+import java.io.IOException;
 
 import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
@@ -62,6 +67,31 @@ public class LoginActivity extends BaseActivity {
                 checkUpdate();
         } else
             showToastMessage(R.string.no_internet);
+    }
+
+    public class VersionChecker extends AsyncTask<String, String, String> {
+
+        private String newVersion;
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            try {
+                newVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=com.development.mhleadmanagementsystemdev ")
+                        .timeout(30000)
+                        .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                        .referrer("http://www.google.com")
+                        .get()
+                        .select(".IxB2fe .hAyfc:nth-child(4) .htlgb span")
+                        .get(0)
+                        .ownText();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return newVersion;
+        }
     }
 
     public void loginButton(View view) {
