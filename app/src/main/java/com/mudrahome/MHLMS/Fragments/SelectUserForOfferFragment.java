@@ -181,7 +181,6 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                         details = new OfferDetails(strOfferTitle,
                                 strOfferDescription, userNames, Timestamp.now());
 
-
                     if (isNetworkConnected()) {
                         final ExtraViews extraViews = new ExtraViews();
                         extraViews.startProgressDialog("Loading...", getContext());

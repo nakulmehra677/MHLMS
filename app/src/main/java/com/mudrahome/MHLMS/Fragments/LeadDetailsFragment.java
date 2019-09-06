@@ -33,9 +33,11 @@ import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
+import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
@@ -63,14 +65,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView assignerContact;
     private TextView assigneeContact;
 
-    private Button button, callButton, assigneeCallbutton, assignerCallButton;
-    private SharedPreferences sharedPreferences;
+    private Button button;
+    private UserDataSharedPreference preference;
     private LinearLayout assignedToLayout, assignerLayout;
     private ProgressDialog progress;
     private Context context;
 
     private LeadDetails leadDetails;
-    private String currentUserType;
+    private Set<String> currentUserType;
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private BroadcastReceiver br;
 
@@ -124,9 +126,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
 
-        sharedPreferences = this.getActivity().getSharedPreferences(
-                getString(R.string.SH_user_details), Activity.MODE_PRIVATE);
-        currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
+        preference = new UserDataSharedPreference(context);
+        currentUserType = preference.getUserType();
 
 //        br = new CallStatus();
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
@@ -156,21 +157,70 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedToLayout = view.findViewById(R.id.assigned_to_layout);
         assignerLayout = view.findViewById(R.id.assigner_layout);
         button = view.findViewById(R.id.edit_lead_details);
-        callButton = view.findViewById(R.id.call_button);
-        assignerCallButton = view.findViewById(R.id.assigner_call_button);
-        assigneeCallbutton = view.findViewById(R.id.assignee_call_button);
+//        callButton = view.findViewById(R.id.call_button);
+//        assignerCallButton = view.findViewById(R.id.assigner_call_button);
+//        assigneeCallbutton = view.findViewById(R.id.assignee_call_button);
 
         setLayoutFields();
 
         if (leadDetails.getAssignerContact() == null) {
-            assignerCallButton.setVisibility(View.GONE);
+            /*assignerCallButton.setVisibility(View.GONE);*/
+            assignerContact.setClickable(false);
+            assignerContact.setCompoundDrawables(null,null,null,null);
+
+        }else {
+
+            assignerContact.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    PermissionManager permission = new PermissionManager(getContext());
+
+                    if (permission.checkCallPhone()) {
+//                    if (permission.checkReadPhoneState()) {
+//                        if (permission.checkRecordAudio()) {
+                        callCustomer(leadDetails.getAssignerContact());
+//                        } else
+//                            permission.requestRecordAudio();
+//                    } else
+//                        permission.requestReadPhoneState();
+                    } else
+                        permission.requestCallPhone();
+                }
+            });
 
         }
+
         if (leadDetails.getAssigneeContact() == null) {
-            assigneeCallbutton.setVisibility(View.GONE);
+            /*assigneeCallbutton.setVisibility(View.GONE);*/
+
+            assigneeContact.setClickable(false);
+            assigneeContact.setCompoundDrawables(null,null,null,null);
+
+        }else {
+
+            assigneeContact.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    PermissionManager permission = new PermissionManager(getContext());
+
+                    if (permission.checkCallPhone()) {
+//                    if (permission.checkReadPhoneState()) {
+//                        if (permission.checkRecordAudio()) {
+                        callCustomer(leadDetails.getAssigneeContact());
+//                        } else
+//                            permission.requestRecordAudio();
+//                    } else
+//                        permission.requestReadPhoneState();
+                    } else
+                        permission.requestCallPhone();
+                }
+            });
+
         }
 
-        callButton.setOnClickListener(new View.OnClickListener() {
+        number.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -189,44 +239,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
         });
 
-        assignerCallButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                PermissionManager permission = new PermissionManager(getContext());
-
-                if (permission.checkCallPhone()) {
-//                    if (permission.checkReadPhoneState()) {
-//                        if (permission.checkRecordAudio()) {
-                    callCustomer(leadDetails.getAssignerContact());
-//                        } else
-//                            permission.requestRecordAudio();
-//                    } else
-//                        permission.requestReadPhoneState();
-                } else
-                    permission.requestCallPhone();
-            }
-        });
-
-        assigneeCallbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                PermissionManager permission = new PermissionManager(getContext());
-
-                if (permission.checkCallPhone()) {
-//                    if (permission.checkReadPhoneState()) {
-//                        if (permission.checkRecordAudio()) {
-                    callCustomer(leadDetails.getAssigneeContact());
-//                        } else
-//                            permission.requestRecordAudio();
-//                    } else
-//                        permission.requestReadPhoneState();
-                } else
-                    permission.requestCallPhone();
-            }
-        });
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -234,9 +246,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         .getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 if (cm.getActiveNetworkInfo() != null) {
-                    if (currentUserType.equals(getString(R.string.telecaller))) {
+                    if (currentUserType.contains(getString(R.string.telecaller))) {
                         progress = new ProgressDialog(context);
-                        progress.setMessage("Loading..");
+                        progress.setMessage("Loading...");
                         progress.setCancelable(false);
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
@@ -259,9 +271,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private void setLayoutFields() {
-        if (currentUserType.equals(getString(R.string.telecaller)))
+        if (currentUserType.contains(getString(R.string.telecaller)))
             assignerLayout.setVisibility(View.GONE);
-        else if (currentUserType.equals(getString(R.string.salesman)))
+        else if (currentUserType.contains(getString(R.string.salesman)))
             assignedToLayout.setVisibility(View.GONE);
         else
             button.setVisibility(View.GONE);

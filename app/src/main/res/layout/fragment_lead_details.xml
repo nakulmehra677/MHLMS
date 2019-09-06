@@ -35,22 +35,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
                     android:text="Customer Details"
                     android:textColor="@color/coloBlack"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
-                    android:id="@+id/call_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="18dp"
-                    android:background="@drawable/call_button_background"
-                    android:drawableLeft="@drawable/ic_call_white_24dp"
-                    android:padding="8dp"
-                    android:text="Call"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                <!--
+                                <Button
+                                    android:id="@+id/call_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="gone"
+                                    android:layout_margin="18dp"
+                                    android:background="@drawable/call_button_background"
+                                    android:drawableLeft="@drawable/ic_call_white_24dp"
+                                    android:padding="8dp"
+                                    android:text="Call"
+                                    android:textColor="@color/colorWhite"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -114,8 +119,14 @@
                         <TextView
                             android:id="@+id/contact_number"
                             android:layout_width="match_parent"
+                            android:gravity="center_vertical"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/coloBlack" />
+                            android:drawableEnd="@drawable/ic_call_white_24dp"
+                            android:drawablePadding="20sp"
+                            android:layout_marginEnd="20sp"
+                            android:textColor="@color/coloBlack"
+                            android:drawableRight="@drawable/call_button_background"
+                            android:layout_marginRight="20sp" />
 
                     </LinearLayout>
 
@@ -229,25 +240,30 @@
                 android:orientation="vertical"
                 android:padding="4dp">
 
+                <!--
 
-                <Button
-                    android:id="@+id/assigner_call_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="18dp"
-                    android:background="@drawable/call_button_background"
-                    android:drawableLeft="@drawable/ic_call_white_24dp"
-                    android:padding="8dp"
-                    android:text="Call"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                                <Button
+                                    android:id="@+id/assigner_call_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="18dp"
+                                    android:visibility="gone"
+                                    android:background="@drawable/call_button_background"
+                                    android:drawableLeft="@drawable/ic_call_white_24dp"
+                                    android:padding="8dp"
+                                    android:text="Call"
+                                    android:textColor="@color/colorWhite"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                -->
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
                     android:text="Assigner's Details"
                     android:textColor="@color/coloBlack"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -295,8 +311,13 @@
                         <TextView
                             android:id="@+id/assigner_contact_number"
                             android:layout_width="match_parent"
+                            android:gravity="center_vertical"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/coloBlack" />
+                            android:layout_marginEnd="20sp"
+                            android:drawableEnd="@drawable/ic_call_white_24dp"
+                            android:textColor="@color/coloBlack"
+                            android:drawableRight="@drawable/ic_call_white_24dp"
+                            android:layout_marginRight="20sp" />
 
                     </LinearLayout>
 
@@ -355,23 +376,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
                     android:text="Assignee's Details"
                     android:textColor="@color/coloBlack"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/assignee_call_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="18dp"
-                    android:layout_weight="0"
-                    android:background="@drawable/call_button_background"
-                    android:drawableLeft="@drawable/ic_call_white_24dp"
-                    android:padding="8dp"
-                    android:text="Call"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                <!--
+                                <Button
+                                    android:id="@+id/assignee_call_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="18dp"
+                                    android:visibility="gone"
+                                    android:layout_weight="0"
+                                    android:background="@drawable/call_button_background"
+                                    android:drawableLeft="@drawable/ic_call_white_24dp"
+                                    android:padding="8dp"
+                                    android:text="Call"
+                                    android:textColor="@color/colorWhite"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@+id/textView4" />-->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -419,7 +443,10 @@
                             android:id="@+id/assignee_contact_number"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
                             android:layout_weight="1"
+                            android:drawableRight="@drawable/ic_call_white_24dp"
+                            android:layout_marginRight="20sp"
                             android:textColor="@color/coloBlack" />
 
                     </LinearLayout>
@@ -458,6 +485,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
                     android:text="Lead's Status"
                     android:textColor="@color/coloBlack" />
 

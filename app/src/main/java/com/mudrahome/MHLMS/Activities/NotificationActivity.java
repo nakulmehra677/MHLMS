@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -15,10 +16,12 @@ import com.mudrahome.MHLMS.ExtraViews;
 import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.R;
+import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,13 +31,13 @@ public class NotificationActivity extends BaseActivity {
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private List<Map<String, String>> data;
     private SimpleAdapter adapter;
-    private SharedPreferences sharedPreferences;
-    private Set<String> currentUserType;
+    private Set<String> currentUserType = new HashSet<>();
     private String currentUserName;
     private List<String> list = new ArrayList<>();
     private ExtraViews extraViews;
     private ListView listView;
     private List<OfferDetails> offerDetails;
+    private UserDataSharedPreference preference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +49,21 @@ public class NotificationActivity extends BaseActivity {
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
         extraViews = new ExtraViews();
 
-        sharedPreferences = getSharedPreferences(getString(R.string.SH_user_details), Activity.MODE_PRIVATE);
+        preference = new UserDataSharedPreference(this);
 
-        currentUserType = sharedPreferences.getStringSet(getString(R.string.SH_user_type), Collections.singleton("Salesman"));
-        currentUserName = sharedPreferences.getString(getString(R.string.SH_user_name), "");
+        currentUserName = preference.getUserName();
+        currentUserType = preference.getUserType();
 
         extraViews.startProgressDialog("Loading...", this);
+
+        String userType;
+        if (currentUserType.contains(getString(R.string.admin))) {
+            userType = getString(R.string.admin);
+        } else if (currentUserType.contains(getString(R.string.telecaller))) {
+            userType = getString(R.string.telecaller);
+        } else {
+            userType = getString(R.string.admin);
+        }
 
         firestore.getOffers(new Firestore.FetchOffer() {
             @Override
@@ -84,9 +96,9 @@ public class NotificationActivity extends BaseActivity {
                 extraViews.dismissProgressDialog();
                 Toast.makeText(NotificationActivity.this, "An error occured.", Toast.LENGTH_SHORT).show();
             }
-        }, currentUserName, currentUserType, false);
+        }, currentUserName, userType, false);
 
-        if (currentUserType.equals(getString(R.string.admin))) {
+        if (currentUserType.contains(getString(R.string.admin))) {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, final int i, long l) {

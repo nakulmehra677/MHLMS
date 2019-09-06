@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -248,7 +249,12 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
 
     private CheckBox addCheckBox(String bank) {
         CheckBox checkBox = new CheckBox(getContext());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkBox.setButtonTintList(getContext().getColorStateList(R.color.colorPrimaryDark));
+        }
+
         checkBox.setPadding(24, 24, 24, 24);
+
         checkBox.setText(bank);
 
         checkBox.setOnClickListener(new View.OnClickListener() {
