@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -63,7 +64,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView assignerContact;
     private TextView assigneeContact;
 
-    private Button button, callButton, assigneeCallbutton, assignerCallButton;
+    private Button button/*, callButton, assigneeCallbutton, assignerCallButton*/;
     private SharedPreferences sharedPreferences;
     private LinearLayout assignedToLayout, assignerLayout;
     private ProgressDialog progress;
@@ -156,21 +157,29 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedToLayout = view.findViewById(R.id.assigned_to_layout);
         assignerLayout = view.findViewById(R.id.assigner_layout);
         button = view.findViewById(R.id.edit_lead_details);
-        callButton = view.findViewById(R.id.call_button);
-        assignerCallButton = view.findViewById(R.id.assigner_call_button);
-        assigneeCallbutton = view.findViewById(R.id.assignee_call_button);
+        /*callButton = view.findViewById(R.id.call_button);*/
+        /*assignerCallButton = view.findViewById(R.id.assigner_call_button);*/
+        /*assigneeCallbutton = view.findViewById(R.id.assignee_call_button);*/
 
         setLayoutFields();
 
         if (leadDetails.getAssignerContact() == null) {
-            assignerCallButton.setVisibility(View.GONE);
+            assignerContact.setClickable(false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                assignerContact.setCompoundDrawablesRelative(null,null,null,null);
+            }
+            /*assignerCallButton.setVisibility(View.GONE);*/
 
         }
         if (leadDetails.getAssigneeContact() == null) {
-            assigneeCallbutton.setVisibility(View.GONE);
+            assigneeContact.setClickable(false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                assigneeContact.setCompoundDrawablesRelative(null,null,null,null);
+            }
+            /*assigneeCallbutton.setVisibility(View.GONE);*/
         }
 
-        callButton.setOnClickListener(new View.OnClickListener() {
+        number.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -189,7 +198,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
         });
 
-        assignerCallButton.setOnClickListener(new View.OnClickListener() {
+        assignerContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -208,7 +217,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
         });
 
-        assigneeCallbutton.setOnClickListener(new View.OnClickListener() {
+        assigneeContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 

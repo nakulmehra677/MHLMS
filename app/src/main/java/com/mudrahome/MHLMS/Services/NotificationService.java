@@ -53,6 +53,8 @@ public class NotificationService extends FirebaseMessagingService {
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVibrate(new long[] {100,1000,100,1000})
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
                 .setContentText(message);
 
