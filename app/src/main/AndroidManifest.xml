@@ -16,32 +16,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
         <activity
             android:name=".Activities.NotificationActivity"
             android:label="Notifications"
             android:screenOrientation="portrait" />
-
         <activity
-            android:label="Start Ad"
             android:name=".Activities.StartOfferActivity"
+            android:label="Start Ad"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".Activities.FilterActivity"
             android:label="Filter Leads"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".Activities.LeadListActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBarLead"/>
-
+            android:theme="@style/AppTheme.NoActionBarLead" />
         <activity
             android:name=".Activities.FeedCustomerDetailsActivity"
             android:label="Feed Customer Details"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".Activities.LoginActivity"
             android:screenOrientation="portrait"
@@ -53,11 +47,10 @@
             </intent-filter>
         </activity>
 
-
         <service
             android:name=".Services.NotificationService"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:minSdkVersion="8">
             <intent-filter
                 android:minSdkVersion="8"
@@ -65,14 +58,15 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-       <!-- <service
+        <!--
+ <service
             android:name=".Services.NotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>-->
-
+        </service>
+        -->
         <receiver android:name=".Services.AlertReceiver" />
     </application>
 

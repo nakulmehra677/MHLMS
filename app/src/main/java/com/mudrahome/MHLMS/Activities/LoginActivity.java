@@ -77,10 +77,10 @@ public class LoginActivity extends BaseActivity {
                     String latestVersion = versionChecker.execute().get();
 
                     if (!latestVersion.equals(BuildConfig.VERSION_NAME)){
-                        sharedPreferences.edit().putBoolean("UpdateAvlb",true);
+                        sharedPreferences.edit().putBoolean("UpdateAvlb",true).apply();
                         /*sessionConfig.setupdateAvailable(true);*/             // save in local storeage update is availble
                     }else {
-                        sharedPreferences.edit().putBoolean("UpdateAvlb",false);
+                        sharedPreferences.edit().putBoolean("UpdateAvlb",false).apply();
                         /*sessionConfig.setupdateAvailable(false);*/
                     }
                 } catch (Exception e) {
@@ -93,7 +93,7 @@ public class LoginActivity extends BaseActivity {
             showToastMessage(R.string.no_internet);
     }
 
-    public class VersionChecker extends AsyncTask<String, String, String> {
+    public static class VersionChecker extends AsyncTask<String, String, String> {
 
         private String newVersion;
 
@@ -321,7 +321,7 @@ public class LoginActivity extends BaseActivity {
 //                this,
 //                mCallbacks);
 //
-//    }
+//    }showToastMessage
 //
 //    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
 //            mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
