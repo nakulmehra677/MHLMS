@@ -163,6 +163,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         setLayoutFields();
 
+        Log.d("Assigner Contact ", "Number :  " + leadDetails.getAssignerContact());
         if (leadDetails.getAssignerContact() == null) {
             assignerContact.setClickable(false);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -170,13 +171,59 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
             /*assignerCallButton.setVisibility(View.GONE);*/
 
+        }else {
+
+            assignerContact.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    PermissionManager permission = new PermissionManager(getContext());
+
+                    if (permission.checkCallPhone()) {
+//                    if (permission.checkReadPhoneState()) {
+//                        if (permission.checkRecordAudio()) {
+                        callCustomer(leadDetails.getAssignerContact());
+//                        } else
+//                            permission.requestRecordAudio();
+//                    } else
+//                        permission.requestReadPhoneState();
+                    } else
+                        permission.requestCallPhone();
+                }
+            });
+
+
         }
+
         if (leadDetails.getAssigneeContact() == null) {
             assigneeContact.setClickable(false);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 assigneeContact.setCompoundDrawablesRelative(null,null,null,null);
             }
             /*assigneeCallbutton.setVisibility(View.GONE);*/
+        }else {
+
+
+            assigneeContact.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    PermissionManager permission = new PermissionManager(getContext());
+
+                    if (permission.checkCallPhone()) {
+//                    if (permission.checkReadPhoneState()) {
+//                        if (permission.checkRecordAudio()) {
+                        callCustomer(leadDetails.getAssigneeContact());
+//                        } else
+//                            permission.requestRecordAudio();
+//                    } else
+//                        permission.requestReadPhoneState();
+                    } else
+                        permission.requestCallPhone();
+                }
+            });
+
+
         }
 
         number.setOnClickListener(new View.OnClickListener() {
@@ -198,43 +245,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
         });
 
-        assignerContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                PermissionManager permission = new PermissionManager(getContext());
-
-                if (permission.checkCallPhone()) {
-//                    if (permission.checkReadPhoneState()) {
-//                        if (permission.checkRecordAudio()) {
-                    callCustomer(leadDetails.getAssignerContact());
-//                        } else
-//                            permission.requestRecordAudio();
-//                    } else
-//                        permission.requestReadPhoneState();
-                } else
-                    permission.requestCallPhone();
-            }
-        });
-
-        assigneeContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                PermissionManager permission = new PermissionManager(getContext());
-
-                if (permission.checkCallPhone()) {
-//                    if (permission.checkReadPhoneState()) {
-//                        if (permission.checkRecordAudio()) {
-                    callCustomer(leadDetails.getAssigneeContact());
-//                        } else
-//                            permission.requestRecordAudio();
-//                    } else
-//                        permission.requestReadPhoneState();
-                } else
-                    permission.requestCallPhone();
-            }
-        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override

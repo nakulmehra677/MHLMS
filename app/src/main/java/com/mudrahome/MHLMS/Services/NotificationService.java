@@ -19,6 +19,9 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Calendar;
 
+import static android.app.Notification.DEFAULT_SOUND;
+import static android.app.Notification.DEFAULT_VIBRATE;
+
 public class NotificationService extends FirebaseMessagingService {
 
     int id = 12;
@@ -55,6 +58,7 @@ public class NotificationService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVibrate(new long[] {100,1000,100,1000})
+                .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
                 .setContentText(message);
 

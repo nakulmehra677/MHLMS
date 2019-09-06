@@ -107,28 +107,9 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 if(model.getStatus().matches("Closed")){
 
-                    /*vh2.cardView.setCardBackgroundColor(Color.rgb(245, 245, 245));
-                    vh2.name.setTextColor(context.getResources().getColor(R.color.greycolor));
-                    vh2.loanType.setTextColor(context.getResources().getColor(R.color.greycolor));
-                    vh2.location.setTextColor(context.getResources().getColor(R.color.greycolor));
-                    vh2.name.setTextColor(context.getResources().getColor(R.color.greycolor));
-                    vh2.date.setTextColor(context.getResources().getColor(R.color.greycolor));
-                    vh2.status.setTextColor(context.getResources().getColor(R.color.greycolor));
-                    vh2.loanAmount.setTextColor(context.getResources().getColor(R.color.greycolor));*/
-                    /*vh2.locationtextview.setCompoundDrawableTintList(Color.rgb(162,162,162));*/
                     vh2.status.setTextColor(Color.RED);
 
-
                 }else {
-                   /* vh2.cardView.setCardBackgroundColor(Color.WHITE);
-                    vh2.name.setTextColor(context.getResources().getColor(R.color.coloBlack));
-                    vh2.loanType.setTextColor(context.getResources().getColor(R.color.coloBlack));
-                    vh2.location.setTextColor(context.getResources().getColor(R.color.coloBlack));
-                    vh2.name.setTextColor(context.getResources().getColor(R.color.coloBlack));
-                    vh2.date.setTextColor(context.getResources().getColor(R.color.coloBlack));
-                    vh2.status.setTextColor(context.getResources().getColor(R.color.coloBlack));
-                    vh2.loanAmount.setTextColor(context.getResources().getColor(R.color.coloBlack));*/
-
                     vh2.status.setTextColor(context.getResources().getColor(R.color.colorPrimary));
 
                 }
