@@ -197,6 +197,9 @@ public class LeadListActivity extends BaseActivity {
     }
 
     private void checkconfirmpassword(String newpass, String confirmpass, String currentapss, ProgressDialog progressDialog,AlertDialog alertDialog) {
+
+        hideKeyboard(LeadListActivity.this);
+
         UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
         /*Log.d("Tag", "checkconfirmpassword: getmailId " + userDataSharedPreference.getUserEmail() );*/
         /*Toast.makeText(getApplicationContext(), "Email " + userDataSharedPreference.getUserEmail(), Toast.LENGTH_SHORT).show();*/

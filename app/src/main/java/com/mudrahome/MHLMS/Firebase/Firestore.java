@@ -237,6 +237,13 @@ public class Firestore {
         dRef.update("deviceToken", deviceToken);
     }
 
+    public void setPassword (String password,String uId){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("userList").document(uId);
+
+        dRef.update("userPassword", password);
+    }
+
     public void startOffer(final com.mudrahome.MHLMS.Interfaces.Firestore.OnUploadOffer listener, OfferDetails details) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("offerList").document();

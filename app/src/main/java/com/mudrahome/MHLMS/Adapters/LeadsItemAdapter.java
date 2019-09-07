@@ -125,7 +125,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 if (currentUserType.equals(context.getString(R.string.telecaller)))
                     vh2.assignedTo.setText(model.getAssignedTo());
                 else if (currentUserType.equals(context.getString(R.string.salesman))) {
-                    vh2.assignText.setText("Assginer");
+                    vh2.assignText.setText("Assginer : ");
                     vh2.assignedTo.setText(model.getAssigner());
                 } else
                     vh2.assignLayout.setVisibility(View.GONE);

@@ -2,6 +2,7 @@ package com.mudrahome.MHLMS.Firebase;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -17,10 +18,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mudrahome.MHLMS.Managers.ProfileManager;
+
+import static com.firebase.ui.auth.AuthUI.TAG;
 
 public class Authentication {
     private Context context;
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+
     public Authentication(Context context) {
         this.context = context;
     }
@@ -43,7 +48,11 @@ public class Authentication {
     }
 
     public void UpdatePassword(String oldpass, final String newpass , String emailid, final ProgressDialog progress, final AlertDialog alertDialog){
+       final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final Firestore firestore = new Firestore(context);
+        final ProfileManager profileManager = new ProfileManager();
 
+        Log.d("Tag", "document Reference :  " + profileManager.getuId());
 
         progress.setMessage("Please wait...");
         progress.setCancelable(false);
@@ -53,7 +62,6 @@ public class Authentication {
         AuthCredential credential = EmailAuthProvider
                 .getCredential(emailid, oldpass);
 
-// Prompt the user to re-provide their sign-in credentials
         user.reauthenticate(credential)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -64,16 +72,19 @@ public class Authentication {
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(context, "Password Updated", Toast.LENGTH_SHORT).show();
+                                        firestore.setPassword(newpass,profileManager.getuId());
                                         progress.dismiss();
                                         alertDialog.dismiss();
-                                        /*Log.d(TAG, "Password updated");*/
                                     } else {
-                                        Toast.makeText(context, "Something want wrong", Toast.LENGTH_SHORT).show();
-                                        /*Log.d(TAG, "Error password not updated")*/
+                                        Toast.makeText(context, "Try again", Toast.LENGTH_SHORT).show();
+                                        progress.dismiss();
+
                                     }
                                 }
                             });
                         } else {
+                            Toast.makeText(context, "Wrong Password", Toast.LENGTH_SHORT).show();
+                            progress.dismiss();
                            /* Log.d(TAG, "Error auth failed")*/
                         }
                     }
