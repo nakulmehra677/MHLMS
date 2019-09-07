@@ -47,6 +47,7 @@
     <string name="SH_user_key">SHUserKey</string>
     <string name="SH_user_uid">SHUserUid</string>
     <string name="SH_user_number">SHUserNumber</string>
+    <string name="SH_user_email">SHEmailUser</string>
 
     <!-- Locations -->
     <string name="delhi">Delhi</string>

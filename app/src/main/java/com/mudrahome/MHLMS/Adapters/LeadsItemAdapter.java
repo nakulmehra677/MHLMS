@@ -40,7 +40,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private final int OFFER = 0, LEADS = 1;
 
-    public LeadsItemAdapter(List<Object> leadDetails, Context context, /*Set<String>*/String currentUserType) {
+    public LeadsItemAdapter(List<Object> leadDetails, Context context,/* Set<String>*/String currentUserType) {
         this.items = leadDetails;
         this.context = context;
         this.currentUserType = currentUserType;

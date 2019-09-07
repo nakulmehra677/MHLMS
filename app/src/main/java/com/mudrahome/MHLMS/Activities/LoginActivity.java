@@ -69,8 +69,8 @@ public class LoginActivity extends BaseActivity {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 checkUpdate();
 
-            } else{
 
+                Log.d("Tag", "onCreate: " + "KITKAT");
                 VersionChecker versionChecker = new VersionChecker();
 
                 try {

@@ -1,12 +1,19 @@
 package com.mudrahome.MHLMS.Activities;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
@@ -16,11 +23,13 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.mudrahome.MHLMS.Adapters.LeadListPagerAdapter;
+import com.mudrahome.MHLMS.Firebase.Authentication;
 import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Fragments.LeadListFragment;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
+import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 public class LeadListActivity extends BaseActivity {
 
@@ -31,6 +40,7 @@ public class LeadListActivity extends BaseActivity {
     private TabLayout tabLayout;
     private TabItem adminItem, salesItem;
 
+    private Authentication authentication;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,7 +167,54 @@ public class LeadListActivity extends BaseActivity {
                 } else
                     showToastMessage(R.string.no_internet);
                 break;
+
+            case R.id.changePassword:
+                if (isNetworkConnected()) {
+
+                    LayoutInflater inflater = LayoutInflater.from(LeadListActivity.this);
+                    View view = inflater.inflate(R.layout.change_password_layout, null);
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    alert.setView(view);
+
+                    final AlertDialog dialog = alert.show();
+
+                    final EditText currpass = view.findViewById(R.id.currentPassword);
+                    final EditText newPass = view.findViewById(R.id.newPassword);
+                    final EditText confirmpass = view.findViewById(R.id.confirmPassword);
+
+                    final Button updatepassword = view.findViewById(R.id.updatepassword);
+
+                    updatepassword.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ProgressDialog progressDialog = new ProgressDialog(LeadListActivity.this);
+                            checkconfirmpassword(newPass.getText().toString(),confirmpass.getText().toString(),currpass.getText().toString(),progressDialog,dialog);
+                        }
+                    });
+                }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkconfirmpassword(String newpass, String confirmpass, String currentapss, ProgressDialog progressDialog,AlertDialog alertDialog) {
+        UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
+        /*Log.d("Tag", "checkconfirmpassword: getmailId " + userDataSharedPreference.getUserEmail() );*/
+        /*Toast.makeText(getApplicationContext(), "Email " + userDataSharedPreference.getUserEmail(), Toast.LENGTH_SHORT).show();*/
+        if(newpass.isEmpty() && confirmpass.isEmpty() && currentapss.isEmpty()){
+            showToastMessage(R.string.fill_all_fields);
+        }else {
+
+            if(newpass.matches(confirmpass)){
+
+                authentication = new Authentication(LeadListActivity.this);
+
+                authentication.UpdatePassword(currentapss,newpass,userDataSharedPreference.getUserEmail(),progressDialog,alertDialog);
+            }else{
+                Toast.makeText(getApplicationContext(), "Password doestn't matched", Toast.LENGTH_SHORT).show();
+            }
+
+
+        }
+
     }
 }

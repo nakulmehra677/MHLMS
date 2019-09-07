@@ -17,6 +17,7 @@ public class UserDataSharedPreference {
     private SharedPreferences preferences;
     private Context context;
     private String userdetails;
+    private String email;
 
     public UserDataSharedPreference(Context context) {
         this.context = context;
@@ -33,12 +34,17 @@ public class UserDataSharedPreference {
         editor.putString(context.getString(R.string.SH_user_key), details.getKey());
         editor.putString(context.getString(R.string.SH_user_uid), details.getuId());
         editor.putString(context.getString(R.string.SH_user_number), details.getContactNumber());
+        editor.putString(context.getString(R.string.SH_user_email),details.getMail());
 
         Set<String> set = new HashSet<String>();
         set.addAll(details.getUserType());
         editor.putStringSet(context.getString(R.string.SH_user_type), set);
 
         editor.commit();
+    }
+
+    public String getUserEmail(){
+        return preferences.getString(context.getString(R.string.SH_user_email),"abc@gmail.com");
     }
 
     public String getUserName() {

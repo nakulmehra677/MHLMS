@@ -37,6 +37,7 @@
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">#000000</item>
+        <item name="android:textColorSecondary">@color/colorPrimary</item>
         <item name="buttonBarPositiveButtonStyle">@color/colorPrimary</item>
     </style>
 
