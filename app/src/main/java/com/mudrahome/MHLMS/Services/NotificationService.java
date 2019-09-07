@@ -19,9 +19,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Calendar;
 
-import static android.app.Notification.DEFAULT_SOUND;
-import static android.app.Notification.DEFAULT_VIBRATE;
-
 public class NotificationService extends FirebaseMessagingService {
 
     int id = 12;
@@ -30,8 +27,8 @@ public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-       /* /Log.i("NotificationMsg","sgdg" + remoteMessage.getData());/
-*/
+        /*Log.i("NotificationMsg","sgdg" + remoteMessage.getData());*/
+
 
         showNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody());
     }
@@ -58,7 +55,6 @@ public class NotificationService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVibrate(new long[] {100,1000,100,1000})
-                .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
                 .setContentText(message);
 
@@ -67,7 +63,7 @@ public class NotificationService extends FirebaseMessagingService {
         id++;
 
         //if(title.equals("New Lead")){
-        // startTimer();
+           // startTimer();
         ///}
     }
     private void startTimer(){
@@ -80,8 +76,6 @@ public class NotificationService extends FirebaseMessagingService {
         Intent intent = new Intent(this, AlertReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 }

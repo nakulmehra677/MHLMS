@@ -19,32 +19,58 @@
             android:orientation="vertical">
 
             <TextView
+
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp"
                 android:gravity="center"
                 android:text="Login"
-                android:textColor="@color/coloBlack"
+                android:textColor="@color/colorPrimary"
                 android:textSize="24dp"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/mail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginTop="50dp"
-                android:hint="Email id"
-                android:inputType="textEmailAddress" />
 
-            <EditText
-                android:id="@+id/password"
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:hint="Password"
-                android:inputType="textPassword" />
+                app:passwordToggleEnabled="true"
+                android:layout_marginTop="50dp"
+                style="@style/InputText_Border"
+                android:layout_marginBottom="8dp"
+                android:theme="@style/InputText_Border"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/mail"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:hint="Email id"
+                    android:inputType="textEmailAddress" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                app:passwordToggleEnabled="true"
+                style="@style/InputText_Border"
+                android:theme="@style/InputText_Border"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:hint="Password"
+                    android:inputType="textPassword" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
 
             <Button
                 android:id="@+id/login"
@@ -53,10 +79,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="8dp"
-                android:background="@color/colorPrimaryDark"
+                android:background="@drawable/two_stoke_button"
                 android:text="Login"
                 android:onClick="loginButton"
-                android:textColor="@color/colorWhite" />
+                android:textColor="@color/colorPrimary" />
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -2,6 +2,8 @@ package com.mudrahome.MHLMS.Activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
 
+import com.mudrahome.MHLMS.BuildConfig;
 import com.mudrahome.MHLMS.Firebase.Authentication;
 import com.mudrahome.MHLMS.Fragments.MobileFragment;
 import com.mudrahome.MHLMS.Interfaces.Firestore;
@@ -25,6 +28,11 @@ import com.google.android.play.core.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
+
+import org.jsoup.Jsoup;
+
+import java.io.IOException;
+
 import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
 public class LoginActivity extends BaseActivity {
@@ -37,6 +45,7 @@ public class LoginActivity extends BaseActivity {
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private ProfileManager profileManager;
     private String contactNumber;
+    SharedPreferences sharedPreferences;
 
     private boolean flag = false;
 
@@ -45,8 +54,9 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        showProgressDialog("Loading..", this);
+        showProgressDialog("Loading...", this);
 
+        sharedPreferences = getApplicationContext().getSharedPreferences("com.mudrahome.MHLMS", MODE_PRIVATE);
         scrollView = findViewById(R.id.scrollLayout);
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
@@ -56,12 +66,56 @@ public class LoginActivity extends BaseActivity {
         profileManager = new ProfileManager();
 
         if (isNetworkConnected()) {
-            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                checkLogin();
-            } else
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 checkUpdate();
+
+            } else{
+
+                VersionChecker versionChecker = new VersionChecker();
+
+                try {
+                    String latestVersion = versionChecker.execute().get();
+
+                    if (!latestVersion.equals(BuildConfig.VERSION_NAME)){
+                        sharedPreferences.edit().putBoolean("UpdateAvlb",true).apply();
+                        /*sessionConfig.setupdateAvailable(true);*/             // save in local storeage update is availble
+                    }else {
+                        sharedPreferences.edit().putBoolean("UpdateAvlb",false).apply();
+                        /*sessionConfig.setupdateAvailable(false);*/
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                checkLogin();
+            }
+
         } else
             showToastMessage(R.string.no_internet);
+    }
+
+    public static class VersionChecker extends AsyncTask<String, String, String> {
+
+        private String newVersion;
+
+        @Override
+        protected String doInBackground(String... params) {
+
+
+            try {
+                newVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=com.development.mhleadmanagementsystemdev")
+                        .timeout(30000)
+                        .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                        .referrer("http://www.google.com")
+                        .get()
+                        .select(".IxB2fe .hAyfc:nth-child(4) .htlgb span")
+                        .get(0)
+                        .ownText();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return newVersion;
+        }
     }
 
     public void loginButton(View view) {
@@ -267,7 +321,7 @@ public class LoginActivity extends BaseActivity {
 //                this,
 //                mCallbacks);
 //
-//    }
+//    }showToastMessage
 //
 //    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
 //            mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {

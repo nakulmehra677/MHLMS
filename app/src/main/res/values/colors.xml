@@ -8,5 +8,8 @@
     <color name="colorGray">#E9E8E8</color>
     <color name="colorGrayLight">#F3F3F3</color>
     <color name="colorPrimaryLight">#97017D8D</color>
+    <color name="greycolor">#A3A3A3</color>
+    <color name="colorRed">#DA0707</color>
+    <color name="colorBlue">#1a73e8</color>
 
 </resources>

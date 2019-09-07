@@ -25,4 +25,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="InputText_Border" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor" >@color/colorPrimary</item>
+        <!--<item name="android:textColorPrimary">@color/inputColor</item>-->
+        <!-- <item name="android:colorAccent">@color/inputColor</item>-->
+        <item name="colorControlNormal">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <!--   <item name="android:textColorHint">@color/inputColor</item>-->
+
+    </style>
+
+    <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">#000000</item>
+        <item name="buttonBarPositiveButtonStyle">@color/colorPrimary</item>
+    </style>
+
 </resources>

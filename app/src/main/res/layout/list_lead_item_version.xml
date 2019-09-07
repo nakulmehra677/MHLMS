@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_margin="5dp"
+    android:id="@+id/cardViewLeadList"
+    app:cardCornerRadius="6dp"
+    android:layout_height="wrap_content">
+
+
+
+
+
+    <LinearLayout
+
+        android:layout_margin="10sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+
+        <TextView
+            android:id="@+id/customer_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="Customer Name"
+            android:textColor="@color/coloBlack"
+            android:textSize="20sp"/>
+
+        <LinearLayout
+            android:id="@+id/assign_layout"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/assign_text"
+                android:drawableStart="@drawable/ic_person"
+                android:layout_width="wrap_content"
+                android:textSize="16sp"
+                android:drawableTint="@color/colorBlue"
+                android:layout_height="wrap_content"
+                android:drawablePadding="5dp"
+                android:text="Assigned to : "
+                android:drawableLeft="@drawable/ic_loan_type" />
+
+            <TextView
+                android:id="@+id/assigned_to"
+                android:textColor="@color/coloBlack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name "/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/loanamounttextview"
+                android:drawableStart="@drawable/ic_rupee"
+                android:layout_width="wrap_content"
+                android:textSize="16sp"
+                android:drawablePadding="5dp"
+                android:layout_height="wrap_content"
+                android:text="Loan Amount : "
+                android:drawableTint="@color/colorPrimary"
+                android:drawableLeft="@drawable/ic_rupee" />
+
+            <TextView
+                android:id="@+id/customer_loan_amount"
+                android:textColor="@color/coloBlack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 L 20K "/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/loantypetextview"
+                android:drawableStart="@drawable/ic_loan_type"
+                android:layout_width="wrap_content"
+                android:textSize="16sp"
+                android:drawableTint="@color/colorPrimary"
+                android:layout_height="wrap_content"
+                android:drawablePadding="5dp"
+                android:text="Loan Type : "
+                android:drawableLeft="@drawable/ic_loan_type" />
+
+            <TextView
+                android:textColor="@color/coloBlack"
+                android:layout_width="wrap_content"
+                android:id="@+id/customer_loan_type"
+                android:layout_height="wrap_content"
+                android:text="Home Loan "/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/locationtextview"
+                android:drawableStart="@drawable/ic_location"
+                android:layout_width="wrap_content"
+                android:textSize="16sp"
+                android:drawablePadding="5dp"
+                android:layout_height="wrap_content"
+                android:text="Location : "
+                android:drawableTint="@color/colorRed"
+                android:drawableLeft="@drawable/ic_location" />
+
+            <TextView
+                android:id="@+id/customer_location"
+                android:textColor="@color/coloBlack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jaipur "/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:weightSum="100"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="50"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="In active"
+                    android:textSize="18sp"
+                    android:textColor="@color/coloBlack"
+                    android:layout_centerHorizontal="true"/>
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:background="@color/coloBlack"/>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="50"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="02- Sep-19"
+                    android:textSize="18sp"
+                    android:textColor="@color/coloBlack"
+                    android:layout_centerHorizontal="true"/>
+
+            </RelativeLayout>
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
