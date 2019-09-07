@@ -1,13 +1,11 @@
 package com.mudrahome.MHLMS.Fragments;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +31,6 @@ import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
-import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -66,15 +63,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView assigneeContact;
 
     private Button button;
-    private UserDataSharedPreference preference;
     private LinearLayout assignedToLayout, assignerLayout;
     private ProgressDialog progress;
     private Context context;
 
     private LeadDetails leadDetails;
-    private Set<String> currentUserType;
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private BroadcastReceiver br;
+    private String userType;
 
     private String customerNotInterested = "Customer Not Interested";
     private String documentPicked = "Document Picked";
@@ -84,9 +80,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String notDoable = "Not Doable";
     private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
 
-    public LeadDetailsFragment(LeadDetails leadDetails, Context context) {
+    public LeadDetailsFragment(LeadDetails leadDetails, Context context, String userType) {
         this.leadDetails = leadDetails;
         this.context = context;
+        this.userType = userType;
     }
 
     @Override
@@ -126,9 +123,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
 
-        preference = new UserDataSharedPreference(context);
-        currentUserType = preference.getUserType();
-
 //        br = new CallStatus();
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
 
@@ -166,9 +160,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         if (leadDetails.getAssignerContact() == null) {
             /*assignerCallButton.setVisibility(View.GONE);*/
             assignerContact.setClickable(false);
-            assignerContact.setCompoundDrawables(null,null,null,null);
+            assignerContact.setCompoundDrawables(null, null, null, null);
 
-        }else {
+        } else {
 
             assignerContact.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -195,9 +189,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             /*assigneeCallbutton.setVisibility(View.GONE);*/
 
             assigneeContact.setClickable(false);
-            assigneeContact.setCompoundDrawables(null,null,null,null);
+            assigneeContact.setCompoundDrawables(null, null, null, null);
 
-        }else {
+        } else {
 
             assigneeContact.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -246,7 +240,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         .getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 if (cm.getActiveNetworkInfo() != null) {
-                    if (currentUserType.contains(getString(R.string.telecaller))) {
+                    if (userType.equals(getString(R.string.telecaller))) {
                         progress = new ProgressDialog(context);
                         progress.setMessage("Loading...");
                         progress.setCancelable(false);
@@ -271,9 +265,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private void setLayoutFields() {
-        if (currentUserType.contains(getString(R.string.telecaller)))
+        if (userType.equals(getString(R.string.telecaller)))
             assignerLayout.setVisibility(View.GONE);
-        else if (currentUserType.contains(getString(R.string.salesman)))
+        else if (userType.contains(getString(R.string.salesman)))
             assignedToLayout.setVisibility(View.GONE);
         else
             button.setVisibility(View.GONE);

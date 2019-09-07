@@ -29,7 +29,6 @@ public class FilterActivity extends BaseActivity {
     private String strAssignee;
     private String strStatus;
     private String strLoanType;
-    private Set<String> currentUserType;
 
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private UserDataSharedPreference preference;
@@ -55,10 +54,16 @@ public class FilterActivity extends BaseActivity {
     private boolean assignerLocationChanged;
     private boolean assigneeLocationChanged;
 
+    private int userType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
+
+        Intent intent = getIntent();
+        userType = intent.getIntExtra("userType", R.string.salesman);
+        Log.d("userrr", getString(userType));
 
         locationButton = findViewById(R.id.location_button);
         assignerButton = findViewById(R.id.assigner_button);
@@ -78,11 +83,10 @@ public class FilterActivity extends BaseActivity {
         loanTypeRadioGroup = findViewById(R.id.loan_type_radio_group);
         statusRadioGroup = findViewById(R.id.status_radio_group);
 
-        preference = new UserDataSharedPreference(this);
-        currentUserType = preference.getUserType();
-
-        if (currentUserType.contains(getString(R.string.telecaller))) {
+        if (userType == R.string.telecaller) {
             assignerButton.setVisibility(View.GONE);
+
+        } else if (userType == R.string.salesman) {
             locationButton.setVisibility(View.GONE);
             assigneeButton.setVisibility(View.GONE);
         }
@@ -204,7 +208,7 @@ public class FilterActivity extends BaseActivity {
         setLoanTypeRadioGroup();
         setStatusRadioGroup();
 
-        if (currentUserType.contains(getString(R.string.salesman))) {
+        if (userType == R.string.salesman) {
             setAssignerRadioGroup();
             highlightAssignerButton();
         } else {
