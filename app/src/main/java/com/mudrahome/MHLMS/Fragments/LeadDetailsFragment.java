@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,9 +33,11 @@ import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
+import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Set;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
@@ -64,14 +65,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView assignerContact;
     private TextView assigneeContact;
 
-    private Button button/*, callButton, assigneeCallbutton, assignerCallButton*/;
-    private SharedPreferences sharedPreferences;
+    private Button button;
+    private UserDataSharedPreference preference;
     private LinearLayout assignedToLayout, assignerLayout;
     private ProgressDialog progress;
     private Context context;
 
     private LeadDetails leadDetails;
-    private String currentUserType;
+    private Set<String> currentUserType;
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private BroadcastReceiver br;
 
@@ -125,9 +126,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
 
-        sharedPreferences = this.getActivity().getSharedPreferences(
-                getString(R.string.SH_user_details), Activity.MODE_PRIVATE);
-        currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type), "Salesman");
+        preference = new UserDataSharedPreference(context);
+        currentUserType = preference.getUserType();
 
 //        br = new CallStatus();
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
@@ -157,19 +157,16 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedToLayout = view.findViewById(R.id.assigned_to_layout);
         assignerLayout = view.findViewById(R.id.assigner_layout);
         button = view.findViewById(R.id.edit_lead_details);
-        /*callButton = view.findViewById(R.id.call_button);*/
-        /*assignerCallButton = view.findViewById(R.id.assigner_call_button);*/
-        /*assigneeCallbutton = view.findViewById(R.id.assignee_call_button);*/
+//        callButton = view.findViewById(R.id.call_button);
+//        assignerCallButton = view.findViewById(R.id.assigner_call_button);
+//        assigneeCallbutton = view.findViewById(R.id.assignee_call_button);
 
         setLayoutFields();
 
-        Log.d("Assigner Contact ", "Number :  " + leadDetails.getAssignerContact());
         if (leadDetails.getAssignerContact() == null) {
-            assignerContact.setClickable(false);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                assignerContact.setCompoundDrawablesRelative(null,null,null,null);
-            }
             /*assignerCallButton.setVisibility(View.GONE);*/
+            assignerContact.setClickable(false);
+            assignerContact.setCompoundDrawables(null,null,null,null);
 
         }else {
 
@@ -192,17 +189,15 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 }
             });
 
-
         }
 
         if (leadDetails.getAssigneeContact() == null) {
-            assigneeContact.setClickable(false);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                assigneeContact.setCompoundDrawablesRelative(null,null,null,null);
-            }
             /*assigneeCallbutton.setVisibility(View.GONE);*/
-        }else {
 
+            assigneeContact.setClickable(false);
+            assigneeContact.setCompoundDrawables(null,null,null,null);
+
+        }else {
 
             assigneeContact.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -222,7 +217,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         permission.requestCallPhone();
                 }
             });
-
 
         }
 
@@ -245,7 +239,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
         });
 
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -253,9 +246,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         .getSystemService(Context.CONNECTIVITY_SERVICE);
 
                 if (cm.getActiveNetworkInfo() != null) {
-                    if (currentUserType.equals(getString(R.string.telecaller))) {
+                    if (currentUserType.contains(getString(R.string.telecaller))) {
                         progress = new ProgressDialog(context);
-                        progress.setMessage("Loading..");
+                        progress.setMessage("Loading...");
                         progress.setCancelable(false);
                         progress.setCanceledOnTouchOutside(false);
                         progress.show();
@@ -278,9 +271,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private void setLayoutFields() {
-        if (currentUserType.equals(getString(R.string.telecaller)))
+        if (currentUserType.contains(getString(R.string.telecaller)))
             assignerLayout.setVisibility(View.GONE);
-        else if (currentUserType.equals(getString(R.string.salesman)))
+        else if (currentUserType.contains(getString(R.string.salesman)))
             assignedToLayout.setVisibility(View.GONE);
         else
             button.setVisibility(View.GONE);

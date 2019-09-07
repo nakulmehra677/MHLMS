@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.mudrahome.MHLMS.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,10 +73,10 @@ public class Firestore {
 
         if (location.equals("All") || location == null)
             query = db.collection("userList")
-                    .whereEqualTo("userType", userType);
+                    .whereArrayContains("userType", userType);
         else
             query = db.collection("userList")
-                    .whereEqualTo("userType", userType)
+                    .whereArrayContains("userType", userType)
                     .whereEqualTo("location", location);
 
         query = query.orderBy("userName", Query.Direction.ASCENDING);
@@ -128,7 +129,9 @@ public class Firestore {
         });
     }
 
-    public void getOffers(final com.mudrahome.MHLMS.Interfaces.Firestore.FetchOffer fetchOffer, String name, Set<String> userType, boolean singleItem) {
+    public void getOffers(final com.mudrahome.MHLMS.Interfaces.Firestore.FetchOffer fetchOffer,
+                          String name, String userType, boolean singleItem) {
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query query = db.collection("offerList");
 
@@ -221,7 +224,6 @@ public class Firestore {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                Log.d(TAG, "onSuccess: UserDetails : " + documentSnapshot.toString());
                 UserDetails userDetails = documentSnapshot.toObject(UserDetails.class);
                 onGetUserDetails.onSuccess(userDetails);
             }

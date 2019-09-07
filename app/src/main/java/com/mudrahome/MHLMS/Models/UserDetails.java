@@ -12,14 +12,14 @@ public class UserDetails {
         this.key = key;
     }
 
-    private String uId, userName, mail, location, key, deviceToken, contactNumber,userType;
-    /*private List<String> userType;*/
+    private String uId, userName, mail, location, key, deviceToken, contactNumber;
+    private List<String> userType;
 
     public UserDetails() {
     }
 
     public UserDetails(String uId, String userName, String mail, String location,
-                       String userType, String key, String deviceToken) {
+                       List<String> userType, String key, String deviceToken) {
         this.uId = uId;
         this.userName = userName;
         this.mail = mail;
@@ -45,11 +45,11 @@ public class UserDetails {
         this.deviceToken = deviceToken;
     }
 
-    public String getUserType() {
+    public List<String> getUserType() {
         return userType;
     }
 
-    public void setUserType(String userType) {
+    public void setUserType(List<String> userType) {
         this.userType = userType;
     }
 

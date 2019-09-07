@@ -37,6 +37,7 @@
     <string name="telecaller">Telecaller</string>
     <string name="salesman">Salesman</string>
     <string name="admin">Admin</string>
+    <string name="admin_and_salesman">Admin and Salesman</string>
 
     <!-- Shared Preference -->
     <string name="SH_user_details">SHUserDetails</string>
@@ -148,7 +149,5 @@
         <item>Status</item>
     </string-array>
 
-
-    // Notification Channel ID
     <string name="notification_channel_id">com.mudrahome</string>
 </resources>
