@@ -133,7 +133,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 vh2.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context);
+                        LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context,currentUserType);
                         leadDetailsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "f");
                     }
                 });
