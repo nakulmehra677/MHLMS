@@ -47,7 +47,7 @@ public class ProfileManager extends BaseActivity {
         return currentUserDetails.getUserType();
     }*/
 
-    public String getCurrentUserType() {
+    public List<String> getCurrentUserType() {
         return currentUserDetails.getUserType();
     }
 

@@ -16,6 +16,7 @@ import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
+import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,10 +29,10 @@ public class FilterActivity extends BaseActivity {
     private String strAssignee;
     private String strStatus;
     private String strLoanType;
-    private String currentUserType;
+    private Set<String> currentUserType;
 
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
-    private SharedPreferences sharedPreferences;
+    private UserDataSharedPreference preference;
 
     private RadioGroup locationRadioGroup;
     private RadioGroup assignerRadioGroup;
@@ -77,17 +78,11 @@ public class FilterActivity extends BaseActivity {
         loanTypeRadioGroup = findViewById(R.id.loan_type_radio_group);
         statusRadioGroup = findViewById(R.id.status_radio_group);
 
-        sharedPreferences = getSharedPreferences(
-                getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
-        // Default User In Hash Set
-        /*HashSet<String> hashSet = new HashSet<>();
-        hashSet.add("Salesman");*/
+        preference = new UserDataSharedPreference(this);
+        currentUserType = preference.getUserType();
 
-        currentUserType = sharedPreferences.getString(getString(R.string.SH_user_type),"Salesman");
-
-        if (currentUserType.equals(getString(R.string.telecaller))) {
+        if (currentUserType.contains(getString(R.string.telecaller))) {
             assignerButton.setVisibility(View.GONE);
-        } else if (currentUserType.equals(getString(R.string.salesman))) {
             locationButton.setVisibility(View.GONE);
             assigneeButton.setVisibility(View.GONE);
         }
@@ -209,7 +204,7 @@ public class FilterActivity extends BaseActivity {
         setLoanTypeRadioGroup();
         setStatusRadioGroup();
 
-        if (currentUserType.equals(getString(R.string.salesman))) {
+        if (currentUserType.contains(getString(R.string.salesman))) {
             setAssignerRadioGroup();
             highlightAssignerButton();
         } else {

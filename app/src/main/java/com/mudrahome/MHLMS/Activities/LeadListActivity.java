@@ -26,8 +26,10 @@ public class LeadListActivity extends BaseActivity {
 
     private ProfileManager profileManager;
     private Toolbar toolbar;
+    LeadListFragment fragment;
     private Firestore firestore;
     private TabLayout tabLayout;
+    private TabItem adminItem, salesItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,9 @@ public class LeadListActivity extends BaseActivity {
         setSupportActionBar(toolbar);
 
         tabLayout = findViewById(R.id.tabLayout);
+        adminItem = findViewById(R.id.admin_item);
+        salesItem = findViewById(R.id.sales_item);
+
         profileManager = new ProfileManager();
         firestore = new Firestore();
 
@@ -49,7 +54,7 @@ public class LeadListActivity extends BaseActivity {
 
                 if (profileManager.getCurrentUserType().contains(getString(R.string.admin)) &&
                         profileManager.getCurrentUserType().contains(getString(R.string.salesman))) {
-                    openViewPager();
+                    openViewPager(R.string.admin_and_salesman);
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.telecaller))) {
                     openFragment(R.string.telecaller);
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.admin))) {
@@ -72,7 +77,7 @@ public class LeadListActivity extends BaseActivity {
         ft.commit();
     }
 
-    private void openViewPager() {
+    private void openViewPager(int userType) {
         tabLayout.setVisibility(View.VISIBLE);
         final ViewPager vpPager = findViewById(R.id.pager);
         LeadListPagerAdapter adapterViewPager = new LeadListPagerAdapter(getSupportFragmentManager(), 2);
