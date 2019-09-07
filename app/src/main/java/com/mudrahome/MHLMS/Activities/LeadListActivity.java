@@ -116,6 +116,8 @@ public class LeadListActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
+
+
         Intent intent = new Intent();
         intent.putExtra("loggedIn", profileManager.checkUserExist());
         setResult(101, intent);
