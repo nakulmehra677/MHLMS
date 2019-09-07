@@ -35,12 +35,12 @@ import java.util.Set;
 public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<Object> items;
     private Context context;
-    private /*Set<String>*/String currentUserType;
+    private String currentUserType;
     private List<LeadDetails> allLeads;
 
     private final int OFFER = 0, LEADS = 1;
 
-    public LeadsItemAdapter(List<Object> leadDetails, Context context, /*Set<String>*/String currentUserType) {
+    public LeadsItemAdapter(List<Object> leadDetails, Context context, String currentUserType) {
         this.items = leadDetails;
         this.context = context;
         this.currentUserType = currentUserType;
@@ -67,7 +67,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                  * Change by Himanshu
                  */
 
-                View v1 = inflater.inflate(R.layout.list_lead_item_version,parent,false);
+                View v1 = inflater.inflate(R.layout.list_lead_item_version, parent, false);
 
                 viewHolder = new LeadListViewHolder(v1);
                 break;
@@ -105,7 +105,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 vh2.status.setText(model.getStatus());
 
-                if(model.getStatus().matches("Closed")){
+                if (model.getStatus().matches("Closed")) {
 
                     /*vh2.cardView.setCardBackgroundColor(Color.rgb(245, 245, 245));
                     vh2.name.setTextColor(context.getResources().getColor(R.color.greycolor));
@@ -119,7 +119,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     vh2.status.setTextColor(Color.RED);
 
 
-                }else {
+                } else {
                    /* vh2.cardView.setCardBackgroundColor(Color.WHITE);
                     vh2.name.setTextColor(context.getResources().getColor(R.color.coloBlack));
                     vh2.loanType.setTextColor(context.getResources().getColor(R.color.coloBlack));
@@ -152,7 +152,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 vh2.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context);
+                        LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context, currentUserType);
                         leadDetailsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "f");
                     }
                 });

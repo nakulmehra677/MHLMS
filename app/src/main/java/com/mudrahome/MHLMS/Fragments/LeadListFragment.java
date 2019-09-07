@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -166,7 +167,6 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
     @SuppressLint("RestrictedApi")
     private void setLayoutByUser() {
-        //if (sharedPreferences.getString(sharedPreferenceUserType, "Salesman").equals("Telecaller"))
         if (userType == R.string.telecaller) {
             fab.setVisibility(View.VISIBLE);
             fab.setImageResource(R.drawable.ic_add_white_24dp);
@@ -306,6 +306,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
             switch (view.getId()) {
                 case R.id.filter:
                     Intent intent = new Intent(getContext(), FilterActivity.class);
+                    intent.putExtra("userType", userType);
                     startActivityForResult(intent, 201);
                     break;
             }
