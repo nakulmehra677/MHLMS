@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -25,7 +24,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.mudrahome.MHLMS.Adapters.LeadListPagerAdapter;
 import com.mudrahome.MHLMS.Firebase.Authentication;
 import com.mudrahome.MHLMS.Firebase.Firestore;
+import com.mudrahome.MHLMS.Fragments.ChangePasswordFragment;
 import com.mudrahome.MHLMS.Fragments.LeadListFragment;
+import com.mudrahome.MHLMS.Interfaces.OnPasswordChange;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
@@ -173,38 +174,37 @@ public class LeadListActivity extends BaseActivity {
             case R.id.changePassword:
                 if (isNetworkConnected()) {
 
-                    LayoutInflater inflater = LayoutInflater.from(LeadListActivity.this);
-                    View view = inflater.inflate(R.layout.change_password_layout, null);
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                    alert.setView(view);
-
-                    final AlertDialog dialog = alert.show();
-
-                    final EditText currpass = view.findViewById(R.id.currentPassword);
-                    final EditText newPass = view.findViewById(R.id.newPassword);
-                    final EditText confirmpass = view.findViewById(R.id.confirmPassword);
-
-                    final Button updatepassword = view.findViewById(R.id.updatepassword);
-
-                    updatepassword.setOnClickListener(new View.OnClickListener() {
+                    Log.d("changed password", "onOptionsItemSelected: button selected");
+                    final UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
+                    ChangePasswordFragment.newInstance(new ChangePasswordFragment.OnPasswordChangedClicked() {
                         @Override
-                        public void onClick(View view) {
-                            ProgressDialog progressDialog = new ProgressDialog(LeadListActivity.this);
-                            checkconfirmpassword(newPass.getText().toString(),confirmpass.getText().toString(),currpass.getText().toString(),progressDialog,dialog);
+                        public void onPasswordChange(String oldPassword, String newPassword) {
+
+                            showProgressDialog("Please wait...",LeadListActivity.this);
+                            Authentication authentication = new Authentication(LeadListActivity.this);
+                            authentication.UpdatePassword(oldPassword, newPassword, userDataSharedPreference.getUserEmail(), new OnPasswordChange() {
+                                @Override
+                                public void onSucess(String result) {
+                                    Log.d("Password Updated", "onSucess: " + result);
+                                    Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+                                    dismissProgressDialog();
+                                }
+                            });
                         }
-                    });
+                    }).show(getSupportFragmentManager(),"changepassword");
+
+
                 }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void checkconfirmpassword(String newpass, String confirmpass, String currentapss, ProgressDialog progressDialog,AlertDialog alertDialog) {
+    /*private void checkconfirmpassword(String newpass, String confirmpass, String currentapss, ProgressDialog progressDialog,AlertDialog alertDialog) {
 
         hideKeyboard(LeadListActivity.this);
 
         UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
-        /*Log.d("Tag", "checkconfirmpassword: getmailId " + userDataSharedPreference.getUserEmail() );*/
-        /*Toast.makeText(getApplicationContext(), "Email " + userDataSharedPreference.getUserEmail(), Toast.LENGTH_SHORT).show();*/
+
         if(newpass.isEmpty() && confirmpass.isEmpty() && currentapss.isEmpty()){
             showToastMessage(R.string.fill_all_fields);
         }else {
@@ -221,5 +221,5 @@ public class LeadListActivity extends BaseActivity {
 
         }
 
-    }
+    }*/
 }

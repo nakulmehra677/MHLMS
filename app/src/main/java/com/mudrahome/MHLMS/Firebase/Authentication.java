@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseUser;
+import com.mudrahome.MHLMS.Fragments.ChangePasswordFragment;
+import com.mudrahome.MHLMS.Interfaces.OnPasswordChange;
 import com.mudrahome.MHLMS.Interfaces.OnUserLogin;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -47,17 +49,13 @@ public class Authentication {
                 });
     }
 
-    public void UpdatePassword(String oldpass, final String newpass , String emailid, final ProgressDialog progress, final AlertDialog alertDialog){
+    public void UpdatePassword(String oldpass, final String newpass , String emailid, final OnPasswordChange onPasswordChange){
        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final Firestore firestore = new Firestore(context);
         final ProfileManager profileManager = new ProfileManager();
 
         Log.d("Tag", "document Reference :  " + profileManager.getuId());
 
-        progress.setMessage("Please wait...");
-        progress.setCancelable(false);
-        progress.setCanceledOnTouchOutside(false);
-        progress.show();
 
         AuthCredential credential = EmailAuthProvider
                 .getCredential(emailid, oldpass);
@@ -71,20 +69,21 @@ public class Authentication {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(context, "Password Updated", Toast.LENGTH_SHORT).show();
+                                        /*Toast.makeText(context, "Password Updated", Toast.LENGTH_SHORT).show();*/
                                         firestore.setPassword(newpass,profileManager.getuId());
-                                        progress.dismiss();
-                                        alertDialog.dismiss();
+                                        onPasswordChange.onSucess("Password Updated");
                                     } else {
+                                        onPasswordChange.onSucess("Try again");
                                         Toast.makeText(context, "Try again", Toast.LENGTH_SHORT).show();
-                                        progress.dismiss();
+
 
                                     }
                                 }
                             });
                         } else {
-                            Toast.makeText(context, "Wrong Password", Toast.LENGTH_SHORT).show();
-                            progress.dismiss();
+                                onPasswordChange.onSucess("Wrong Password");
+                            /*Toast.makeText(context, "Wrong Password", Toast.LENGTH_SHORT).show();*/
+
                            /* Log.d(TAG, "Error auth failed")*/
                         }
                     }
