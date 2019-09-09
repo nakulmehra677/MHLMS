@@ -6,4 +6,10 @@
     android:background="@color/colorPrimaryDark"
     android:layout_height="170dp">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:src="@mipmap/app_icon"/>
+
 </LinearLayout>

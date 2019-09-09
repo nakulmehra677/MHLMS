@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
@@ -95,6 +97,29 @@ public class LeadListActivity extends BaseActivity {
 
             }
         }, profileManager.getuId());
+
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+
+                switch (id){
+
+                    case R.id.profileDetails:
+                        Toast.makeText(LeadListActivity.this, "Open Fragment Profile Details", Toast.LENGTH_SHORT).show();
+                        drawerLayout.closeDrawers();
+                        break;
+
+                    case R.id.settings:
+                        Toast.makeText(LeadListActivity.this, "Open setting", Toast.LENGTH_SHORT).show();
+                        drawerLayout.closeDrawers();
+                        break;
+                }
+
+                return true;
+            }
+        });
     }
 
     private void openFragment(int userType) {
@@ -186,6 +211,14 @@ public class LeadListActivity extends BaseActivity {
                     showToastMessage(R.string.no_internet);
                 break;
 
+            case android.R.id.home:
+                try {
+                    drawerLayout.openDrawer(Gravity.LEFT);
+                } catch (Exception e) {
+                    Log.e("HomeButtonActionBar", "onOptionsItemSelected: " + e.getMessage());
+                }
+                break;
+
             case R.id.changePassword:
                 if (isNetworkConnected()) {
 
@@ -217,27 +250,5 @@ public class LeadListActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /*private void checkconfirmpassword(String newpass, String confirmpass, String currentapss, ProgressDialog progressDialog,AlertDialog alertDialog) {
 
-        hideKeyboard(LeadListActivity.this);
-
-        UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
-
-        if(newpass.isEmpty() && confirmpass.isEmpty() && currentapss.isEmpty()){
-            showToastMessage(R.string.fill_all_fields);
-        }else {
-
-            if(newpass.matches(confirmpass)){
-
-                authentication = new Authentication(LeadListActivity.this);
-
-                authentication.UpdatePassword(currentapss,newpass,userDataSharedPreference.getUserEmail(),progressDialog,alertDialog);
-            }else{
-                Toast.makeText(getApplicationContext(), "Password doestn't matched", Toast.LENGTH_SHORT).show();
-            }
-
-
-        }
-
-    }*/
 }
