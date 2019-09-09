@@ -219,7 +219,7 @@ public class LeadListActivity extends BaseActivity {
                 }
                 break;
 
-            case R.id.changePassword:
+            case R.id.change_password:
                 if (isNetworkConnected()) {
 
                     Log.d("changed password", "onOptionsItemSelected: button selected");
