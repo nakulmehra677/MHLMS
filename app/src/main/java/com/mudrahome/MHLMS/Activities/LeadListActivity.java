@@ -217,7 +217,7 @@ public class LeadListActivity extends BaseActivity {
 
                 authentication = new Authentication(LeadListActivity.this);
 
-                authentication.UpdatePassword(currentapss, newpass, userDataSharedPreference.getUserEmail(), progressDialog, alertDialog);
+                //authentication.UpdatePassword(currentapss, newpass, userDataSharedPreference.getUserEmail(), progressDialog, alertDialog);
             } else {
                 Toast.makeText(getApplicationContext(), "Password doestn't matched", Toast.LENGTH_SHORT).show();
             }

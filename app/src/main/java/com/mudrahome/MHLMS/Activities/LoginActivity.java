@@ -70,7 +70,6 @@ public class LoginActivity extends BaseActivity {
                 checkUpdate();
 
 
-                Log.d("Tag", "onCreate: " + "KITKAT");
                 VersionChecker versionChecker = new VersionChecker();
 
                 try {
