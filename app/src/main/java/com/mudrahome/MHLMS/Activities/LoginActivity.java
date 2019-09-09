@@ -65,58 +65,12 @@ public class LoginActivity extends BaseActivity {
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore(this);
         profileManager = new ProfileManager();
 
-        if (isNetworkConnected()) {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                checkUpdate();
 
+        checkUpdate();
 
-                Log.d("Tag", "onCreate: " + "KITKAT");
-                VersionChecker versionChecker = new VersionChecker();
-
-                try {
-                    String latestVersion = versionChecker.execute().get();
-
-                    if (!latestVersion.equals(BuildConfig.VERSION_NAME)){
-                        sharedPreferences.edit().putBoolean("UpdateAvlb",true).apply();
-                        /*sessionConfig.setupdateAvailable(true);*/             // save in local storeage update is availble
-                    }else {
-                        sharedPreferences.edit().putBoolean("UpdateAvlb",false).apply();
-                        /*sessionConfig.setupdateAvailable(false);*/
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                checkLogin();
-            }
-
-        } else
-            showToastMessage(R.string.no_internet);
     }
 
-    public static class VersionChecker extends AsyncTask<String, String, String> {
 
-        private String newVersion;
-
-        @Override
-        protected String doInBackground(String... params) {
-
-
-            try {
-                newVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=com.development.mhleadmanagementsystemdev")
-                        .timeout(30000)
-                        .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
-                        .referrer("http://www.google.com")
-                        .get()
-                        .select(".IxB2fe .hAyfc:nth-child(4) .htlgb span")
-                        .get(0)
-                        .ownText();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return newVersion;
-        }
-    }
 
     public void loginButton(View view) {
         hideKeyboard(LoginActivity.this);
