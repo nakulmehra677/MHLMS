@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MHLMS</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="passwords_not_matching">Passwords are not matching.</string>
     <string name="fill_all_fields">Fill all the fields.</string>
     <string name="fill_details_correctly">Fill details correctly.</string>

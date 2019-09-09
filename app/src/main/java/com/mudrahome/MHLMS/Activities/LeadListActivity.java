@@ -14,11 +14,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.mudrahome.MHLMS.Adapters.LeadListPagerAdapter;
@@ -40,12 +43,15 @@ public class LeadListActivity extends BaseActivity {
     private Firestore firestore;
     private TabLayout tabLayout;
     private TabItem adminItem, salesItem;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
 
     private Authentication authentication;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_leads_list);
+        setContentView(R.layout.drawer_layout_leadlist);
 
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
@@ -54,9 +60,18 @@ public class LeadListActivity extends BaseActivity {
         tabLayout = findViewById(R.id.tabLayout);
         adminItem = findViewById(R.id.admin_item);
         salesItem = findViewById(R.id.sales_item);
+        drawerLayout = findViewById(R.id.drawerlayoutLeadList);
+        navigationView = findViewById(R.id.navigationdrawer_dashboard);
 
         profileManager = new ProfileManager();
         firestore = new Firestore();
+
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
 
         firestore.getUsers(new com.mudrahome.MHLMS.Interfaces.Firestore.OnGetUserDetails() {
             @Override
@@ -186,8 +201,11 @@ public class LeadListActivity extends BaseActivity {
                                 @Override
                                 public void onSucess(String result) {
                                     Log.d("Password Updated", "onSucess: " + result);
+
                                     Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
                                     dismissProgressDialog();
+                                    hideKeyboard(LeadListActivity.this);
+
                                 }
                             });
                         }
