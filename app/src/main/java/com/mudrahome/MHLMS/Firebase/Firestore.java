@@ -21,13 +21,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.mudrahome.MHLMS.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
-import static com.firebase.ui.auth.AuthUI.TAG;
 
 public class Firestore {
     Context context;
@@ -77,14 +73,13 @@ public class Firestore {
         else
             query = db.collection("userList")
                     .whereArrayContains("userType", userType)
-                    .whereEqualTo("location", location);
+                    .whereEqualTo("location." + location, true);
 
         query = query.orderBy("userName", Query.Direction.ASCENDING);
 
         query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
-                Log.d("HEREEE", "ffff");
 
                 List<UserDetails> salesPersonList = new ArrayList<>();
                 for (QueryDocumentSnapshot document : documentSnapshots) {
@@ -237,7 +232,7 @@ public class Firestore {
         dRef.update("deviceToken", deviceToken);
     }
 
-    public void setPassword (String password,String uId){
+    public void setPassword(String password, String uId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("userList").document(uId);
 

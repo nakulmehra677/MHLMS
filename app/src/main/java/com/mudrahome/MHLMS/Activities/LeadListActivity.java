@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -24,9 +25,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.mudrahome.MHLMS.Adapters.LeadListPagerAdapter;
 import com.mudrahome.MHLMS.Firebase.Authentication;
 import com.mudrahome.MHLMS.Firebase.Firestore;
-import com.mudrahome.MHLMS.Fragments.ChangePasswordFragment;
 import com.mudrahome.MHLMS.Fragments.LeadListFragment;
-import com.mudrahome.MHLMS.Interfaces.OnPasswordChange;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
@@ -42,11 +41,13 @@ public class LeadListActivity extends BaseActivity {
     private TabItem adminItem, salesItem;
 
     private Authentication authentication;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leads_list);
 
+        Log.d("curr", "CALLED");
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
         setSupportActionBar(toolbar);
@@ -58,28 +59,30 @@ public class LeadListActivity extends BaseActivity {
         profileManager = new ProfileManager();
         firestore = new Firestore();
 
-        firestore.getUsers(new com.mudrahome.MHLMS.Interfaces.Firestore.OnGetUserDetails() {
-            @Override
-            public void onSuccess(UserDetails userDetails) {
-                profileManager.setCurrentUserDetails(userDetails);
+        if (profileManager.checkUserExist()) {
+            firestore.getUsers(new com.mudrahome.MHLMS.Interfaces.Firestore.OnGetUserDetails() {
+                @Override
+                public void onSuccess(UserDetails userDetails) {
+                    profileManager.setCurrentUserDetails(userDetails);
 
-                if (profileManager.getCurrentUserType().contains(getString(R.string.admin)) &&
-                        profileManager.getCurrentUserType().contains(getString(R.string.salesman))) {
-                    openViewPager(R.string.admin_and_salesman);
-                } else if (profileManager.getCurrentUserType().contains(getString(R.string.telecaller))) {
-                    openFragment(R.string.telecaller);
-                } else if (profileManager.getCurrentUserType().contains(getString(R.string.admin))) {
-                    openFragment(R.string.admin);
-                } else {
-                    openFragment(R.string.salesman);
+                    if (profileManager.getCurrentUserType().contains(getString(R.string.admin)) &&
+                            profileManager.getCurrentUserType().contains(getString(R.string.salesman))) {
+                        openViewPager(R.string.admin_and_salesman);
+                    } else if (profileManager.getCurrentUserType().contains(getString(R.string.telecaller))) {
+                        openFragment(R.string.telecaller);
+                    } else if (profileManager.getCurrentUserType().contains(getString(R.string.admin))) {
+                        openFragment(R.string.admin);
+                    } else {
+                        openFragment(R.string.salesman);
+                    }
                 }
-            }
 
-            @Override
-            public void fail() {
+                @Override
+                public void fail() {
 
-            }
-        }, profileManager.getuId());
+                }
+            }, profileManager.getuId());
+        }
     }
 
     private void openFragment(int userType) {
@@ -116,13 +119,12 @@ public class LeadListActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
-
+        super.onBackPressed();
 
         Intent intent = new Intent();
         intent.putExtra("loggedIn", profileManager.checkUserExist());
         setResult(101, intent);
-        finish();
+        Log.d("CURR", "onBack");
     }
 
     @Override
@@ -171,55 +173,55 @@ public class LeadListActivity extends BaseActivity {
                     showToastMessage(R.string.no_internet);
                 break;
 
-            case R.id.changePassword:
+            case R.id.change_password:
                 if (isNetworkConnected()) {
 
-                    Log.d("changed password", "onOptionsItemSelected: button selected");
-                    final UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
-                    ChangePasswordFragment.newInstance(new ChangePasswordFragment.OnPasswordChangedClicked() {
+                    LayoutInflater inflater = LayoutInflater.from(LeadListActivity.this);
+                    View view = inflater.inflate(R.layout.change_password_layout, null);
+                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    alert.setView(view);
+
+                    final AlertDialog dialog = alert.show();
+
+                    final EditText currpass = view.findViewById(R.id.currentPassword);
+                    final EditText newPass = view.findViewById(R.id.newPassword);
+                    final EditText confirmpass = view.findViewById(R.id.confirmPassword);
+
+                    final Button updatepassword = view.findViewById(R.id.updatepassword);
+
+                    updatepassword.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onPasswordChange(String oldPassword, String newPassword) {
-
-                            showProgressDialog("Please wait...",LeadListActivity.this);
-                            Authentication authentication = new Authentication(LeadListActivity.this);
-                            authentication.UpdatePassword(oldPassword, newPassword, userDataSharedPreference.getUserEmail(), new OnPasswordChange() {
-                                @Override
-                                public void onSucess(String result) {
-                                    Log.d("Password Updated", "onSucess: " + result);
-                                    Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                                    dismissProgressDialog();
-                                }
-                            });
+                        public void onClick(View view) {
+                            ProgressDialog progressDialog = new ProgressDialog(LeadListActivity.this);
+                            checkconfirmpassword(newPass.getText().toString(), confirmpass.getText().toString(), currpass.getText().toString(), progressDialog, dialog);
                         }
-                    }).show(getSupportFragmentManager(),"changepassword");
-
-
+                    });
                 }
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /*private void checkconfirmpassword(String newpass, String confirmpass, String currentapss, ProgressDialog progressDialog,AlertDialog alertDialog) {
+    private void checkconfirmpassword(String newpass, String confirmpass, String currentapss, ProgressDialog progressDialog, AlertDialog alertDialog) {
 
         hideKeyboard(LeadListActivity.this);
 
         UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
-
-        if(newpass.isEmpty() && confirmpass.isEmpty() && currentapss.isEmpty()){
+        /*Log.d("Tag", "checkconfirmpassword: getmailId " + userDataSharedPreference.getUserEmail() );*/
+        /*Toast.makeText(getApplicationContext(), "Email " + userDataSharedPreference.getUserEmail(), Toast.LENGTH_SHORT).show();*/
+        if (newpass.isEmpty() && confirmpass.isEmpty() && currentapss.isEmpty()) {
             showToastMessage(R.string.fill_all_fields);
-        }else {
+        } else {
 
-            if(newpass.matches(confirmpass)){
+            if (newpass.matches(confirmpass)) {
 
                 authentication = new Authentication(LeadListActivity.this);
 
-                authentication.UpdatePassword(currentapss,newpass,userDataSharedPreference.getUserEmail(),progressDialog,alertDialog);
-            }else{
+                authentication.UpdatePassword(currentapss, newpass, userDataSharedPreference.getUserEmail(), progressDialog, alertDialog);
+            } else {
                 Toast.makeText(getApplicationContext(), "Password doestn't matched", Toast.LENGTH_SHORT).show();
             }
-
-
         }
 
-    }*/
+    }
 }

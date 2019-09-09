@@ -1,5 +1,7 @@
 package com.mudrahome.MHLMS.Managers;
 
+import android.util.Log;
+
 import com.mudrahome.MHLMS.Activities.BaseActivity;
 import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Models.UserDetails;
@@ -32,6 +34,7 @@ public class ProfileManager extends BaseActivity {
     }
 
     public boolean checkUserExist() {
+        Log.d("CURR", "exist");
         currentUser = mAuth.getCurrentUser();
         if (currentUser == null)
             return false;

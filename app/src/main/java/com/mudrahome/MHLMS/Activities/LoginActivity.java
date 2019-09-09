@@ -240,6 +240,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("CURR", "login");
         // check if the request code is same as what is passed  here it is 2
         if (resultCode == 101) {
             if (data.getBooleanExtra("loggedIn", true))
