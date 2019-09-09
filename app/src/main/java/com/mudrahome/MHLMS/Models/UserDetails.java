@@ -1,6 +1,7 @@
 package com.mudrahome.MHLMS.Models;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class UserDetails {
@@ -12,13 +13,14 @@ public class UserDetails {
         this.key = key;
     }
 
-    private String uId, userName, mail, location, key, deviceToken, contactNumber;
+    private String uId, userName, mail, key, deviceToken, contactNumber;
     private List<String> userType;
+    private Map<String, Boolean> location;
 
     public UserDetails() {
     }
 
-    public UserDetails(String uId, String userName, String mail, String location,
+    public UserDetails(String uId, String userName, String mail, Map<String, Boolean> location,
                        List<String> userType, String key, String deviceToken) {
         this.uId = uId;
         this.userName = userName;
@@ -53,11 +55,11 @@ public class UserDetails {
         this.userType = userType;
     }
 
-    public String getLocation() {
+    public Map<String, Boolean> getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Map<String, Boolean> location) {
         this.location = location;
     }
 

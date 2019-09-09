@@ -5,19 +5,18 @@
     <item
         android:id="@+id/notification"
         android:icon="@drawable/ic_notifications_white_24dp"
-        android:title="Notificaiton"
+        android:title="Notification"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/changePassword"
+        android:id="@+id/change_password"
         android:title="Change Password"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/logout"
         android:title="Logout"
         app:showAsAction="never" />
-
 
 
 </menu>

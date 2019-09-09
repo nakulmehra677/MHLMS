@@ -30,21 +30,30 @@ public class UserDataSharedPreference {
         SharedPreferences.Editor editor = preferences.edit();
 
         editor.putString(context.getString(R.string.SH_user_name), details.getUserName());
-        editor.putString(context.getString(R.string.SH_user_location), details.getLocation());
         editor.putString(context.getString(R.string.SH_user_key), details.getKey());
         editor.putString(context.getString(R.string.SH_user_uid), details.getuId());
         editor.putString(context.getString(R.string.SH_user_number), details.getContactNumber());
-        editor.putString(context.getString(R.string.SH_user_email),details.getMail());
+        editor.putString(context.getString(R.string.SH_user_email), details.getMail());
 
-        Set<String> set = new HashSet<String>();
-        set.addAll(details.getUserType());
-        editor.putStringSet(context.getString(R.string.SH_user_type), set);
+        Set<String> location = new HashSet<String>();
+        for (String l : details.getLocation().keySet()) {
+            boolean yes = details.getLocation().get(l);
+            if (yes) {
+                location.add(l);
+            }
+        }
+
+        editor.putStringSet(context.getString(R.string.SH_user_location), location);
+
+        Set<String> userType = new HashSet<String>();
+        userType.addAll(details.getUserType());
+        editor.putStringSet(context.getString(R.string.SH_user_type), userType);
 
         editor.commit();
     }
 
-    public String getUserEmail(){
-        return preferences.getString(context.getString(R.string.SH_user_email),"abc@gmail.com");
+    public String getUserEmail() {
+        return preferences.getString(context.getString(R.string.SH_user_email), "abc@gmail.com");
     }
 
     public String getUserName() {
