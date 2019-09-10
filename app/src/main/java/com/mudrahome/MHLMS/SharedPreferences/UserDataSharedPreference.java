@@ -52,6 +52,18 @@ public class UserDataSharedPreference {
         editor.commit();
     }
 
+    public String getLocation(){
+        return preferences.getString(context.getString(R.string.SH_user_location),"null");
+    }
+
+    public String getContactNumber(){
+        return preferences.getString(context.getString(R.string.SH_user_number),"null");
+    }
+
+    public String getUserUid(){
+        return preferences.getString(context.getString(R.string.SH_user_uid),"null");
+    }
+
     public String getUserEmail() {
         return preferences.getString(context.getString(R.string.SH_user_email), "abc@gmail.com");
     }

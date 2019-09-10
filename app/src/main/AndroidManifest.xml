@@ -3,10 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mudrahome.MHLMS">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/app_icon"
@@ -15,25 +11,35 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".Activities.ProfileDetailsActivity"
+            android:label="Profile Details"
+            android:parentActivityName=".Activities.LeadListActivity">
+
+        </activity>
         <activity
             android:name=".Activities.NotificationActivity"
             android:label="Notifications"
+            android:parentActivityName=".Activities.LeadListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.StartOfferActivity"
             android:label="Start Ad"
+            android:parentActivityName=".Activities.LeadListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.FilterActivity"
             android:label="Filter Leads"
+            android:parentActivityName=".Activities.LeadListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.LeadListActivity"
             android:screenOrientation="portrait"
+            android:parentActivityName=".Activities.LeadListActivity"
             android:theme="@style/AppTheme.NoActionBarLead" />
         <activity
             android:name=".Activities.FeedCustomerDetailsActivity"
             android:label="Feed Customer Details"
+            android:parentActivityName=".Activities.LeadListActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activities.LoginActivity"
@@ -46,6 +52,23 @@
             </intent-filter>
         </activity>
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/logo_mh" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/coloBlack" />
+        <receiver android:name=".Services.AlertReceiver" />
+        <!--
+ <service
+            android:name=".Services.NotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        -->
         <service
             android:name=".Services.NotificationService"
             android:enabled="true"
@@ -57,23 +80,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/logo_mh" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/coloBlack" />
-        <!--
- <service
-            android:name=".Services.NotificationService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        -->
-        <receiver android:name=".Services.AlertReceiver" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>

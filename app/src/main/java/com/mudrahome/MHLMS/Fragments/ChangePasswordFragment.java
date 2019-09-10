@@ -71,10 +71,17 @@ public class ChangePasswordFragment extends AppCompatDialogFragment {
                 if(currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()){
 
                     Toast.makeText(getContext(), "Please Fill all Fields" + currentPassword , Toast.LENGTH_SHORT).show();
-                }else if(!newPassword.matches(confirmPassword)){
-                    Toast.makeText(getContext(), "Confirm Password doesn't matched" ,  Toast.LENGTH_SHORT).show();
+                }else if(newPassword.matches(confirmPassword)){
+
+                    if(newPassword.length() >= 6){
+                        onPasswordChangedClicked.onPasswordChange(currentPassword,newPassword);
+                    }else {
+                        Toast.makeText(getContext(), "You have to enter atleast 6 digit password", Toast.LENGTH_SHORT).show();
+                    }
+
+
                 }else {
-                    onPasswordChangedClicked.onPasswordChange(currentPassword,newPassword);
+                    Toast.makeText(getContext(), "Confirm Password doesn't matched" ,  Toast.LENGTH_SHORT).show();
                 }
             }
         });

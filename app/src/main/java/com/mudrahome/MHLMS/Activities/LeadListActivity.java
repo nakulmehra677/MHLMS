@@ -49,7 +49,7 @@ public class LeadListActivity extends BaseActivity {
     NavigationView navigationView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
 
-    private Authentication authentication;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +107,8 @@ public class LeadListActivity extends BaseActivity {
                 switch (id){
 
                     case R.id.profileDetails:
-                        Toast.makeText(LeadListActivity.this, "Open Fragment Profile Details", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(LeadListActivity.this,ProfileDetailsActivity.class));
+                        /*Toast.makeText(LeadListActivity.this, "Open Fragment Profile Details", Toast.LENGTH_SHORT).show();*/
                         drawerLayout.closeDrawers();
                         break;
 
@@ -222,8 +223,9 @@ public class LeadListActivity extends BaseActivity {
             case R.id.change_password:
                 if (isNetworkConnected()) {
 
-                    Log.d("changed password", "onOptionsItemSelected: button selected");
+
                     final UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
+                    Log.d("changed password", "onOptionsItemSelected: button selected" +userDataSharedPreference.getUserEmail());
                     ChangePasswordFragment.newInstance(new ChangePasswordFragment.OnPasswordChangedClicked() {
                         @Override
                         public void onPasswordChange(String oldPassword, String newPassword) {

@@ -42,9 +42,7 @@ public class ProfileManager extends BaseActivity {
             return true;
     }
 
-    public void UpdatePassword(){
 
-    }
 
     public FirebaseUser getCurrentUser() {
         return currentUser;
