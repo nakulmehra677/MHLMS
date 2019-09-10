@@ -6,13 +6,19 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ScrollView;
+import android.widget.TextView;
+
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.mudrahome.MHLMS.BuildConfig;
 import com.mudrahome.MHLMS.Firebase.Authentication;
+import com.mudrahome.MHLMS.Fragments.LeadListFragment;
 import com.mudrahome.MHLMS.Fragments.MobileFragment;
 import com.mudrahome.MHLMS.Interfaces.Firestore;
 import com.mudrahome.MHLMS.Interfaces.OnUserLogin;
@@ -39,7 +45,8 @@ public class LoginActivity extends BaseActivity {
 
     private EditText mail, password;
     private UserDetails currentUserDetails;
-    private ScrollView scrollView;
+    private CardView cardView;
+    private TextView splashText;
 
     private Authentication authentication;
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
@@ -54,17 +61,15 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        showProgressDialog("Loading...", this);
-
         sharedPreferences = getApplicationContext().getSharedPreferences("com.mudrahome.MHLMS", MODE_PRIVATE);
-        scrollView = findViewById(R.id.scrollLayout);
+        cardView = findViewById(R.id.card);
+        splashText = findViewById(R.id.splash_text);
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
 
         authentication = new Authentication(this);
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore(this);
         profileManager = new ProfileManager();
-
 
         checkUpdate();
 
@@ -104,13 +109,11 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void checkLogin() {
-        profileManager = new ProfileManager();
+        Log.d("log", "sdvvdfs");
         if (profileManager.checkUserExist()) {
             firestore.getUsers(onGetUserDetails(), profileManager.getuId());
         } else {
-            if (progress.isShowing())
-                dismissProgressDialog();
-            scrollView.setVisibility(View.VISIBLE);
+            cardView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -128,19 +131,19 @@ public class LoginActivity extends BaseActivity {
                 UserDataSharedPreference preference = new UserDataSharedPreference(LoginActivity.this);
                 preference.setUserDetails(currentUserDetails);
 
-                dismissProgressDialog();
                 showToastMessage(R.string.logged_in);
-
-                if (currentUserDetails.getContactNumber() == null ||
+                startLeadsPage();
+/*                if (currentUserDetails.getContactNumber() == null ||
                         currentUserDetails.getContactNumber().isEmpty()) {
                     openMobileFragment();
-                } else
-                    startLeadsPage();
+                } */
             }
 
             @Override
             public void fail() {
+                Log.d("Flag", String.valueOf(flag));
                 profileManager.signOut();
+                cardView.setVisibility(View.VISIBLE);
                 firestore.setCurrentDeviceToken("", profileManager.getuId());
             }
         };
@@ -197,7 +200,7 @@ public class LoginActivity extends BaseActivity {
             if (data.getBooleanExtra("loggedIn", true))
                 finish();
             else
-                scrollView.setVisibility(View.VISIBLE);
+                cardView.setVisibility(View.VISIBLE);
         }
         if (requestCode == 17362) {
             if (resultCode != RESULT_OK) {
@@ -216,9 +219,6 @@ public class LoginActivity extends BaseActivity {
             public void onSuccess(AppUpdateInfo appUpdateInfo) {
                 if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                         && appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)) {
-                    if (progress.isShowing())
-                        progress.dismiss();
-                    Log.i("UPDATE", "YES");
                     try {
                         manager.startUpdateFlowForResult(
                                 appUpdateInfo,
@@ -228,9 +228,6 @@ public class LoginActivity extends BaseActivity {
                     } catch (IntentSender.SendIntentException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    Log.i("UPDATE", "NO");
-                    checkLogin();
                 }
             }
         });
@@ -256,7 +253,8 @@ public class LoginActivity extends BaseActivity {
                     } catch (IntentSender.SendIntentException e) {
                         e.printStackTrace();
                     }
-                }
+                }else
+                    checkLogin();
             }
         });
     }
