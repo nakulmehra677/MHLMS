@@ -309,4 +309,12 @@ public class Firestore {
             }
         });
     }
+
+    public void setWorkingLocation(String location,String uId){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("userList").document(uId);
+
+        dRef.update("workingLocation",location);
+    }
+
 }

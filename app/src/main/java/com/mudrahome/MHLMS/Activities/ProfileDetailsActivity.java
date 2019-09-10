@@ -5,15 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.mudrahome.MHLMS.Firebase.Firestore;
-import com.mudrahome.MHLMS.Managers.ProfileManager;
-import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class ProfileDetailsActivity extends AppCompatActivity {
@@ -77,8 +72,6 @@ public class ProfileDetailsActivity extends AppCompatActivity {
         profileDesignation.setText(userDesignation);
         profilePhone.setText(userDataSharedPreference.getContactNumber());
         profileLocation.setText(userlocation);
-
-
 
 
 

@@ -30,8 +30,7 @@ public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        /*Log.i("NotificationMsg","sgdg" + remoteMessage.getData());*/
-
+        Log.i("NotificationMsg","sgdg" + remoteMessage.getNotification().getTitle());
 
         showNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody());
     }
@@ -52,7 +51,7 @@ public class NotificationService extends FirebaseMessagingService {
             manager.createNotificationChannel(channel);
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notification")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this,getResources().getString(R.string.notification_channel_id))
                 .setContentTitle(title)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
@@ -62,7 +61,7 @@ public class NotificationService extends FirebaseMessagingService {
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
                 .setContentText(message);
 
-        NotificationManagerCompat managerCompat =NotificationManagerCompat.from(this);
+        NotificationManagerCompat managerCompat =NotificationManagerCompat.from(NotificationService.this);
         managerCompat.notify(id,builder.build());
         id++;
 

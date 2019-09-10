@@ -13,15 +13,16 @@ public class UserDetails {
         this.key = key;
     }
 
-    private String uId, userName, mail, key, deviceToken, contactNumber;
+    private String uId, userName, mail, key, deviceToken, contactNumber,workingLocation;
     private List<String> userType;
     private Map<String, Boolean> location;
+
 
     public UserDetails() {
     }
 
     public UserDetails(String uId, String userName, String mail, Map<String, Boolean> location,
-                       List<String> userType, String key, String deviceToken) {
+                       List<String> userType, String key, String deviceToken,String workingLocation) {
         this.uId = uId;
         this.userName = userName;
         this.mail = mail;
@@ -29,6 +30,15 @@ public class UserDetails {
         this.userType = userType;
         this.key = key;
         this.deviceToken = deviceToken;
+        this.workingLocation = workingLocation;
+    }
+
+    public String getWorkingLocation() {
+        return workingLocation;
+    }
+
+    public void setWorkingLocation(String workingLocation) {
+        this.workingLocation = workingLocation;
     }
 
     public String getContactNumber() {
