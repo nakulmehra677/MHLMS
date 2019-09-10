@@ -70,8 +70,6 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-
-
     public void loginButton(View view) {
         hideKeyboard(LoginActivity.this);
 

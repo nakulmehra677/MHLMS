@@ -251,7 +251,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                     getDetails();
                     if (checkEmpty()) {
                         uploadDetails();
-//                        checkSMSPermission();
+                        checkSMSPermission();
                     } else
                         showToastMessage(R.string.fill_details_correctly);
                 } else
