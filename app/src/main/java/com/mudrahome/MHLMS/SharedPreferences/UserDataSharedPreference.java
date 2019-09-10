@@ -19,6 +19,7 @@ public class UserDataSharedPreference {
     private String userdetails;
     private String email;
 
+
     public UserDataSharedPreference(Context context) {
         this.context = context;
         preferences = context.getSharedPreferences(
@@ -52,8 +53,11 @@ public class UserDataSharedPreference {
         editor.commit();
     }
 
-    public String getLocation(){
-        return preferences.getString(context.getString(R.string.SH_user_location),"null");
+    public Set<String> getLocation(){
+
+        Set<String> locationset = new HashSet<String>();
+        locationset.add("null");
+        return preferences.getStringSet(context.getString(R.string.SH_user_location),locationset);
     }
 
     public String getContactNumber(){

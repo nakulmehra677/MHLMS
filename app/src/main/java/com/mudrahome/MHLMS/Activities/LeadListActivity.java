@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
@@ -214,7 +215,7 @@ public class LeadListActivity extends BaseActivity {
 
             case android.R.id.home:
                 try {
-                    drawerLayout.openDrawer(Gravity.LEFT);
+                    drawerLayout.openDrawer(GravityCompat.START);
                 } catch (Exception e) {
                     Log.e("HomeButtonActionBar", "onOptionsItemSelected: " + e.getMessage());
                 }

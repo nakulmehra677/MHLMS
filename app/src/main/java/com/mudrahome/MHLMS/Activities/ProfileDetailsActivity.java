@@ -19,9 +19,10 @@ import java.util.Set;
 public class ProfileDetailsActivity extends AppCompatActivity {
 
     TextView profileName, profileEmail, profilePhone, profileLocation, profileDesignation;
-    Firestore firestore;
-    ProfileManager profileManager;
+
     UserDataSharedPreference userDataSharedPreference;
+    String userDesignation = "";
+    String userlocation = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class ProfileDetailsActivity extends AppCompatActivity {
         Set<String> userType = new HashSet<>();
         userType = userDataSharedPreference.getUserType();
 
-        String userDesignation = "";
+
 
         for (String s : userType) {
 
@@ -49,52 +50,36 @@ public class ProfileDetailsActivity extends AppCompatActivity {
 
                 userDesignation = s;
             }else {
-                userDesignation = ","+s;
+                userDesignation += ","+s;
             }
 
         }
+
+        Set<String> locationset = new HashSet<>();
+        locationset = userDataSharedPreference.getLocation();
+
+
+
+        for (String s : locationset) {
+
+            if(userlocation == ""){
+
+                userlocation = s;
+            }else {
+                userlocation = ","+s;
+            }
+
+        }
+
 
         profileName.setText(userDataSharedPreference.getUserName());
         profileEmail.setText(userDataSharedPreference.getUserEmail());
         profileDesignation.setText(userDesignation);
         profilePhone.setText(userDataSharedPreference.getContactNumber());
-        profileLocation.setText(userDataSharedPreference.getLocation());
+        profileLocation.setText(userlocation);
 
 
-       /* firestore.getUsers(new com.mudrahome.MHLMS.Interfaces.Firestore.OnGetUserDetails() {
-            @Override
-            public void onSuccess(UserDetails userDetails) {
 
-                List<String> userType = new ArrayList<>();
-                userType = userDetails.getUserType();
-
-                String userDesignation = "";
-
-                for (int i = 0; i < userType.size(); i++) {
-
-                    if(userDesignation == ""){
-
-                        userDesignation = userType.get(i);
-                    }else {
-                        userDesignation = ","+userType.get(i);
-                    }
-
-                }
-
-
-                profileName.setText(userDetails.getUserName());
-                profileDesignation.setText(userDesignation);
-                profileEmail.setText(userDetails.getMail());
-                profileLocation.setText(userDetails.getLocation());
-                profilePhone.setText(userDetails.getContactNumber());
-
-            }
-
-            @Override
-            public void fail() {
-
-            }
-        }, profileManager.getuId());*/
 
 
     }
