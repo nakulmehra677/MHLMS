@@ -1,5 +1,6 @@
 package com.mudrahome.MHLMS.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.mudrahome.MHLMS.Adapters.LeadListPagerAdapter;
@@ -32,7 +35,7 @@ import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
-public class LeadListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class LeadListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener , View.OnClickListener {
 
     private ProfileManager profileManager;
     private Toolbar toolbar;
@@ -41,7 +44,8 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-
+    private FloatingActionButton filter, fab;
+    private int userType1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,12 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
         setSupportActionBar(toolbar);
+
+
+        filter = findViewById(R.id.filter1);
+        fab = findViewById(R.id.fab);
+
+        filter.setOnClickListener(this);
 
         tabLayout = findViewById(R.id.tabLayout);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -76,10 +86,13 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     openViewPager(R.string.admin_and_salesman);
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.telecaller))) {
                     openFragment(R.string.telecaller);
+                    userType1 = R.string.telecaller;
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.admin))) {
                     openFragment(R.string.admin);
+                    userType1 = R.string.admin;
                 } else {
                     openFragment(R.string.salesman);
+                    userType1 = R.string.salesman;
                 }
             }
 
@@ -90,6 +103,43 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         }, profileManager.getuId());
     }
 
+
+    @SuppressLint("RestrictedApi")
+    private void setFabButtonByUser(int userType) {
+
+        if (userType == R.string.telecaller) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setImageResource(R.drawable.ic_add_white_24dp);
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(LeadListActivity.this, FeedCustomerDetailsActivity.class));
+                }
+            });
+        } else if (userType == R.string.admin) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setImageResource(R.drawable.megaphone);
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (isNetworkConnected()) {
+                        startActivity(new Intent(LeadListActivity.this, StartOfferActivity.class));
+                    } else
+                        showToastMessage(R.string.no_internet);
+
+                }
+            });
+        } else {
+            fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
+
+            fab.setVisibility(View.GONE);
+        }
+
+
+    }
+
     private void openFragment(int userType) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.frame_layout, new LeadListFragment(userType));
@@ -98,6 +148,8 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
     private void openViewPager(int userType) {
         tabLayout.setVisibility(View.VISIBLE);
+        userType1 = R.string.admin;
+        setFabButtonByUser(userType1);
         final ViewPager vpPager = findViewById(R.id.pager);
         LeadListPagerAdapter adapterViewPager = new LeadListPagerAdapter(getSupportFragmentManager(), 2);
         vpPager.setAdapter(adapterViewPager);
@@ -108,6 +160,12 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 vpPager.setCurrentItem(tab.getPosition());
+                if (tab.getPosition() == 0)
+                    userType1 = R.string.admin;
+                else
+                    userType1 = R.string.salesman;
+
+                setFabButtonByUser(userType1);
             }
 
             @Override
@@ -235,4 +293,19 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onClick(View view) {
+        if (isNetworkConnected()) {
+            switch (view.getId()) {
+                case R.id.filter1:
+                    Intent intent = new Intent(LeadListActivity.this, FilterActivity.class);
+                    intent.putExtra("userType", userType1);
+                    /*startActivity(intent);*/
+                    startActivityForResult(intent, 201);
+                    break;
+            }
+        }
+    }
+
 }
