@@ -38,14 +38,12 @@ import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
-public class LeadListActivity extends BaseActivity {
+public class LeadListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ProfileManager profileManager;
     private Toolbar toolbar;
-    LeadListFragment fragment;
     private Firestore firestore;
     private TabLayout tabLayout;
-    private TabItem adminItem, salesItem;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -54,27 +52,24 @@ public class LeadListActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.drawer_layout_leadlist);
+        setContentView(R.layout.activity_leads_list);
 
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
         setSupportActionBar(toolbar);
 
         tabLayout = findViewById(R.id.tabLayout);
-        adminItem = findViewById(R.id.admin_item);
-        salesItem = findViewById(R.id.sales_item);
         drawerLayout = findViewById(R.id.drawerlayoutLeadList);
         navigationView = findViewById(R.id.navigationdrawer_dashboard);
 
         profileManager = new ProfileManager();
         firestore = new Firestore();
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
 
         firestore.getUsers(new com.mudrahome.MHLMS.Interfaces.Firestore.OnGetUserDetails() {
             @Override
@@ -98,30 +93,6 @@ public class LeadListActivity extends BaseActivity {
 
             }
         }, profileManager.getuId());
-
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                int id = menuItem.getItemId();
-
-                switch (id){
-
-                    case R.id.profileDetails:
-                        startActivity(new Intent(LeadListActivity.this,ProfileDetailsActivity.class));
-                        /*Toast.makeText(LeadListActivity.this, "Open Fragment Profile Details", Toast.LENGTH_SHORT).show();*/
-                        drawerLayout.closeDrawers();
-                        break;
-
-                    case R.id.settings:
-                        Toast.makeText(LeadListActivity.this, "Open setting", Toast.LENGTH_SHORT).show();
-                        drawerLayout.closeDrawers();
-                        break;
-                }
-
-                return true;
-            }
-        });
     }
 
     private void openFragment(int userType) {
@@ -159,12 +130,48 @@ public class LeadListActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
-
-
         Intent intent = new Intent();
         intent.putExtra("loggedIn", profileManager.checkUserExist());
         setResult(101, intent);
         finish();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+
+            case R.id.profileDetails:
+                startActivity(new Intent(LeadListActivity.this, ProfileDetailsActivity.class));
+                /*Toast.makeText(LeadListActivity.this, "Open Fragment Profile Details", Toast.LENGTH_SHORT).show();*/
+                drawerLayout.closeDrawers();
+                break;
+
+            case R.id.change_password:
+                if (isNetworkConnected()) {
+                    final UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
+                    Log.d("changed password", "onOptionsItemSelected: button selected" + userDataSharedPreference.getUserEmail());
+                    ChangePasswordFragment.newInstance(new ChangePasswordFragment.OnPasswordChangedClicked() {
+                        @Override
+                        public void onPasswordChange(String oldPassword, String newPassword) {
+
+                            showProgressDialog("Please wait...", LeadListActivity.this);
+                            Authentication authentication = new Authentication(LeadListActivity.this);
+                            authentication.UpdatePassword(oldPassword, newPassword, userDataSharedPreference.getUserEmail(), new OnPasswordChange() {
+                                @Override
+                                public void onSucess(String result) {
+                                    Log.d("Password Updated", "onSucess: " + result);
+
+                                    Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+                                    dismissProgressDialog();
+                                    hideKeyboard(LeadListActivity.this);
+
+                                }
+                            });
+                        }
+                    }).show(getSupportFragmentManager(), "changepassword");
+                }
+        }
+        return true;
     }
 
     @Override
@@ -220,38 +227,7 @@ public class LeadListActivity extends BaseActivity {
                     Log.e("HomeButtonActionBar", "onOptionsItemSelected: " + e.getMessage());
                 }
                 break;
-
-            case R.id.change_password:
-                if (isNetworkConnected()) {
-
-
-                    final UserDataSharedPreference userDataSharedPreference = new UserDataSharedPreference(LeadListActivity.this);
-                    Log.d("changed password", "onOptionsItemSelected: button selected" +userDataSharedPreference.getUserEmail());
-                    ChangePasswordFragment.newInstance(new ChangePasswordFragment.OnPasswordChangedClicked() {
-                        @Override
-                        public void onPasswordChange(String oldPassword, String newPassword) {
-
-                            showProgressDialog("Please wait...",LeadListActivity.this);
-                            Authentication authentication = new Authentication(LeadListActivity.this);
-                            authentication.UpdatePassword(oldPassword, newPassword, userDataSharedPreference.getUserEmail(), new OnPasswordChange() {
-                                @Override
-                                public void onSucess(String result) {
-                                    Log.d("Password Updated", "onSucess: " + result);
-
-                                    Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                                    dismissProgressDialog();
-                                    hideKeyboard(LeadListActivity.this);
-
-                                }
-                            });
-                        }
-                    }).show(getSupportFragmentManager(),"changepassword");
-
-
-                }
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }

@@ -46,7 +46,6 @@ public class LoginActivity extends BaseActivity {
     private EditText mail, password;
     private UserDetails currentUserDetails;
     private CardView cardView;
-    private TextView splashText;
 
     private Authentication authentication;
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
@@ -63,7 +62,6 @@ public class LoginActivity extends BaseActivity {
 
         sharedPreferences = getApplicationContext().getSharedPreferences("com.mudrahome.MHLMS", MODE_PRIVATE);
         cardView = findViewById(R.id.card);
-        splashText = findViewById(R.id.splash_text);
         mail = findViewById(R.id.mail);
         password = findViewById(R.id.password);
 
@@ -235,8 +233,6 @@ public class LoginActivity extends BaseActivity {
 
     private void isUpdating() {
         final AppUpdateManager manager = AppUpdateManagerFactory.create(this);
-
-        Task<AppUpdateInfo> appUpdateInfoTask = manager.getAppUpdateInfo();
 
         manager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
             @Override

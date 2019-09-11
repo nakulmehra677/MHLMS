@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingBottom="110dp" />
+            android:paddingBottom="55dp" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -42,7 +42,7 @@
         android:background="@android:color/transparent"
         android:elevation="-10dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/filter"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
