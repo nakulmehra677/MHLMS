@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -84,10 +85,11 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
         bankListLayout = v.findViewById(R.id.bank_layout);
         bankProgress = v.findViewById(R.id.bank_progress);
 
-
+        remarksSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
         remarksAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.remarks, android.R.layout.simple_spinner_item);
         remarksAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         remarksSpinner.setAdapter(remarksAdapter);
 
         remarksSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
