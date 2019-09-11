@@ -9,7 +9,7 @@ import com.mudrahome.MHLMS.Models.UserList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Firestore {
+public class FirestoreInterfaces {
 
     public interface FetchOffer {
         void onSuccess(List<OfferDetails> details);

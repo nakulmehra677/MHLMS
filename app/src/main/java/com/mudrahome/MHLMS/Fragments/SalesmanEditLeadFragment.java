@@ -23,7 +23,7 @@ import android.widget.TimePicker;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.mudrahome.MHLMS.Interfaces.Firestore;
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Managers.Alarm;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.R;
@@ -226,7 +226,7 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
 
     private void getBankList() {
         com.mudrahome.MHLMS.Firebase.Firestore firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
-        firestore.getBankList(new Firestore.OnFetchBankList() {
+        firestore.getBankList(new FirestoreInterfaces.OnFetchBankList() {
             @Override
             public void onSuccess(ArrayList list) {
                 if (list.size() != 0) {

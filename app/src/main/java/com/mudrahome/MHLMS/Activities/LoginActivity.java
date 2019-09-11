@@ -3,24 +3,17 @@ package com.mudrahome.MHLMS.Activities;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.mudrahome.MHLMS.BuildConfig;
 import com.mudrahome.MHLMS.Firebase.Authentication;
-import com.mudrahome.MHLMS.Fragments.LeadListFragment;
-import com.mudrahome.MHLMS.Fragments.MobileFragment;
-import com.mudrahome.MHLMS.Interfaces.Firestore;
+import com.mudrahome.MHLMS.Firebase.Firestore;
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Interfaces.OnUserLogin;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.UserDetails;
@@ -34,10 +27,6 @@ import com.google.android.play.core.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
-
-import org.jsoup.Jsoup;
-
-import java.io.IOException;
 
 import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
@@ -60,16 +49,19 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        sharedPreferences = getApplicationContext().getSharedPreferences("com.mudrahome.MHLMS", MODE_PRIVATE);
-        cardView = findViewById(R.id.card);
-        mail = findViewById(R.id.mail);
-        password = findViewById(R.id.password);
+        if (isNetworkConnected()) {
+            sharedPreferences = getApplicationContext().getSharedPreferences("com.mudrahome.MHLMS", MODE_PRIVATE);
+            cardView = findViewById(R.id.card);
+            mail = findViewById(R.id.mail);
+            password = findViewById(R.id.password);
 
-        authentication = new Authentication(this);
-        firestore = new com.mudrahome.MHLMS.Firebase.Firestore(this);
-        profileManager = new ProfileManager();
-
-        checkUpdate();
+            authentication = new Authentication(this);
+            firestore = new Firestore(this);
+            profileManager = new ProfileManager();
+        } else {
+            showToastMessage(R.string.no_internet);
+            finish();
+        }
 
     }
 
@@ -77,7 +69,6 @@ public class LoginActivity extends BaseActivity {
         hideKeyboard(LoginActivity.this);
 
         if (isNetworkConnected()) {
-
             String strMail = mail.getText().toString();
             String strPassword = password.getText().toString();
 
@@ -107,7 +98,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void checkLogin() {
-        Log.d("log", "sdvvdfs");
         if (profileManager.checkUserExist()) {
             firestore.getUsers(onGetUserDetails(), profileManager.getuId());
         } else {
@@ -115,8 +105,8 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private Firestore.OnGetUserDetails onGetUserDetails() {
-        return new Firestore.OnGetUserDetails() {
+    private FirestoreInterfaces.OnGetUserDetails onGetUserDetails() {
+        return new FirestoreInterfaces.OnGetUserDetails() {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 String strDeviceToken = FirebaseInstanceId.getInstance().getToken();
@@ -152,41 +142,39 @@ public class LoginActivity extends BaseActivity {
                 LoginActivity.this, LeadListActivity.class), 101);
     }
 
-    private void openMobileFragment() {
-        MobileFragment.newInstance(new MobileFragment.OnNumberClickListener() {
-            @Override
-            public void onSubmitClicked(String number) {
-                contactNumber = "+91" + number.trim();
-                if (isNetworkConnected()) {
-                    currentUserDetails.setContactNumber(contactNumber);
-                    firestore.updateUserDetails(new Firestore.OnUpdateUser() {
-                        @Override
-                        public void onSuccess() {
-                            startLeadsPage();
-                        }
-
-                        @Override
-                        public void onFail() {
-                            openMobileFragment();
-                        }
-                    }, currentUserDetails);
-                } else {
-                    showToastMessage(R.string.no_internet);
-                    openMobileFragment();
-                }
-            }
-        }).show(getSupportFragmentManager(), "promo");
-    }
+//    private void openMobileFragment() {
+//        MobileFragment.newInstance(new MobileFragment.OnNumberClickListener() {
+//            @Override
+//            public void onSubmitClicked(String number) {
+//                contactNumber = "+91" + number.trim();
+//                if (isNetworkConnected()) {
+//                    currentUserDetails.setContactNumber(contactNumber);
+//                    firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
+//                        @Override
+//                        public void onSuccess() {
+//                            startLeadsPage();
+//                        }
+//
+//                        @Override
+//                        public void onFail() {
+//                            openMobileFragment();
+//                        }
+//                    }, currentUserDetails);
+//                } else {
+//                    showToastMessage(R.string.no_internet);
+//                    openMobileFragment();
+//                }
+//            }
+//        }).show(getSupportFragmentManager(), "promo");
+//    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isNetworkConnected()) {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                isUpdating();
-        } else {
-            showToastMessage(R.string.no_internet);
-            finish();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            isUpdating();
+        else {
+            checkLogin();
         }
     }
 
@@ -209,7 +197,6 @@ public class LoginActivity extends BaseActivity {
 
     private void checkUpdate() {
         final AppUpdateManager manager = AppUpdateManagerFactory.create(this);
-
         Task<AppUpdateInfo> appUpdateInfoTask = manager.getAppUpdateInfo();
 
         appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
@@ -226,6 +213,8 @@ public class LoginActivity extends BaseActivity {
                     } catch (IntentSender.SendIntentException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    checkLogin();
                 }
             }
         });
@@ -237,9 +226,8 @@ public class LoginActivity extends BaseActivity {
         manager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
             @Override
             public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                if (appUpdateInfo.updateAvailability()
-                        == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-                    // If an in-app update is already running, resume the update.
+                if (appUpdateInfo.updateAvailability() ==
+                        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
                     try {
                         manager.startUpdateFlowForResult(
                                 appUpdateInfo,
@@ -249,8 +237,8 @@ public class LoginActivity extends BaseActivity {
                     } catch (IntentSender.SendIntentException e) {
                         e.printStackTrace();
                     }
-                }else
-                    checkLogin();
+                } else
+                    checkUpdate();
             }
         });
     }
@@ -285,7 +273,7 @@ public class LoginActivity extends BaseActivity {
 //            flag = true;
 //
 //            currentUserDetails.setContactNumber(contactNumber);
-//            firestore.updateUserDetails(new Firestore.OnUpdateUser() {
+//            firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
 //                @Override
 //                public void onSuccess() {
 //                    startLeadsPage();

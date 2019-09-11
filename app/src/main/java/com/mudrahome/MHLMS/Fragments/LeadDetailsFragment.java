@@ -12,7 +12,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.mudrahome.MHLMS.Interfaces.Firestore;
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Managers.PermissionManager;
 import com.mudrahome.MHLMS.Models.TimeModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -34,7 +34,6 @@ import com.mudrahome.MHLMS.R;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Set;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
@@ -311,8 +310,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 //        Log.d("State", "onStart");
     }
 
-    private Firestore.OnFetchUsersList onFetchSalesPersonList() {
-        return new Firestore.OnFetchUsersList() {
+    private FirestoreInterfaces.OnFetchUsersList onFetchSalesPersonList() {
+        return new FirestoreInterfaces.OnFetchUsersList() {
             @Override
             public void onListFetched(UserList userList) {
                 progress.dismiss();
@@ -387,8 +386,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         }).show(getFragmentManager(), "promo");
     }
 
-    private Firestore.OnUpdateLead onUpdateLead() {
-        return new Firestore.OnUpdateLead() {
+    private FirestoreInterfaces.OnUpdateLead onUpdateLead() {
+        return new FirestoreInterfaces.OnUpdateLead() {
             @Override
             public void onLeadUpdated() {
                 Toast.makeText(context, R.string.lead_update, Toast.LENGTH_SHORT).show();

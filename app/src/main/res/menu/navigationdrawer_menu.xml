@@ -4,17 +4,25 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+
         <item
             android:id="@+id/profileDetails"
-            android:checkable="true"
+            android:checkable="false"
             android:icon="@drawable/ic_person"
             android:title="Profile Details" />
 
         <item
             android:id="@+id/change_password"
-            android:checkable="true"
+            android:checkable="false"
             android:icon="@drawable/ic_settings_black_24dp"
-            android:title="Setting" />
+            android:title="Change Password" />
+
+        <item
+            android:id="@+id/logout"
+            android:checkable="false"
+            android:iconTint="@color/colorPrimaryDark"
+            android:icon="@drawable/ic_power_settings_new_black_24dp"
+            android:title="Logout" />
     </group>
 
 </menu>

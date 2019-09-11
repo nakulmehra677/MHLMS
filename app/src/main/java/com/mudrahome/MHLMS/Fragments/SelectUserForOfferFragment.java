@@ -20,7 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.Timestamp;
 import com.mudrahome.MHLMS.ExtraViews;
-import com.mudrahome.MHLMS.Interfaces.Firestore;
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
@@ -154,7 +154,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     selectUsersLayout.setVisibility(View.INVISIBLE);
                     if (allCallers.size() == 0) {
                         extraViews.startProgressDialog("Loading...", getContext());
-                        firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+                        firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                             @Override
                             public void onListFetched(UserList userList) {
                                 for (UserDetails details : userList.getUserList()) {
@@ -184,7 +184,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     if (isNetworkConnected()) {
                         final ExtraViews extraViews = new ExtraViews();
                         extraViews.startProgressDialog("Loading...", getContext());
-                        firestore.startOffer(new Firestore.OnUploadOffer() {
+                        firestore.startOffer(new FirestoreInterfaces.OnUploadOffer() {
                             @Override
                             public void onSuccess() {
                                 extraViews.dismissProgressDialog();
@@ -622,7 +622,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (delhiTelecallerLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -648,7 +648,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (indoreTelecallerLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -674,7 +674,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (jaipurTelecallerLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -700,7 +700,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (gwaliorTelecallerLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -726,7 +726,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (ahmedabadTelecallerLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -752,7 +752,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (delhiSalesmanLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -778,7 +778,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (indoreSalesmanLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -804,7 +804,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (jaipurSalesmanLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -830,7 +830,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (gwaliorSalesmanLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 
@@ -856,7 +856,7 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
         if (ahmedabadSalesmanLayout.getChildCount() == 0) {
             extraViews.startProgressDialog("Loading...", getContext());
 
-            firestore.fetchUsersByUserType(new Firestore.OnFetchUsersList() {
+            firestore.fetchUsersByUserType(new FirestoreInterfaces.OnFetchUsersList() {
                 @Override
                 public void onListFetched(UserList userList) {
 

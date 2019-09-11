@@ -48,6 +48,6 @@ public class NotificationHelper extends ContextWrapper {
         return new NotificationCompat.Builder(getApplicationContext(), channelID)
                 .setContentTitle("Reminder!")
                 .setContentText("You got a reminder to work on the lead of " + customerName)
-                .setSmallIcon(R.mipmap.app_icon);
+                .setSmallIcon(R.mipmap.ic_launcher);
     }
 }

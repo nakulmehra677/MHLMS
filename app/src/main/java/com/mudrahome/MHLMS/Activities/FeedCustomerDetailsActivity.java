@@ -27,7 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.mudrahome.MHLMS.Interfaces.Firestore;
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Managers.Alarm;
 import com.mudrahome.MHLMS.Managers.TimeManager;
 import com.mudrahome.MHLMS.Models.LeadDetails;
@@ -429,8 +429,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 timeModel.getTime(), timeModel.getTimeStamp());
     }
 
-    private Firestore.OnUploadCustomerDetails onUploadCustomerDetails() {
-        return new Firestore.OnUploadCustomerDetails() {
+    private FirestoreInterfaces.OnUploadCustomerDetails onUploadCustomerDetails() {
+        return new FirestoreInterfaces.OnUploadCustomerDetails() {
             @Override
             public void onDataUploaded() {
                 Log.i("No of Nodes", "Uploaded");
@@ -450,8 +450,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         };
     }
 
-    private Firestore.OnFetchUsersList onFetchUsersListListener() {
-        return new Firestore.OnFetchUsersList() {
+    private FirestoreInterfaces.OnFetchUsersList onFetchUsersListListener() {
+        return new FirestoreInterfaces.OnFetchUsersList() {
             @Override
             public void onListFetched(UserList userList) {
 

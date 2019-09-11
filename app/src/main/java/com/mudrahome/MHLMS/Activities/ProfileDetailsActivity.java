@@ -24,56 +24,39 @@ public class ProfileDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_details);
 
-
         profileName = findViewById(R.id.profileName);
         profileEmail = findViewById(R.id.profileEmail);
         profileLocation = findViewById(R.id.profileLocation);
         profilePhone = findViewById(R.id.profileContact);
         profileDesignation = findViewById(R.id.profileDesignation);
 
-
-        userDataSharedPreference = new UserDataSharedPreference(ProfileDetailsActivity.this);
-
+        userDataSharedPreference = new UserDataSharedPreference(this);
         Set<String> userType = new HashSet<>();
         userType = userDataSharedPreference.getUserType();
 
-
-
         for (String s : userType) {
-
             if(userDesignation == ""){
-
                 userDesignation = s;
             }else {
-                userDesignation += ","+s;
+                userDesignation += ", "+s;
             }
-
         }
 
         Set<String> locationset = new HashSet<>();
         locationset = userDataSharedPreference.getLocation();
 
-
-
         for (String s : locationset) {
-
             if(userlocation == ""){
-
                 userlocation = s;
             }else {
                 userlocation = ","+s;
             }
-
         }
-
 
         profileName.setText(userDataSharedPreference.getUserName());
         profileEmail.setText(userDataSharedPreference.getUserEmail());
         profileDesignation.setText(userDesignation);
         profilePhone.setText(userDataSharedPreference.getContactNumber());
         profileLocation.setText(userlocation);
-
-
-
     }
 }

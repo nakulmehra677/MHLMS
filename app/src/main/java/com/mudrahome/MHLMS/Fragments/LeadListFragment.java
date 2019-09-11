@@ -7,12 +7,10 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -29,7 +27,7 @@ import com.mudrahome.MHLMS.Activities.FilterActivity;
 import com.mudrahome.MHLMS.Activities.StartOfferActivity;
 import com.mudrahome.MHLMS.Adapters.LeadsItemAdapter;
 import com.mudrahome.MHLMS.ExtraViews;
-import com.mudrahome.MHLMS.Interfaces.Firestore;
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.R;
@@ -197,7 +195,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
     private void getOffer() {
 
-        firestore.getOffers(new Firestore.FetchOffer() {
+        firestore.getOffers(new FirestoreInterfaces.FetchOffer() {
                                 @Override
                                 public void onSuccess(List<OfferDetails> details) {
                                     if (details.size() > 0) {
@@ -231,8 +229,8 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                 locationFilter, assignerFilter, assigneeFilter, loanTypeFilter, statusFilter);
     }
 
-    private Firestore.OnFetchLeadList onFetchLeadList() {
-        return new Firestore.OnFetchLeadList() {
+    private FirestoreInterfaces.OnFetchLeadList onFetchLeadList() {
+        return new FirestoreInterfaces.OnFetchLeadList() {
             @Override
             public void onLeadAdded(List<LeadDetails> l, DocumentSnapshot lastVisible) {
                 if (l.size() < 20)

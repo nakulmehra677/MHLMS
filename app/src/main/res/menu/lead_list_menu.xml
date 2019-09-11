@@ -8,10 +8,4 @@
         android:title="Notification"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/logout"
-        android:title="Logout"
-        app:showAsAction="never" />
-
-
 </menu>

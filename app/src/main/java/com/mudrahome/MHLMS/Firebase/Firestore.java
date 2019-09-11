@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import android.util.Log;
 
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
@@ -38,7 +39,7 @@ public class Firestore {
         this.context = context;
     }
 
-    public void uploadCustomerDetails(final com.mudrahome.MHLMS.Interfaces.Firestore.OnUploadCustomerDetails listener,
+    public void uploadCustomerDetails(final FirestoreInterfaces.OnUploadCustomerDetails listener,
                                       final LeadDetails leadDetails) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -62,7 +63,7 @@ public class Firestore {
     }
 
     public void fetchUsersByUserType(
-            final com.mudrahome.MHLMS.Interfaces.Firestore.OnFetchUsersList listener, String location, String userType) {
+            final FirestoreInterfaces.OnFetchUsersList listener, String location, String userType) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query query;
@@ -92,7 +93,7 @@ public class Firestore {
         });
     }
 
-    public void updateLeadDetails(final com.mudrahome.MHLMS.Interfaces.Firestore.OnUpdateLead listener, LeadDetails updateLead) {
+    public void updateLeadDetails(final FirestoreInterfaces.OnUpdateLead listener, LeadDetails updateLead) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("leadList").document(updateLead.getKey());
@@ -124,7 +125,7 @@ public class Firestore {
         });
     }
 
-    public void getOffers(final com.mudrahome.MHLMS.Interfaces.Firestore.FetchOffer fetchOffer,
+    public void getOffers(final FirestoreInterfaces.FetchOffer fetchOffer,
                           String name, String userType, boolean singleItem) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -155,7 +156,7 @@ public class Firestore {
         });
     }
 
-    public void getLeadList(final com.mudrahome.MHLMS.Interfaces.Firestore.OnFetchLeadList listener,
+    public void getLeadList(final FirestoreInterfaces.OnFetchLeadList listener,
                             String assign, String userName, DocumentSnapshot lastLead,
                             String locationFilter, String assignerFilter,
                             String assigneeFilter, String loanTypeFilter, String statusFilter) {
@@ -209,7 +210,7 @@ public class Firestore {
         });
     }
 
-    public void getUsers(final com.mudrahome.MHLMS.Interfaces.Firestore.OnGetUserDetails onGetUserDetails, String uId) {
+    public void getUsers(final FirestoreInterfaces.OnGetUserDetails onGetUserDetails, String uId) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("userList").document(uId);
@@ -239,7 +240,7 @@ public class Firestore {
         dRef.update("userPassword", password);
     }
 
-    public void startOffer(final com.mudrahome.MHLMS.Interfaces.Firestore.OnUploadOffer listener, OfferDetails details) {
+    public void startOffer(final FirestoreInterfaces.OnUploadOffer listener, OfferDetails details) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("offerList").document();
 
@@ -259,7 +260,7 @@ public class Firestore {
         });
     }
 
-    public void removeAd(final com.mudrahome.MHLMS.Interfaces.Firestore.OnRemoveAd removeAd, OfferDetails details) {
+    public void removeAd(final FirestoreInterfaces.OnRemoveAd removeAd, OfferDetails details) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("offerList").document(details.getKey());
 
@@ -276,7 +277,7 @@ public class Firestore {
         });
     }
 
-    public void updateUserDetails(final com.mudrahome.MHLMS.Interfaces.Firestore.OnUpdateUser updateUser, UserDetails details) {
+    public void updateUserDetails(final FirestoreInterfaces.OnUpdateUser updateUser, UserDetails details) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("userList").document(details.getuId());
 
@@ -295,7 +296,7 @@ public class Firestore {
         });
     }
 
-    public void getBankList(final com.mudrahome.MHLMS.Interfaces.Firestore.OnFetchBankList list) {
+    public void getBankList(final FirestoreInterfaces.OnFetchBankList list) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("bankList").document("banks");
 

@@ -1,11 +1,8 @@
 package com.mudrahome.MHLMS.Activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -13,13 +10,12 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.mudrahome.MHLMS.ExtraViews;
-import com.mudrahome.MHLMS.Interfaces.Firestore;
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.R;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -65,7 +61,7 @@ public class NotificationActivity extends BaseActivity {
             userType = getString(R.string.admin);
         }
 
-        firestore.getOffers(new Firestore.FetchOffer() {
+        firestore.getOffers(new FirestoreInterfaces.FetchOffer() {
             @Override
             public void onSuccess(List<OfferDetails> details) {
 
@@ -111,7 +107,7 @@ public class NotificationActivity extends BaseActivity {
                     adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             if (isNetworkConnected()) {
-                                firestore.removeAd(new Firestore.OnRemoveAd() {
+                                firestore.removeAd(new FirestoreInterfaces.OnRemoveAd() {
                                     @Override
                                     public void onSuccess() {
                                         data.remove(i);
