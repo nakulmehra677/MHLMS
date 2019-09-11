@@ -25,7 +25,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.mudrahome.MHLMS.Activities.FeedCustomerDetailsActivity;
 import com.mudrahome.MHLMS.Activities.FilterActivity;
-import com.mudrahome.MHLMS.Activities.LeadListActivity;
 import com.mudrahome.MHLMS.Activities.StartOfferActivity;
 import com.mudrahome.MHLMS.Adapters.LeadsItemAdapter;
 import com.mudrahome.MHLMS.ExtraViews;
@@ -38,11 +37,11 @@ import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LeadListFragment extends Fragment {
+public class LeadListFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    /*private FloatingActionButton fab;*/
+    private FloatingActionButton fab;
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ProgressBar progressBar, firstPageProgressBar;
 
@@ -73,64 +72,32 @@ public class LeadListFragment extends Fragment {
         this.userType = userType;
     }
 
-
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        try {
-
-            LeadListActivity leadListActivity = (LeadListActivity) getActivity();
-
-            leadListActivity.getFilterData();
-
-            assignerFilter = leadListActivity.getFilterData().get(0);
-            assigneeFilter = leadListActivity.getFilterData().get(1);
-            locationFilter = leadListActivity.getFilterData().get(2);
-            loanTypeFilter = leadListActivity.getFilterData().get(3);
-            statusFilter = leadListActivity.getFilterData().get(4);
-
-            Log.d("Filter","hjhjkj  "+assigneeFilter+"\n"+assigneeFilter+"\n"+locationFilter+"\n"+loanTypeFilter+"\n"+statusFilter);
-
-        }catch (Exception e){
-
-        }
-
         View v = inflater.inflate(
                 R.layout.fragment_lead_list, container, false);
         extraViews = new ExtraViews();
 
-
-
-
         recyclerView = v.findViewById(R.id.recycler_view);
-        /*fab = v.findViewById(R.id.fab);*/
+        fab = getActivity().findViewById(R.id.fab);
         mySwipeRefreshLayout = v.findViewById(R.id.swiperefresh);
         progressBar = v.findViewById(R.id.progressBar);
         firstPageProgressBar = v.findViewById(R.id.first_page_progressBar);
-        /*filter = v.findViewById(R.id.filter);*/
+        filter = getActivity().findViewById(R.id.filter1);
 
         preferences = new UserDataSharedPreference(getContext());
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore(getContext());
 
         linearLayoutManager = new LinearLayoutManager(getContext());
-        /*filter.setOnClickListener(this);*/
+        filter.setOnClickListener(this);
 
         adapter = new LeadsItemAdapter(leadDetailsList, getContext(), getString(userType));
         recyclerView.setAdapter(adapter);
         setLayoutByUser();
-
-        leadDetailsList.clear();
-        adapter.notifyDataSetChanged();
-        isLastItemFetched = false;
-        bottomVisibleItem = null;
-        firstPageProgressBar.setVisibility(View.VISIBLE);
-
-        fetchLeads();
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -199,7 +166,7 @@ public class LeadListFragment extends Fragment {
 
     @SuppressLint("RestrictedApi")
     private void setLayoutByUser() {
-        /*if (userType == R.string.telecaller) {
+        if (userType == R.string.telecaller) {
             fab.setVisibility(View.VISIBLE);
             fab.setImageResource(R.drawable.ic_add_white_24dp);
 
@@ -222,7 +189,7 @@ public class LeadListFragment extends Fragment {
                         extraViews.showToast(R.string.no_internet, getContext());
                 }
             });
-        }*/
+        }
         leadDetailsList.clear();
         getOffer();
     }
@@ -250,6 +217,7 @@ public class LeadListFragment extends Fragment {
     }
 
     private void fetchLeads() {
+        Log.d("FecthLead", locationFilter+ assignerFilter+ assigneeFilter+ loanTypeFilter+ statusFilter);
         String s;
         if (userType == R.string.telecaller)
             s = "assigner";
@@ -306,21 +274,45 @@ public class LeadListFragment extends Fragment {
         };
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+
+
+        if (resultCode == 201) {
+            Log.d("fragment", "filter called: " +requestCode);
+            assignerFilter = data.getStringExtra("assigner_filter");
+            assigneeFilter = data.getStringExtra("assignee_filter");
+            locationFilter = data.getStringExtra("location_filter");
+            loanTypeFilter = data.getStringExtra("loan_type_filter");
+            statusFilter = data.getStringExtra("status_filter");
+
+            leadDetailsList.clear();
+            adapter.notifyDataSetChanged();
+            isLastItemFetched = false;
+            bottomVisibleItem = null;
+            firstPageProgressBar.setVisibility(View.VISIBLE);
+
+            fetchLeads();
+        }
+    }
+
     protected boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;
     }
 
-    /*@Override
+    @Override
     public void onClick(View view) {
         if (isNetworkConnected()) {
             switch (view.getId()) {
-                case R.id.filter:
+                case R.id.filter1:
                     Intent intent = new Intent(getContext(), FilterActivity.class);
                     intent.putExtra("userType", userType);
                     startActivityForResult(intent, 201);
                     break;
             }
         }
-    }*/
+    }
 }

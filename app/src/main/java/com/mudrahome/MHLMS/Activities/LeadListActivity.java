@@ -36,10 +36,8 @@ import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class LeadListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener , View.OnClickListener {
+public class LeadListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener  {
 
     private ProfileManager profileManager;
     private Toolbar toolbar;
@@ -49,16 +47,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     NavigationView navigationView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private FloatingActionButton filter, fab;
-    private int userType1;
 
-
-    private String assignerFilter = "All";
-    private String assigneeFilter = "All";
-    private String locationFilter = "All";
-    private String statusFilter = "All";
-    private String loanTypeFilter = "All";
-
-    List<String> filterData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +58,6 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         toolbar.inflateMenu(R.menu.lead_list_menu);
         setSupportActionBar(toolbar);
 
-
-        filter = findViewById(R.id.filter1);
-        fab = findViewById(R.id.fab);
-
-        filter.setOnClickListener(this);
 
         tabLayout = findViewById(R.id.tabLayout);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -99,16 +83,15 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     openViewPager(R.string.admin_and_salesman);
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.telecaller))) {
                     openFragment(R.string.telecaller);
-                    userType1 = R.string.telecaller;
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.admin))) {
                     openFragment(R.string.admin);
-                    userType1 = R.string.admin;
+
                 } else {
                     openFragment(R.string.salesman);
-                    userType1 = R.string.salesman;
+
                 }
 
-                setFabButtonByUser(userType1);
+
             }
 
             @Override
@@ -117,87 +100,11 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
             }
         }, profileManager.getuId());
 
-        Log.d("UserType", "onCreate: dssss" + userType1);
-
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // check if the request code is same as what is passed  here it is 2
-        if (resultCode == 201) {
-
-            Log.d("Filter", "onActivityResult: shj");
-            assignerFilter = data.getStringExtra("assigner_filter");
-            assigneeFilter = data.getStringExtra("assignee_filter");
-            locationFilter = data.getStringExtra("location_filter");
-            loanTypeFilter = data.getStringExtra("loan_type_filter");
-            statusFilter = data.getStringExtra("status_filter");
-
-            List<String> filter = new ArrayList<>();
-
-            filter.add(assignerFilter);
-            filter.add(assigneeFilter);
-            filter.add(locationFilter);
-            filter.add(loanTypeFilter);
-            filter.add(statusFilter);
-
-            setFilterData(filter);
-
-            /*Log.d("filterdata", "onActivityResult: " + filter.get(2));*/
-
-            openFragment(userType1);
-
-        }
-    }
-
-    private void setFilterData(List<String> list) {
-
-        this.filterData = list;
-
-    }
-
-    public List<String> getFilterData(){
-
-        return filterData;
-    }
-
-
-    @SuppressLint("RestrictedApi")
-    private void setFabButtonByUser(int userType) {
-
-        if (userType == R.string.telecaller) {
-            fab.setVisibility(View.VISIBLE);
-            fab.setImageResource(R.drawable.ic_add_white_24dp);
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(LeadListActivity.this, FeedCustomerDetailsActivity.class));
-                }
-            });
-        } else if (userType == R.string.admin) {
-            fab.setVisibility(View.VISIBLE);
-            fab.setImageResource(R.drawable.megaphone);
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (isNetworkConnected()) {
-                        startActivity(new Intent(LeadListActivity.this, StartOfferActivity.class));
-                    } else
-                        showToastMessage(R.string.no_internet);
-
-                }
-            });
-        } else {
-            /*fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));*/
-
-            fab.setVisibility(View.GONE);
-        }
 
 
     }
+
+
 
     private void openFragment(int userType) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -207,8 +114,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
     private void openViewPager(int userType) {
         tabLayout.setVisibility(View.VISIBLE);
-        userType1 = R.string.admin;
-        setFabButtonByUser(userType1);
+        openFragment(R.string.admin);
         final ViewPager vpPager = findViewById(R.id.pager);
         LeadListPagerAdapter adapterViewPager = new LeadListPagerAdapter(getSupportFragmentManager(), 2);
         vpPager.setAdapter(adapterViewPager);
@@ -219,12 +125,12 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 vpPager.setCurrentItem(tab.getPosition());
-                if (tab.getPosition() == 0)
-                    userType1 = R.string.admin;
-                else
-                    userType1 = R.string.salesman;
+                if(tab.getPosition() == 0){
+                    openFragment(R.string.admin);
+                }else {
+                    openFragment(R.string.salesman);
+                }
 
-                setFabButtonByUser(userType1);
             }
 
             @Override
@@ -354,18 +260,6 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View view) {
-        if (isNetworkConnected()) {
-            switch (view.getId()) {
-                case R.id.filter1:
-                    Intent intent = new Intent(LeadListActivity.this, FilterActivity.class);
-                    intent.putExtra("userType", userType1);
-                    /*startActivity(intent);*/
-                    startActivityForResult(intent, 201);
-                    break;
-            }
-        }
-    }
+
 
 }
