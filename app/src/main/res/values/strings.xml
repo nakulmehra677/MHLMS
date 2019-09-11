@@ -150,7 +150,6 @@
         <item>Not Doable</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string-array name="filter_button">
         <item>Location</item>
         <item>Assigner</item>

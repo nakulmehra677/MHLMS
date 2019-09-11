@@ -3,16 +3,10 @@ package com.mudrahome.MHLMS.Adapters;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.GradientDrawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,14 +22,11 @@ import com.mudrahome.MHLMS.ViewHolders.OfferViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
 
 public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<Object> items;
     private Context context;
-    private /*Set<String>*/String currentUserType;
+    private String currentUserType;
     private List<LeadDetails> allLeads;
 
     private final int OFFER = 0, LEADS = 1;
@@ -49,9 +40,6 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.lead_list_item, parent, false);
-//        return new LeadListViewHolder(view);
-
         RecyclerView.ViewHolder viewHolder;
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
@@ -62,13 +50,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 break;
 
             default:
-                /*View v1 = inflater.inflate(R.layout.lead_list_item, parent, false);*/
-                /**
-                 * Change by Himanshu
-                 */
-
-                View v1 = inflater.inflate(R.layout.list_lead_item_version,parent,false);
-
+                View v1 = inflater.inflate(R.layout.list_lead_item, parent, false);
                 viewHolder = new LeadListViewHolder(v1);
                 break;
         }
@@ -84,17 +66,8 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 final OfferDetails offerDetails = (OfferDetails) items.get(i);
 
                 if (offerDetails != null) {
-                    Random rnd = new Random();
-//                    int color = Color.argb(255,
-//                            rnd.nextInt(256),
-//                            rnd.nextInt(256),
-//                            rnd.nextInt(256));
-//
-//                    vh1.layout.setBackgroundColor(color);
-
                     vh1.offerTitle.setText(offerDetails.getTitle());
                     vh1.offerDescription.setText(offerDetails.getDescription());
-
                 }
                 break;
 
@@ -105,11 +78,11 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
                 vh2.status.setText(model.getStatus());
 
-                if(model.getStatus().matches("Closed")){
+                if (model.getStatus().matches("Closed")) {
 
                     vh2.status.setTextColor(Color.RED);
 
-                }else {
+                } else {
                     vh2.status.setTextColor(context.getResources().getColor(R.color.colorPrimary));
 
                 }
@@ -118,22 +91,19 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 vh2.loanAmount.setText(model.getLoanAmount());
                 vh2.loanType.setText(model.getLoanType());
                 vh2.location.setText(model.getLocation());
-
-
                 vh2.date.setText(model.getDate());
 
                 if (currentUserType.equals(context.getString(R.string.telecaller)))
-                    vh2.assignedTo.setText(model.getAssignedTo());
+                    vh2.assign.setText(model.getAssignedTo());
                 else if (currentUserType.equals(context.getString(R.string.salesman))) {
-                    vh2.assignText.setText("Assginer : ");
-                    vh2.assignedTo.setText(model.getAssigner());
+                    vh2.assign.setText(model.getAssigner());
                 } else
-                    vh2.assignLayout.setVisibility(View.GONE);
+                    vh2.assign.setVisibility(View.GONE);
 
                 vh2.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context,currentUserType);
+                        LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context, currentUserType);
                         leadDetailsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "f");
                     }
                 });
