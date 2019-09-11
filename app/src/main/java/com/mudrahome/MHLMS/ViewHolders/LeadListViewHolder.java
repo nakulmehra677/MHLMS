@@ -12,8 +12,7 @@ import com.mudrahome.MHLMS.Interfaces.ItemClickListener;
 import com.mudrahome.MHLMS.R;
 
 public class LeadListViewHolder extends RecyclerView.ViewHolder {
-    public TextView name, contact, loanAmount, loanType, location, assignedTo, status, date, assignText;
-    public TextView loanamounttextview,loantypetextview,locationtextview;
+    public TextView name, contact, loanAmount, loanType, location, assign, status, date, assignText;
     public ItemClickListener itemClickListener;
     public LinearLayout assignLayout;
     public CardView cardView;
@@ -28,15 +27,10 @@ public class LeadListViewHolder extends RecyclerView.ViewHolder {
         loanAmount = itemView.findViewById(R.id.customer_loan_amount);
         loanType = itemView.findViewById(R.id.customer_loan_type);
         location = itemView.findViewById(R.id.customer_location);
-        assignedTo = itemView.findViewById(R.id.assigned_to);
         status = itemView.findViewById(R.id.status);
         date = itemView.findViewById(R.id.date);
-        assignLayout = itemView.findViewById(R.id.assign_layout);
-        assignText = itemView.findViewById(R.id.assign_text);
+        assign = itemView.findViewById(R.id.assign);
         cardView = itemView.findViewById(R.id.cardViewLeadList);
-        loanamounttextview = itemView.findViewById(R.id.loanamounttextview);
-        loantypetextview = itemView.findViewById(R.id.loantypetextview);
-        locationtextview = itemView.findViewById(R.id.locationtextview);
     }
 
     public void setName(String string) {
