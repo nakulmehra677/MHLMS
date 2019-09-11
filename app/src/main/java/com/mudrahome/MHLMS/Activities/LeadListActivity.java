@@ -168,6 +168,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     public void onClick(DialogInterface dialogInterface, int u) {
                         profileManager.signOut();
                         showToastMessage(R.string.logged_out);
+//                        kghv k
                         //SharedPreferences.Editor editor = sharedPreferences.edit();
                         //editor.clear();
                         onBackPressed();
