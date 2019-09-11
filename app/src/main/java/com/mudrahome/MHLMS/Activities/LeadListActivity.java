@@ -36,6 +36,9 @@ import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LeadListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener , View.OnClickListener {
 
     private ProfileManager profileManager;
@@ -47,6 +50,15 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private FloatingActionButton filter, fab;
     private int userType1;
+
+
+    private String assignerFilter = "All";
+    private String assigneeFilter = "All";
+    private String locationFilter = "All";
+    private String statusFilter = "All";
+    private String loanTypeFilter = "All";
+
+    List<String> filterData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +119,47 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
         Log.d("UserType", "onCreate: dssss" + userType1);
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // check if the request code is same as what is passed  here it is 2
+        if (resultCode == 201) {
+
+            Log.d("Filter", "onActivityResult: shj");
+            assignerFilter = data.getStringExtra("assigner_filter");
+            assigneeFilter = data.getStringExtra("assignee_filter");
+            locationFilter = data.getStringExtra("location_filter");
+            loanTypeFilter = data.getStringExtra("loan_type_filter");
+            statusFilter = data.getStringExtra("status_filter");
+
+            List<String> filter = new ArrayList<>();
+
+            filter.add(assignerFilter);
+            filter.add(assigneeFilter);
+            filter.add(locationFilter);
+            filter.add(loanTypeFilter);
+            filter.add(statusFilter);
+
+            setFilterData(filter);
+
+            /*Log.d("filterdata", "onActivityResult: " + filter.get(2));*/
+
+            openFragment(userType1);
+
+        }
+    }
+
+    private void setFilterData(List<String> list) {
+
+        this.filterData = list;
+
+    }
+
+    public List<String> getFilterData(){
+
+        return filterData;
     }
 
 
