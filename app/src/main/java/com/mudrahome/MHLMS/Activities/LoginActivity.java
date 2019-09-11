@@ -42,7 +42,7 @@ public class LoginActivity extends BaseActivity {
     private String contactNumber;
     SharedPreferences sharedPreferences;
 
-    private boolean flag = false;
+    private boolean newLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,7 @@ public class LoginActivity extends BaseActivity {
             if (!strMail.isEmpty() && !strPassword.isEmpty()) {
                 showProgressDialog("Loading..", LoginActivity.this);
 
+                newLogin = true;
                 authentication.loginUser(new OnUserLogin() {
                     @Override
                     public void onSuccess(String uId) {
@@ -119,7 +120,11 @@ public class LoginActivity extends BaseActivity {
                 UserDataSharedPreference preference = new UserDataSharedPreference(LoginActivity.this);
                 preference.setUserDetails(currentUserDetails);
 
-                showToastMessage(R.string.logged_in);
+                if (newLogin) {
+                    dismissProgressDialog();
+                    newLogin = false;
+                    showToastMessage(R.string.logged_in);
+                }
                 startLeadsPage();
 /*                if (currentUserDetails.getContactNumber() == null ||
                         currentUserDetails.getContactNumber().isEmpty()) {
@@ -129,7 +134,6 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void fail() {
-                Log.d("Flag", String.valueOf(flag));
                 profileManager.signOut();
                 cardView.setVisibility(View.VISIBLE);
                 firestore.setCurrentDeviceToken("", profileManager.getuId());
