@@ -52,14 +52,14 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_leads_list);
+        setContentView(R.layout.drawer_layout_leadlist);
 
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
         setSupportActionBar(toolbar);
 
         tabLayout = findViewById(R.id.tabLayout);
-        drawerLayout = findViewById(R.id.drawerlayoutLeadList);
+        drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigationdrawer_dashboard);
 
         profileManager = new ProfileManager();
