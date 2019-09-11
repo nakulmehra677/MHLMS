@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -94,6 +95,8 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     openFragment(R.string.salesman);
                     userType1 = R.string.salesman;
                 }
+
+                setFabButtonByUser(userType1);
             }
 
             @Override
@@ -101,6 +104,9 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
             }
         }, profileManager.getuId());
+
+        Log.d("UserType", "onCreate: dssss" + userType1);
+
     }
 
 
@@ -258,9 +264,10 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                         new OnPasswordChange() {
                             @Override
                             public void onSucess(String result) {
+
+                                hideKeyboard(LeadListActivity.this);
                                 Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
                                 dismissProgressDialog();
-                                hideKeyboard(LeadListActivity.this);
 
                             }
                         });
