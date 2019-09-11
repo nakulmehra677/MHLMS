@@ -132,7 +132,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                 }
             });
         } else {
-            fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
+            /*fab.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));*/
 
             fab.setVisibility(View.GONE);
         }
