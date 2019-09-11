@@ -36,11 +36,11 @@ import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LeadListFragment extends Fragment implements View.OnClickListener {
+public class LeadListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
-    private FloatingActionButton fab;
+    /*private FloatingActionButton fab;*/
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ProgressBar progressBar, firstPageProgressBar;
 
@@ -82,17 +82,17 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         extraViews = new ExtraViews();
 
         recyclerView = v.findViewById(R.id.recycler_view);
-        fab = v.findViewById(R.id.fab);
+        /*fab = v.findViewById(R.id.fab);*/
         mySwipeRefreshLayout = v.findViewById(R.id.swiperefresh);
         progressBar = v.findViewById(R.id.progressBar);
         firstPageProgressBar = v.findViewById(R.id.first_page_progressBar);
-        filter = v.findViewById(R.id.filter);
+        /*filter = v.findViewById(R.id.filter);*/
 
         preferences = new UserDataSharedPreference(getContext());
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore(getContext());
 
         linearLayoutManager = new LinearLayoutManager(getContext());
-        filter.setOnClickListener(this);
+        /*filter.setOnClickListener(this);*/
 
         adapter = new LeadsItemAdapter(leadDetailsList, getContext(), getString(userType));
         recyclerView.setAdapter(adapter);
@@ -165,7 +165,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
     @SuppressLint("RestrictedApi")
     private void setLayoutByUser() {
-        if (userType == R.string.telecaller) {
+        /*if (userType == R.string.telecaller) {
             fab.setVisibility(View.VISIBLE);
             fab.setImageResource(R.drawable.ic_add_white_24dp);
 
@@ -188,7 +188,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                         extraViews.showToast(R.string.no_internet, getContext());
                 }
             });
-        }
+        }*/
         leadDetailsList.clear();
         getOffer();
     }
@@ -298,7 +298,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         return cm.getActiveNetworkInfo() != null;
     }
 
-    @Override
+    /*@Override
     public void onClick(View view) {
         if (isNetworkConnected()) {
             switch (view.getId()) {
@@ -309,5 +309,5 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                     break;
             }
         }
-    }
+    }*/
 }
