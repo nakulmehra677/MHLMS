@@ -46,8 +46,6 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    private FloatingActionButton filter, fab;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +55,6 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         toolbar = findViewById(R.id.toolbarLeadList);
         toolbar.inflateMenu(R.menu.lead_list_menu);
         setSupportActionBar(toolbar);
-
 
         tabLayout = findViewById(R.id.tabLayout);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -90,8 +87,6 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     openFragment(R.string.salesman);
 
                 }
-
-
             }
 
             @Override

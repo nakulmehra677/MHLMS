@@ -157,4 +157,6 @@
         <item>Loan Type</item>
         <item>Status</item>
     </string-array>
+
+    <string name="emoji">Made with &#128153; by Nakul</string>
 </resources>

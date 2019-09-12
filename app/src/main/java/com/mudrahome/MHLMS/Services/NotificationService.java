@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -30,46 +31,47 @@ public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Log.i("NotificationMsg","sgdg" + remoteMessage.getNotification().getTitle());
+        Log.i("NotificationMsg", "sgdg" + remoteMessage.getNotification().getTitle());
 
-        showNotification(remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody());
+        showNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
     }
 
     public void showNotification(String title, String message) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notification_channel_id),"User Notification", NotificationManager.IMPORTANCE_HIGH);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notification_channel_id), "User Notification", NotificationManager.IMPORTANCE_HIGH);
             channel.enableVibration(true);
             channel.enableLights(true);
             channel.setLightColor(Color.BLUE);
             channel.setShowBadge(true);
             channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
-            channel.setVibrationPattern(new long[]{100,1000,100,1000});
+            channel.setVibrationPattern(new long[]{100, 1000, 100, 1000});
 
             NotificationManager manager = getSystemService(NotificationManager.class);
             assert manager != null;
             manager.createNotificationChannel(channel);
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this,getResources().getString(R.string.notification_channel_id))
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this, getResources().getString(R.string.notification_channel_id))
                 .setContentTitle(title)
-                .setSmallIcon(R.drawable.ic_stat_name)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setVibrate(new long[] {100,1000,100,1000})
+                .setVibrate(new long[]{100, 1000, 100, 1000})
                 .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
                 .setContentText(message);
 
-        NotificationManagerCompat managerCompat =NotificationManagerCompat.from(NotificationService.this);
-        managerCompat.notify(id,builder.build());
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(NotificationService.this);
+        managerCompat.notify(id, builder.build());
         id++;
 
         //if(title.equals("New Lead")){
-           // startTimer();
+        // startTimer();
         ///}
     }
-    private void startTimer(){
+
+    private void startTimer() {
         Calendar calendar = Calendar.getInstance();
         System.out.println("The current date is : " + calendar.getTime());
         //calendar.add(Calendar.MINUTE, 1);

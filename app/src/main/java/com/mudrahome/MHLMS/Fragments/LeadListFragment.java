@@ -83,11 +83,11 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         extraViews = new ExtraViews();
 
         recyclerView = v.findViewById(R.id.recycler_view);
-        fab = getActivity().findViewById(R.id.fab);
+        fab = v.findViewById(R.id.fab);
         mySwipeRefreshLayout = v.findViewById(R.id.swiperefresh);
         progressBar = v.findViewById(R.id.progressBar);
         firstPageProgressBar = v.findViewById(R.id.first_page_progressBar);
-        filter = getActivity().findViewById(R.id.filter1);
+        filter = v.findViewById(R.id.filter1);
 
         preferences = new UserDataSharedPreference(getContext());
         firestore = new com.mudrahome.MHLMS.Firebase.Firestore(getContext());
@@ -217,7 +217,6 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
     }
 
     private void fetchLeads() {
-        Log.d("FecthLead", locationFilter+ assignerFilter+ assigneeFilter+ loanTypeFilter+ statusFilter);
         String s;
         if (userType == R.string.telecaller)
             s = "assigner";
@@ -281,12 +280,18 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
 
         if (resultCode == 201) {
-            Log.d("fragment", "filter called: " +requestCode);
+            Log.d("fragment", "filter called: " + requestCode);
             assignerFilter = data.getStringExtra("assigner_filter");
             assigneeFilter = data.getStringExtra("assignee_filter");
             locationFilter = data.getStringExtra("location_filter");
             loanTypeFilter = data.getStringExtra("loan_type_filter");
             statusFilter = data.getStringExtra("status_filter");
+
+            Log.d("Fillter", assignerFilter);
+            Log.d("Fillter", assigneeFilter);
+            Log.d("Fillter", locationFilter);
+            Log.d("Fillter", loanTypeFilter);
+            Log.d("Fillter", statusFilter);
 
             leadDetailsList.clear();
             adapter.notifyDataSetChanged();
@@ -294,7 +299,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
             bottomVisibleItem = null;
             firstPageProgressBar.setVisibility(View.VISIBLE);
 
-            fetchLeads();
+            getOffer();
         }
     }
 
