@@ -5,13 +5,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
 
-import com.mudrahome.MHLMS.CustomViewPager;
+import com.mudrahome.MHLMS.ViewPagers.CustomViewPager;
 import com.mudrahome.MHLMS.Fragments.FeedOfferDetailsFragment;
 import com.mudrahome.MHLMS.Fragments.SelectUserForOfferFragment;
 import com.mudrahome.MHLMS.R;

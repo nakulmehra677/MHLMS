@@ -5,8 +5,10 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -250,7 +252,6 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 if (isNetworkConnected()) {
                     getDetails();
                     if (checkEmpty()) {
-                        uploadDetails();
                         checkSMSPermission();
                     } else
                         showToastMessage(R.string.fill_details_correctly);
@@ -329,11 +330,19 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String[] currentUserFirstName = currentUserName.split(" ");
         String[] assigneeUserFirstName = strAssignTo.split(" ");
 
-        SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(strContactNumber,
-                null, "Thanks for connecting mudrahome.com. You were speaking with " +
-                        currentUserFirstName[0] + " " + currentUserNumber + ". " + assigneeUserFirstName[0] + " " +
-                        strAssigneeContact + " will connect you for further processing your loan.", null, null);
+//        SmsManager smsManager = SmsManager.getDefault();
+//        smsManager.sendTextMessage(strContactNumber,
+//                null, "Thanks for connecting mudrahome.com. You were speaking with " +
+//                        currentUserFirstName[0] + " " + currentUserNumber + ". " + assigneeUserFirstName[0] + " " +
+//                        strAssigneeContact + " will connect you for further processing your loan.", null, null);
+
+
+        Uri uri = Uri.parse("smsto:" + strContactNumber);
+        Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+        intent.putExtra("sms_body", "Thanks for connecting mudrahome.com. You were speaking with " +
+                currentUserFirstName[0] + " " + currentUserNumber + ". " + assigneeUserFirstName[0] + " " +
+                strAssigneeContact + " will connect you for further processing your loan.");
+        startActivity(intent);
         uploadDetails();
     }
 

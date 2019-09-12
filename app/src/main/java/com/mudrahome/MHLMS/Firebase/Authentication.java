@@ -22,8 +22,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 
-import static com.firebase.ui.auth.AuthUI.TAG;
-
 public class Authentication {
     private Context context;
 

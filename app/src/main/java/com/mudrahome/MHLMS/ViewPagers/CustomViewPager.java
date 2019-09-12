@@ -1,4 +1,4 @@
-package com.mudrahome.MHLMS;
+package com.mudrahome.MHLMS.ViewPagers;
 
 import android.content.Context;
 import android.util.AttributeSet;

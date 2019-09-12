@@ -3,9 +3,12 @@ package com.mudrahome.MHLMS.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.mudrahome.MHLMS.R;
+//import com.mudrahome.MHLMS.Services.SMSService;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.util.HashSet;
@@ -35,10 +38,10 @@ public class ProfileDetailsActivity extends AppCompatActivity {
         userType = userDataSharedPreference.getUserType();
 
         for (String s : userType) {
-            if(userDesignation == ""){
+            if (userDesignation == "") {
                 userDesignation = s;
-            }else {
-                userDesignation += ", "+s;
+            } else {
+                userDesignation += ", " + s;
             }
         }
 
@@ -46,10 +49,10 @@ public class ProfileDetailsActivity extends AppCompatActivity {
         locationset = userDataSharedPreference.getLocation();
 
         for (String s : locationset) {
-            if(userlocation == ""){
+            if (userlocation == "") {
                 userlocation = s;
-            }else {
-                userlocation = ","+s;
+            } else {
+                userlocation = "," + s;
             }
         }
 
@@ -58,5 +61,14 @@ public class ProfileDetailsActivity extends AppCompatActivity {
         profileDesignation.setText(userDesignation);
         profilePhone.setText(userDataSharedPreference.getContactNumber());
         profileLocation.setText(userlocation);
+
+        Button button = findViewById(R.id.send_sms);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                SMSService smsService = new SMSService();
+//                smsService.sendSMS();
+            }
+        });
     }
 }
