@@ -46,7 +46,6 @@ dependencies {
 
     //implementation 'com.android.support:multidex:1.0.3'
 
-
     //JSOUP for in app update for android 4.4.4 and below
     implementation 'org.jsoup:jsoup:1.11.1'
 }
