@@ -18,7 +18,7 @@ public class UserDataSharedPreference {
     private Context context;
     private String userdetails;
     private String email;
-
+    private SharedPreferences.Editor editor;
 
     public UserDataSharedPreference(Context context) {
         this.context = context;
@@ -28,7 +28,7 @@ public class UserDataSharedPreference {
     }
 
     public void setUserDetails(UserDetails details) {
-        SharedPreferences.Editor editor = preferences.edit();
+        editor = preferences.edit();
 
         editor.putString(context.getString(R.string.SH_user_name), details.getUserName());
         editor.putString(context.getString(R.string.SH_user_key), details.getKey());
@@ -53,19 +53,23 @@ public class UserDataSharedPreference {
         editor.commit();
     }
 
-    public Set<String> getLocation(){
+    public void setContactNumber(String number) {
+        editor.putString(context.getString(R.string.SH_user_number), number);
+    }
+
+    public Set<String> getLocation() {
 
         Set<String> locationset = new HashSet<String>();
         locationset.add("null");
-        return preferences.getStringSet(context.getString(R.string.SH_user_location),locationset);
+        return preferences.getStringSet(context.getString(R.string.SH_user_location), locationset);
     }
 
-    public String getContactNumber(){
-        return preferences.getString(context.getString(R.string.SH_user_number),"null");
+    public String getContactNumber() {
+        return preferences.getString(context.getString(R.string.SH_user_number), "null");
     }
 
-    public String getUserUid(){
-        return preferences.getString(context.getString(R.string.SH_user_uid),"null");
+    public String getUserUid() {
+        return preferences.getString(context.getString(R.string.SH_user_uid), "null");
     }
 
     public String getUserEmail() {
