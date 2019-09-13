@@ -5,7 +5,6 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -126,10 +125,6 @@ public class LoginActivity extends BaseActivity {
                     showToastMessage(R.string.logged_in);
                 }
                 startLeadsPage();
-/*                if (currentUserDetails.getContactNumber() == null ||
-                        currentUserDetails.getContactNumber().isEmpty()) {
-                    openMobileFragment();
-                } */
             }
 
             @Override
@@ -145,32 +140,6 @@ public class LoginActivity extends BaseActivity {
         startActivityForResult(new Intent(
                 LoginActivity.this, LeadListActivity.class), 101);
     }
-
-//    private void openMobileFragment() {
-//        MobileFragment.newInstance(new MobileFragment.OnNumberClickListener() {
-//            @Override
-//            public void onSubmitClicked(String number) {
-//                contactNumber = "+91" + number.trim();
-//                if (isNetworkConnected()) {
-//                    currentUserDetails.setContactNumber(contactNumber);
-//                    firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
-//                        @Override
-//                        public void onSuccess() {
-//                            startLeadsPage();
-//                        }
-//
-//                        @Override
-//                        public void onFail() {
-//                            openMobileFragment();
-//                        }
-//                    }, currentUserDetails);
-//                } else {
-//                    showToastMessage(R.string.no_internet);
-//                    openMobileFragment();
-//                }
-//            }
-//        }).show(getSupportFragmentManager(), "promo");
-//    }
 
     @Override
     protected void onResume() {

@@ -18,7 +18,7 @@
 
         <activity
             android:name=".Activities.ProfileDetailsActivity"
-            android:label="Profile Details"/>
+            android:label="Profile Details" />
         <activity
             android:name=".Activities.NotificationActivity"
             android:label="Notifications"

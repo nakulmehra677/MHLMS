@@ -46,7 +46,12 @@ dependencies {
 
     //implementation 'com.android.support:multidex:1.0.3'
 
-
     //JSOUP for in app update for android 4.4.4 and below
     implementation 'org.jsoup:jsoup:1.11.1'
+
+
+    implementation 'com.google.android.gms:play-services-base:17.1.0'
+    implementation 'com.google.android.gms:play-services-identity:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.1.0'
 }

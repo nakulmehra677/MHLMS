@@ -280,11 +280,11 @@ public class Firestore {
         });
     }
 
-    public void updateUserDetails(final FirestoreInterfaces.OnUpdateUser updateUser, UserDetails details) {
+    public void updateUserDetails(final FirestoreInterfaces.OnUpdateUser updateUser, String number, String uId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference dRef = db.collection("userList").document(details.getuId());
+        DocumentReference dRef = db.collection("userList").document(uId);
 
-        dRef.update("contactNumber", details.getContactNumber())
+        dRef.update("contactNumber", number)
 
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -314,11 +314,10 @@ public class Firestore {
         });
     }
 
-    public void setWorkingLocation(String location,String uId){
+    public void setWorkingLocation(String location, String uId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("userList").document(uId);
 
-        dRef.update("workingLocation",location);
+        dRef.update("workingLocation", location);
     }
-
 }
