@@ -82,7 +82,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String notDoable = "Not Doable";
     private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
     private Boolean reasonshow = false;
-    private Boolean salesmanreason = false;
+    private Boolean salesmanreason = false,salesnone = false;
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context, String userType) {
         this.leadDetails = leadDetails;
@@ -304,10 +304,24 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         else
             button.setVisibility(View.GONE);
 
+
+
+        String salesRemark ="1. "+ leadDetails.getSalesmanReason().get(0);
+
+        if(salesRemark.matches("1. None")){
+            try {
+                salesnone = true;
+                salesRemark = "1. "+leadDetails.getSalesmanReason().get(1);
+            }catch (Exception e){
+                salesRemark = "";
+                salesmanRemarks.setVisibility(View.GONE);
+            }
+
+        }
+
         expandCallerRemarks();
 
         expandSalesReason();
-
 
         name.setText(leadDetails.getName());
         loan.setText(leadDetails.getLoanAmount());
@@ -320,7 +334,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedTo.setText(leadDetails.getAssignedTo());
         assigner.setText(leadDetails.getAssigner());
         callerRemarks.setText("1. "+leadDetails.getTelecallerRemarks().get(0));
-        salesmanRemarks.setText("1. "+leadDetails.getSalesmanReason().get(0));
+        salesmanRemarks.setText(salesRemark);
         customerRemarks.setText(leadDetails.getSalesmanRemarks());
         status.setText(leadDetails.getStatus());
         workDate.setText(leadDetails.getDate());
@@ -345,11 +359,20 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         saller_remarks_linearlayout.removeAllViewsInLayout();
 
 
+        int t = 1;
+        if(salesnone){
+         t=2;
+        }
 
-        for(int i = 1 ; i < leadDetails.getSalesmanReason().size(); i++){
+        for(int i = t ; i < leadDetails.getSalesmanReason().size(); i++){
 
             TextView textView = new TextView(getContext());
-            textView.setText( (i+1)+". "+leadDetails.getSalesmanReason().get(i));
+            if(salesnone){
+                textView.setText( (i)+". "+leadDetails.getSalesmanReason().get(i));
+            }else {
+                textView.setText( (i+1)+". "+leadDetails.getSalesmanReason().get(i));
+            }
+
             textView.setTextSize(14f);
             textView.setTextColor(getResources().getColor(R.color.coloBlack));
 
