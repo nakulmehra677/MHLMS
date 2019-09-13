@@ -84,9 +84,9 @@ public class ProfileDetailsActivity extends BaseActivity {
                         firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
                             @Override
                             public void onSuccess() {
-                                showToastMessage(R.string.updated);
                                 preference.setContactNumber(strContact);
                                 profilePhone.setText(strContact);
+                                showToastMessage(R.string.updated);
                             }
 
                             @Override

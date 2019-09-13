@@ -56,6 +56,7 @@ public class UserDataSharedPreference {
     public void setContactNumber(String number) {
         editor = preferences.edit();
         editor.putString(context.getString(R.string.SH_user_number), number);
+        editor.commit();
     }
 
     public Set<String> getLocation() {
