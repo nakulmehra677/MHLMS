@@ -214,16 +214,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/reasontextview"
-                    android:drawableEnd="@drawable/ic_arrow_drop_down"
                     android:layout_margin="4dp"
-                    android:text="Reason"
-                    android:drawableRight="@drawable/ic_arrow_drop_down" />
+                    android:text="Reason" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:id="@+id/reasonlinear_layout"/>
+
 
                 <EditText
                     android:id="@+id/telecaller_reason"
