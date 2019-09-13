@@ -7,6 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mudrahome.MHLMS.Firebase.Firestore;
+import com.mudrahome.MHLMS.Fragments.EditPhoneFragment;
+import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
+import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.R;
 //import com.mudrahome.MHLMS.Services.SMSService;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
@@ -14,11 +18,11 @@ import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ProfileDetailsActivity extends AppCompatActivity {
+public class ProfileDetailsActivity extends BaseActivity {
 
     TextView profileName, profileEmail, profilePhone, profileLocation, profileDesignation;
 
-    UserDataSharedPreference userDataSharedPreference;
+    UserDataSharedPreference preference;
     String userDesignation = "";
     String userlocation = "";
 
@@ -33,9 +37,11 @@ public class ProfileDetailsActivity extends AppCompatActivity {
         profilePhone = findViewById(R.id.profileContact);
         profileDesignation = findViewById(R.id.profileDesignation);
 
-        userDataSharedPreference = new UserDataSharedPreference(this);
+        Button button = findViewById(R.id.edit_number);
+
+        preference = new UserDataSharedPreference(this);
         Set<String> userType = new HashSet<>();
-        userType = userDataSharedPreference.getUserType();
+        userType = preference.getUserType();
 
         for (String s : userType) {
             if (userDesignation == "") {
@@ -46,28 +52,43 @@ public class ProfileDetailsActivity extends AppCompatActivity {
         }
 
         Set<String> locationset = new HashSet<>();
-        locationset = userDataSharedPreference.getLocation();
+        locationset = preference.getLocation();
 
         for (String s : locationset) {
             if (userlocation == "") {
                 userlocation = s;
             } else {
-                userlocation = "," + s;
+                userlocation = ", " + s;
             }
         }
 
-        profileName.setText(userDataSharedPreference.getUserName());
-        profileEmail.setText(userDataSharedPreference.getUserEmail());
+        profileName.setText(preference.getUserName());
+        profileEmail.setText(preference.getUserEmail());
         profileDesignation.setText(userDesignation);
-        profilePhone.setText(userDataSharedPreference.getContactNumber());
+        profilePhone.setText(preference.getContactNumber());
         profileLocation.setText(userlocation);
 
-        Button button = findViewById(R.id.send_sms);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                SMSService smsService = new SMSService();
-//                smsService.sendSMS();
+                EditPhoneFragment.newInstance(preference.getContactNumber(), new EditPhoneFragment.OnSubmitClickListener() {
+                    @Override
+                    public void onSubmitClicked(String number) {
+                        Firestore firestore = new Firestore();
+                        ProfileManager manager = new ProfileManager();
+                        firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
+                            @Override
+                            public void onSuccess() {
+                                showToastMessage(R.string.updated);
+                            }
+
+                            @Override
+                            public void onFail() {
+                                showToastMessage(R.string.update_fail);
+                            }
+                        }, number, manager.getuId());
+                    }
+                });
             }
         });
     }

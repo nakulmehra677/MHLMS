@@ -41,8 +41,6 @@ public class ProfileManager extends BaseActivity {
             return true;
     }
 
-
-
     public FirebaseUser getCurrentUser() {
         return currentUser;
     }
