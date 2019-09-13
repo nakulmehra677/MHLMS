@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
@@ -30,6 +32,8 @@ import com.mudrahome.MHLMS.R;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import static com.firebase.ui.auth.AuthUI.TAG;
 
 @SuppressLint("ValidFragment")
 public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
@@ -48,7 +52,7 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
     private TextView dateTextView;
     private TextView timeTextView;
 
-    private LinearLayout reminderLayout;
+    private LinearLayout reminderLayout,reasonlinear_layout;
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinute;
@@ -70,6 +74,7 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
         return f;
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -85,11 +90,31 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
         timeTextView = v.findViewById(R.id.time);
         reminderLayout = v.findViewById(R.id.reminder_layout);
         telecallerReason = v.findViewById(R.id.telecaller_reason);
+        reasonlinear_layout = v.findViewById(R.id.reasonlinear_layout);
+
 
         customerName.setText(leadDetails.getName());
         loanAmount.setText(leadDetails.getLoanAmount());
         contactNumber.setText(leadDetails.getContactNumber());
-        telecallerReason.setText(leadDetails.getTelecallerRemarks());
+
+
+        Log.d(TAG, "onCreateDialog: " + "editdetails called");
+        String remarks = "";
+
+        for (int i = 0 ; i < leadDetails.getTelecallerRemarks().size();i++){
+
+            TextView textView = new TextView(getContext());
+            textView.setText( (i+1)+". "+leadDetails.getTelecallerRemarks().get(i));
+            textView.setTextSize(18f);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+
+            reasonlinear_layout.addView(textView);
+        }
+
+
+        telecallerReason.setText(remarks);
 
         if (leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
                 leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
@@ -195,12 +220,17 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
                         String strName = customerName.getText().toString();
                         String strLoanAmount = loanAmount.getText().toString();
                         String strNumber = contactNumber.getText().toString();
-                        String strReason = telecallerReason.getText().toString();
+
+
+                        ArrayList<String> strReason =leadDetails.getTelecallerRemarks();
+                        strReason.add(telecallerReason.getText().toString());
+
+
 
                         if (!strName.isEmpty() &&
                                 !strLoanAmount.isEmpty() &&
                                 !strNumber.isEmpty() &&
-                                !strReason.isEmpty()) {
+                                strReason.size() != 0) {
 
                             UpdateLead updateLead = new UpdateLead(leadDetails);
 

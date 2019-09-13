@@ -65,11 +65,12 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     private int mYear, mMonth, mDay, mHour, mMinute;
     private int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinute;
 
-    private String strName, strContactNumber, strLoanAmount, strRemarks,
+    private String strName, strContactNumber, strLoanAmount,
             strEmployment = "None", strEmploymentType = "None",
             strLoanType, strPropertyType = "None", strLocation, strAssignTo = "None",
             strAssignToUId, strAssigneeContact, strAssignerContact;
 
+    private ArrayList<String> strRemarks = new ArrayList<>();
     private String strDate, strTime;
     private ProgressDialog progress;
     private LinearLayout selfEmploymentLayout, propertyTypeLayout;
@@ -422,7 +423,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         strName = name.getText().toString().trim();
         strContactNumber = contactNumber.getText().toString().trim();
         strLoanAmount = loanAmount.getText().toString().trim();
-        strRemarks = remarks.getText().toString().trim();
+
+        strRemarks.add(remarks.getText().toString().trim());
     }
 
     private void makeObject(TimeModel timeModel) {
@@ -430,11 +432,13 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String assignerUId = sharedPreferences.getString(getString(R.string.SH_user_uid), "");
         String assignerContact = sharedPreferences.getString(getString(R.string.SH_user_number), "");
 
+        ArrayList<String> salesmanreson = new ArrayList<>();
+        salesmanreson.add("None");
         leadDetails = new LeadDetails(strName, strContactNumber, assignerContact,
                 strAssigneeContact, strLoanAmount, strEmployment, strEmploymentType, strLoanType,
                 strPropertyType, strLocation, strRemarks, timeModel.getDate(), strAssignTo,
                 "Active", assigner, "", "None", strAssignToUId,
-                assignerUId, "None", timeModel.getTime(), timeModel.getDate(),
+                assignerUId, salesmanreson, timeModel.getTime(), timeModel.getDate(),
                 timeModel.getTime(), timeModel.getTimeStamp());
     }
 

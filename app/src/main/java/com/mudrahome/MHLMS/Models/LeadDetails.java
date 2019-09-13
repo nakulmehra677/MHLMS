@@ -6,8 +6,10 @@ import java.util.List;
 public class LeadDetails {
     String name, contactNumber, assignerContact, assigneeContact, loanAmount, loanType, propertyType, employment,
             employmentType, location, salesmanRemarks, date, assignedTo, status, key,
-            assigner, telecallerRemarks, assignedToUId, assignerUId, salesmanReason,
+            assigner, assignedToUId, assignerUId,
             time, assignDate, assignTime;
+
+    ArrayList<String>  telecallerRemarks,salesmanReason;
     long timeStamp;
 
     public String getAssignerContact() {
@@ -80,11 +82,11 @@ public class LeadDetails {
         this.salesmanRemarks = salesmanRemarks;
     }
 
-    public String getTelecallerRemarks() {
+    public ArrayList<String> getTelecallerRemarks() {
         return telecallerRemarks;
     }
 
-    public void setTelecallerRemarks(String telecallerRemarks) {
+    public void setTelecallerRemarks(ArrayList<String> telecallerRemarks) {
         this.telecallerRemarks = telecallerRemarks;
     }
 
@@ -204,11 +206,11 @@ public class LeadDetails {
         this.assignerUId = assignerUId;
     }
 
-    public String getSalesmanReason() {
+    public ArrayList<String> getSalesmanReason() {
         return salesmanReason;
     }
 
-    public void setSalesmanReason(String salesmanReason) {
+    public void setSalesmanReason(ArrayList<String> salesmanReason) {
         this.salesmanReason = salesmanReason;
     }
 
@@ -223,9 +225,9 @@ public class LeadDetails {
     public LeadDetails(String name, String contactNumber, String assignerContact,
                        String assigneeContact, String loanAmount, String employment,
                        String employmentType, String loanType, String propertyType, String location,
-                       String telecallerRemarks, String date, String assignedTo, String status,
+                       ArrayList<String> telecallerRemarks, String date, String assignedTo, String status,
                        String assigner, String key, String salesmanRemarks, String assignedToUId,
-                       String assignerUId, String salesmanReason, String time, String assignDate,
+                       String assignerUId, ArrayList<String> salesmanReason, String time, String assignDate,
                        String assignTime, long timeStamp) {
         this.name = name;
         this.contactNumber = contactNumber;

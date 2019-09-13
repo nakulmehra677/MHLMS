@@ -3,6 +3,9 @@ package com.mudrahome.MHLMS.Managers;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.TimeModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UpdateLead {
     private LeadDetails leadDetails;
 
@@ -18,7 +21,7 @@ public class UpdateLead {
         this.leadDetails = leadDetails;
     }
 
-    public void taleCaller(String customerName, String loanAmount, String contactNumber, String telecallerReason) {
+    public void taleCaller(String customerName, String loanAmount, String contactNumber, ArrayList<String> telecallerReason) {
         leadDetails.setName(customerName);
         leadDetails.setLoanAmount(loanAmount);
         leadDetails.setContactNumber(contactNumber);

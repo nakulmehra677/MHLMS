@@ -165,7 +165,9 @@ public class Firestore {
         Query query = db.collection("leadList");
 
         if (!locationFilter.equals("All"))
+
             query = query.whereEqualTo("location", locationFilter);
+        Log.d("Query", "onSuccess: run location " + locationFilter);
         if (!assignerFilter.equals("All"))
             query = query.whereEqualTo("assigner", assignerFilter);
         if (!assigneeFilter.equals("All"))
@@ -194,6 +196,7 @@ public class Firestore {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
 
+                Log.d("Query", "onSuccess: run");
                 List<LeadDetails> leads = new ArrayList<>();
                 for (QueryDocumentSnapshot document : documentSnapshots) {
                     LeadDetails l = document.toObject(LeadDetails.class);

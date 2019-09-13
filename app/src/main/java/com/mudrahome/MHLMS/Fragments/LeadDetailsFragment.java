@@ -19,6 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +34,7 @@ import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressLint("ValidFragment")
@@ -271,6 +273,34 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         else
             button.setVisibility(View.GONE);
 
+        String remarks = "";
+
+        for(int i = 0 ; i < leadDetails.getTelecallerRemarks().size(); i++){
+
+                if(remarks.equals("")){
+                    remarks = remarks + (i+1) + ". " + leadDetails.getTelecallerRemarks().get(i) ;
+                }else {
+                    remarks = "<br>"+remarks + (i+1) + ". " + leadDetails.getTelecallerRemarks().get(i) ;
+                }
+
+
+        }
+
+        String salesremarks = "";
+
+        for(int i = 0 ; i < leadDetails.getSalesmanReason().size(); i++){
+
+            if(salesremarks.equals("")){
+                salesremarks = salesremarks + (i+1) + ". " + leadDetails.getSalesmanReason().get(i) ;
+            }else {
+                salesremarks = "<br>"+salesremarks + (i+1) + ". " + leadDetails.getSalesmanReason().get(i) ;
+            }
+
+            if(salesremarks.matches("None")){
+                salesremarks = "";
+            }
+
+        }
         name.setText(leadDetails.getName());
         loan.setText(leadDetails.getLoanAmount());
         number.setText(leadDetails.getContactNumber());
@@ -281,8 +311,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         location.setText(leadDetails.getLocation());
         assignedTo.setText(leadDetails.getAssignedTo());
         assigner.setText(leadDetails.getAssigner());
-        callerRemarks.setText(leadDetails.getTelecallerRemarks());
-        salesmanRemarks.setText(leadDetails.getSalesmanReason());
+        callerRemarks.setText(Html.fromHtml(remarks));
+
+        salesmanRemarks.setText(Html.fromHtml(salesremarks));
         customerRemarks.setText(leadDetails.getSalesmanRemarks());
         status.setText(leadDetails.getStatus());
         workDate.setText(leadDetails.getDate());
@@ -355,8 +386,11 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 leadDetails.setTimeStamp(timeModel.getTimeStamp());
                 leadDetails.setBanks(banks);
 
+                ArrayList<String> salesmanReson = new ArrayList<>();
+                salesmanReson.add(dialogSalesmanReason);
+
                 leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
-                leadDetails.setSalesmanReason(dialogSalesmanReason);
+                leadDetails.setSalesmanReason(salesmanReson);
 
                 if (dialogSalesmanRemarks.equals(customerNotInterested))
                     leadDetails.setStatus(getString(R.string.inactive));
