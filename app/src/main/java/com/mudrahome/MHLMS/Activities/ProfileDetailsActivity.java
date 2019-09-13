@@ -3,6 +3,7 @@ package com.mudrahome.MHLMS.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,7 +13,7 @@ import com.mudrahome.MHLMS.Fragments.EditPhoneFragment;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.R;
-//import com.mudrahome.MHLMS.Services.SMSService;
+
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.util.HashSet;
@@ -20,11 +21,13 @@ import java.util.Set;
 
 public class ProfileDetailsActivity extends BaseActivity {
 
-    TextView profileName, profileEmail, profilePhone, profileLocation, profileDesignation;
+    private TextView profileName, profileEmail, profilePhone, profileLocation, profileDesignation;
+    private Button button;
 
-    UserDataSharedPreference preference;
-    String userDesignation = "";
-    String userlocation = "";
+    private UserDataSharedPreference preference;
+    private String userDesignation = "";
+    private String userlocation = "";
+    private String strContact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +40,7 @@ public class ProfileDetailsActivity extends BaseActivity {
         profilePhone = findViewById(R.id.profileContact);
         profileDesignation = findViewById(R.id.profileDesignation);
 
-        Button button = findViewById(R.id.edit_number);
+        button = findViewById(R.id.edit_number);
 
         preference = new UserDataSharedPreference(this);
         Set<String> userType = new HashSet<>();
@@ -71,15 +74,19 @@ public class ProfileDetailsActivity extends BaseActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 EditPhoneFragment.newInstance(preference.getContactNumber(), new EditPhoneFragment.OnSubmitClickListener() {
                     @Override
                     public void onSubmitClicked(String number) {
                         Firestore firestore = new Firestore();
                         ProfileManager manager = new ProfileManager();
+                        strContact = number;
                         firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
                             @Override
                             public void onSuccess() {
                                 showToastMessage(R.string.updated);
+                                preference.setContactNumber(strContact);
+                                profilePhone.setText(strContact);
                             }
 
                             @Override
@@ -88,7 +95,7 @@ public class ProfileDetailsActivity extends BaseActivity {
                             }
                         }, number, manager.getuId());
                     }
-                });
+                }).show(getSupportFragmentManager(), "promo");
             }
         });
     }
