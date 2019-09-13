@@ -22,6 +22,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -64,7 +65,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView assigneeContact;
 
     private Button button;
-    private LinearLayout assignedToLayout, assignerLayout;
+    private LinearLayout assignedToLayout, assignerLayout,caller_remarks_linearlayout,saller_remarks_linearlayout;
     private ProgressDialog progress;
     private Context context;
 
@@ -80,6 +81,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
     private String notDoable = "Not Doable";
     private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
+    private Boolean reasonshow = false;
+    private Boolean salesmanreason = false;
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context, String userType) {
         this.leadDetails = leadDetails;
@@ -148,6 +151,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         bankNames = view.findViewById(R.id.bank_names);
         assignerContact = view.findViewById(R.id.assigner_contact_number);
         assigneeContact = view.findViewById(R.id.assignee_contact_number);
+        caller_remarks_linearlayout = view.findViewById(R.id.caller_remarks_linearlayout);
+        saller_remarks_linearlayout = view.findViewById(R.id.saller_remarks_linearlayout);
 
         assignedToLayout = view.findViewById(R.id.assigned_to_layout);
         assignerLayout = view.findViewById(R.id.assigner_layout);
@@ -215,6 +220,19 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         }
 
+        callerRemarks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!reasonshow){
+                    caller_remarks_linearlayout.setVisibility(View.VISIBLE);
+                    reasonshow = true;
+                }else {
+                    caller_remarks_linearlayout.setVisibility(View.GONE);
+                    reasonshow = false;
+                }
+            }
+        });
+
         number.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -231,6 +249,19 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 //                        permission.requestReadPhoneState();
                 } else
                     permission.requestCallPhone();
+            }
+        });
+
+        salesmanRemarks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!salesmanreason){
+                    saller_remarks_linearlayout.setVisibility(View.VISIBLE);
+                    salesmanreason = true;
+                }else {
+                    saller_remarks_linearlayout.setVisibility(View.GONE);
+                    salesmanreason = false;
+                }
             }
         });
 
@@ -273,34 +304,11 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         else
             button.setVisibility(View.GONE);
 
-        String remarks = "";
+        expandCallerRemarks();
 
-        for(int i = 0 ; i < leadDetails.getTelecallerRemarks().size(); i++){
-
-                if(remarks.equals("")){
-                    remarks = remarks + (i+1) + ". " + leadDetails.getTelecallerRemarks().get(i) ;
-                }else {
-                    remarks = "<br>"+remarks + (i+1) + ". " + leadDetails.getTelecallerRemarks().get(i) ;
-                }
+        expandSalesReason();
 
 
-        }
-
-        String salesremarks = "";
-
-        for(int i = 0 ; i < leadDetails.getSalesmanReason().size(); i++){
-
-            if(salesremarks.equals("")){
-                salesremarks = salesremarks + (i+1) + ". " + leadDetails.getSalesmanReason().get(i) ;
-            }else {
-                salesremarks = "<br>"+salesremarks + (i+1) + ". " + leadDetails.getSalesmanReason().get(i) ;
-            }
-
-            if(salesremarks.matches("None")){
-                salesremarks = "";
-            }
-
-        }
         name.setText(leadDetails.getName());
         loan.setText(leadDetails.getLoanAmount());
         number.setText(leadDetails.getContactNumber());
@@ -311,9 +319,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         location.setText(leadDetails.getLocation());
         assignedTo.setText(leadDetails.getAssignedTo());
         assigner.setText(leadDetails.getAssigner());
-        callerRemarks.setText(Html.fromHtml(remarks));
-
-        salesmanRemarks.setText(Html.fromHtml(salesremarks));
+        callerRemarks.setText("1. "+leadDetails.getTelecallerRemarks().get(0));
+        salesmanRemarks.setText("1. "+leadDetails.getSalesmanReason().get(0));
         customerRemarks.setText(leadDetails.getSalesmanRemarks());
         status.setText(leadDetails.getStatus());
         workDate.setText(leadDetails.getDate());
@@ -330,6 +337,51 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         }
         String bankList = csvBuilder.toString();
         bankNames.setText(bankList);
+    }
+
+    private void expandSalesReason() {
+
+        saller_remarks_linearlayout.removeAllViewsInLayout();
+        saller_remarks_linearlayout.removeAllViewsInLayout();
+
+
+
+        for(int i = 1 ; i < leadDetails.getSalesmanReason().size(); i++){
+
+            TextView textView = new TextView(getContext());
+            textView.setText( (i+1)+". "+leadDetails.getSalesmanReason().get(i));
+            textView.setTextSize(14f);
+            textView.setTextColor(getResources().getColor(R.color.coloBlack));
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+            layoutParams.setMargins(3,0,0,2);
+            textView.setLayoutParams(layoutParams);
+            saller_remarks_linearlayout.addView(textView);
+
+        }
+
+
+
+    }
+
+    private void expandCallerRemarks() {
+
+        caller_remarks_linearlayout.removeAllViews();
+        caller_remarks_linearlayout.removeAllViewsInLayout();
+
+        for (int i = 1 ; i < leadDetails.getTelecallerRemarks().size();i++){
+
+            TextView textView = new TextView(getContext());
+            textView.setText( (i+1)+". "+leadDetails.getTelecallerRemarks().get(i));
+            textView.setTextSize(14f);
+            textView.setTextColor(getResources().getColor(R.color.coloBlack));
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(3,0,0,2);
+            textView.setLayoutParams(layoutParams);
+            caller_remarks_linearlayout.addView(textView);
+        }
+
     }
 
     @Override
@@ -386,7 +438,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 leadDetails.setTimeStamp(timeModel.getTimeStamp());
                 leadDetails.setBanks(banks);
 
-                ArrayList<String> salesmanReson = new ArrayList<>();
+                ArrayList<String> salesmanReson = leadDetails.getSalesmanReason();
                 salesmanReson.add(dialogSalesmanReason);
 
                 leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);

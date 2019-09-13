@@ -51,14 +51,16 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
     private Button timePickerButton;
     private TextView dateTextView;
     private TextView timeTextView;
+    private TextView reasontextview;
 
-    private LinearLayout reminderLayout,reasonlinear_layout;
+    private LinearLayout reminderLayout;
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinute;
 
 
     private LeadDetails leadDetails;
+    private Boolean reasonshow = false;
 
 
     public TelecallerEditLeadFragment(LeadDetails leadDetails, List<UserDetails> salesPersonList, OnSubmitClickListener listener) {
@@ -90,7 +92,8 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
         timeTextView = v.findViewById(R.id.time);
         reminderLayout = v.findViewById(R.id.reminder_layout);
         telecallerReason = v.findViewById(R.id.telecaller_reason);
-        reasonlinear_layout = v.findViewById(R.id.reasonlinear_layout);
+
+        reasontextview = v.findViewById(R.id.reasontextview);
 
 
         customerName.setText(leadDetails.getName());
@@ -98,20 +101,9 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
         contactNumber.setText(leadDetails.getContactNumber());
 
 
-        Log.d(TAG, "onCreateDialog: " + "editdetails called");
+
+
         String remarks = "";
-
-        for (int i = 0 ; i < leadDetails.getTelecallerRemarks().size();i++){
-
-            TextView textView = new TextView(getContext());
-            textView.setText( (i+1)+". "+leadDetails.getTelecallerRemarks().get(i));
-            textView.setTextSize(18f);
-
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
-
-            reasonlinear_layout.addView(textView);
-        }
 
 
         telecallerReason.setText(remarks);

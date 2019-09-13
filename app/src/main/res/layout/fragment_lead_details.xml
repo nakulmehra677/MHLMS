@@ -321,6 +321,7 @@
 
                     </LinearLayout>
 
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -333,11 +334,32 @@
                             android:layout_height="wrap_content"
                             android:text="Caller's remarks : " />
 
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+
                         <TextView
                             android:id="@+id/caller_remarks"
+                            android:layout_marginBottom="3dp"
+                            android:drawableEnd="@drawable/ic_arrow_drop_down"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/coloBlack" />
+                            android:textColor="@color/coloBlack"
+                            android:drawableRight="@drawable/ic_arrow_drop_down"
+                            android:layout_marginRight="10dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:visibility="gone"
+                            android:id="@+id/caller_remarks_linearlayout"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"/>
 
                     </LinearLayout>
 
@@ -360,6 +382,8 @@
                             android:textColor="@color/coloBlack" />
 
                     </LinearLayout>
+
+
 
                 </LinearLayout>
 
@@ -463,11 +487,34 @@
                             android:layout_height="wrap_content"
                             android:text="Salesman's remarks : " />
 
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:paddingHorizontal="8dp"
+                        android:paddingVertical="4dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+
                         <TextView
                             android:id="@+id/salesman_remarks"
+                            android:layout_marginBottom="3dp"
+                            android:drawableEnd="@drawable/ic_arrow_drop_down"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/coloBlack" />
+                            android:textColor="@color/coloBlack"
+                            android:drawableRight="@drawable/ic_arrow_drop_down"
+                            android:layout_marginRight="10dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:visibility="gone"
+                            android:id="@+id/saller_remarks_linearlayout"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"/>
 
                     </LinearLayout>
 
