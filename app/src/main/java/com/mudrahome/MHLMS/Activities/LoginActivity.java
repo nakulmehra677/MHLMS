@@ -5,11 +5,13 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import androidx.cardview.widget.CardView;
 
+import com.google.android.play.core.install.model.AppUpdateType;
 import com.mudrahome.MHLMS.Firebase.Authentication;
 import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
@@ -38,10 +40,13 @@ public class LoginActivity extends BaseActivity {
     private Authentication authentication;
     private com.mudrahome.MHLMS.Firebase.Firestore firestore;
     private ProfileManager profileManager;
-    private String contactNumber;
-    SharedPreferences sharedPreferences;
-
     private boolean newLogin = false;
+
+    AppUpdateManager appUpdateManager;
+    Task<AppUpdateInfo> appUpdateInfoTask;
+
+    private int UPDATE_REQUEST_CODE = 9898;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +54,10 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
 
         if (isNetworkConnected()) {
-            sharedPreferences = getApplicationContext().getSharedPreferences("com.mudrahome.MHLMS", MODE_PRIVATE);
+            appUpdateManager = AppUpdateManagerFactory.create(this);
+            appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+            checkUpdate();
+
             cardView = findViewById(R.id.card);
             mail = findViewById(R.id.mail);
             password = findViewById(R.id.password);
@@ -144,9 +152,9 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isUpdating();
-        else {
+        } else {
             checkLogin();
         }
     }
@@ -169,51 +177,41 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void checkUpdate() {
-        final AppUpdateManager manager = AppUpdateManagerFactory.create(this);
-        Task<AppUpdateInfo> appUpdateInfoTask = manager.getAppUpdateInfo();
-
-        appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
-            @Override
-            public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                        && appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)) {
-                    try {
-                        manager.startUpdateFlowForResult(
-                                appUpdateInfo,
-                                IMMEDIATE,
-                                LoginActivity.this,
-                                17362);
-                    } catch (IntentSender.SendIntentException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    checkLogin();
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                            appUpdateInfo,
+                            AppUpdateType.IMMEDIATE,
+                            this,
+                            UPDATE_REQUEST_CODE);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
                 }
             }
         });
     }
 
     private void isUpdating() {
-        final AppUpdateManager manager = AppUpdateManagerFactory.create(this);
-
-        manager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
-            @Override
-            public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                if (appUpdateInfo.updateAvailability() ==
-                        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-                    try {
-                        manager.startUpdateFlowForResult(
-                                appUpdateInfo,
-                                IMMEDIATE,
-                                LoginActivity.this,
-                                17362);
-                    } catch (IntentSender.SendIntentException e) {
-                        e.printStackTrace();
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(
+                appUpdateInfo -> {
+                    if (appUpdateInfo.updateAvailability()
+                            == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                        try {
+                            appUpdateManager.startUpdateFlowForResult(
+                                    appUpdateInfo,
+                                    IMMEDIATE,
+                                    this,
+                                    UPDATE_REQUEST_CODE);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Log.d("checkUpdate", "not available");
+                        checkLogin();
                     }
-                } else
-                    checkUpdate();
-            }
-        });
+                });
     }
 
 //    private void sendVerificationCode() {
