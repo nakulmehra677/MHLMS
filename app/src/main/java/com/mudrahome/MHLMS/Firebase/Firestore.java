@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Models.LeadDetails;
+import com.mudrahome.MHLMS.Models.LeadFilter;
 import com.mudrahome.MHLMS.Models.OfferDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
@@ -156,24 +157,23 @@ public class Firestore {
         });
     }
 
-    public void getLeadList(final FirestoreInterfaces.OnFetchLeadList listener,
-                            String assign, String userName, DocumentSnapshot lastLead,
-                            String locationFilter, String assignerFilter,
-                            String assigneeFilter, String loanTypeFilter, String statusFilter) {
+    public void downloadLeadList(final FirestoreInterfaces.OnFetchLeadList listener,
+                                 String assign, String userName, DocumentSnapshot lastLead,
+                                 LeadFilter filter) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query query = db.collection("leadList");
 
-        if (!locationFilter.equals("All"))
-            query = query.whereEqualTo("location", locationFilter);
-        if (!assignerFilter.equals("All"))
-            query = query.whereEqualTo("assigner", assignerFilter);
-        if (!assigneeFilter.equals("All"))
-            query = query.whereEqualTo("assignedTo", assigneeFilter);
-        if (!loanTypeFilter.equals("All"))
-            query = query.whereEqualTo("loanType", loanTypeFilter);
-        if (!statusFilter.equals("All"))
-            query = query.whereEqualTo("status", statusFilter);
+        if (!filter.getLocation().equals("All"))
+            query = query.whereEqualTo("location", filter.getLocation());
+        if (!filter.getAssigner().equals("All"))
+            query = query.whereEqualTo("assigner", filter.getAssigner());
+        if (!filter.getAssignee().equals("All"))
+            query = query.whereEqualTo("assignedTo", filter.getAssignee());
+        if (!filter.getLoanType().equals("All"))
+            query = query.whereEqualTo("loanType", filter.getLoanType());
+        if (!filter.getStatus().equals("All"))
+            query = query.whereEqualTo("status", filter.getStatus());
 
         if (lastLead == null) {
             if (!assign.equals("Admin"))
@@ -198,10 +198,10 @@ public class Firestore {
                 List<LeadDetails> leads = new ArrayList<>();
                 for (QueryDocumentSnapshot document : documentSnapshots) {
 
-                    if(document.contains("salesmanRemarks") && document.contains("telecallerRemarks")){
+                    if (document.contains("salesmanRemarks") && document.contains("telecallerRemarks")) {
                         LeadDetails l = document.toObject(LeadDetails.class);
                         leads.add(l);
-                    }else {
+                    } else {
                         ArrayList<String> list = new ArrayList<>();
                         list.add("None");
                         LeadDetails l = document.toObject(LeadDetails.class);
@@ -209,9 +209,6 @@ public class Firestore {
                         l.setTelecallerRemarks(list);
                         leads.add(l);
                     }
-
-
-
                 }
 
                 DocumentSnapshot lastVisible = null;

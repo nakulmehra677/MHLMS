@@ -2,7 +2,6 @@ package com.mudrahome.MHLMS.Activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +22,6 @@ import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.UpdateAvailability;
-import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
@@ -38,8 +36,9 @@ public class LoginActivity extends BaseActivity {
     private CardView cardView;
 
     private Authentication authentication;
-    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
+    private Firestore firestore;
     private ProfileManager profileManager;
+    private String contactNumber;
     private boolean newLogin = false;
 
     AppUpdateManager appUpdateManager;

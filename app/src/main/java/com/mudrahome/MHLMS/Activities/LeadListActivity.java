@@ -31,13 +31,14 @@ import com.mudrahome.MHLMS.Fragments.ChangePasswordFragment;
 import com.mudrahome.MHLMS.Fragments.LeadListFragment;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Interfaces.OnPasswordChange;
+//import com.mudrahome.MHLMS.Managers.LeadManager;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 
-public class LeadListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener  {
+public class LeadListActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ProfileManager profileManager;
     private Toolbar toolbar;
@@ -85,7 +86,6 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
                 } else {
                     openFragment(R.string.salesman);
-
                 }
             }
 
@@ -94,12 +94,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
             }
         }, profileManager.getuId());
-
-
-
     }
-
-
 
     private void openFragment(int userType) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -120,12 +115,11 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 vpPager.setCurrentItem(tab.getPosition());
-                if(tab.getPosition() == 0){
+                if (tab.getPosition() == 0) {
                     openFragment(R.string.admin);
-                }else {
+                } else {
                     openFragment(R.string.salesman);
                 }
-
             }
 
             @Override
@@ -193,7 +187,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     }
                 }).setNegativeButton("No", (dialogInterface, u) -> {
 
-                });
+        });
         androidx.appcompat.app.AlertDialog alert = build.create();
         alert.show();
     }
@@ -248,7 +242,6 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
 }
