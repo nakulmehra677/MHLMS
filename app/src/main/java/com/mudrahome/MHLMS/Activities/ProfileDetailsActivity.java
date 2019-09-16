@@ -54,7 +54,7 @@ public class ProfileDetailsActivity extends BaseActivity {
             }
         }
 
-        Set<String> locationset = new HashSet<>();
+        Set<String> locationset;
         locationset = preference.getLocation();
 
         Log.d("LocationProfile", locationset.toString());
@@ -72,32 +72,23 @@ public class ProfileDetailsActivity extends BaseActivity {
         profilePhone.setText(preference.getContactNumber());
         profileLocation.setText(userlocation);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        button.setOnClickListener(view -> EditPhoneFragment.newInstance(preference.getContactNumber(), number -> {
+            Firestore firestore = new Firestore();
+            ProfileManager manager = new ProfileManager();
+            strContact = number;
+            firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
+                @Override
+                public void onSuccess() {
+                    preference.setContactNumber(strContact);
+                    profilePhone.setText(strContact);
+                    showToastMessage(R.string.updated);
+                }
 
-                EditPhoneFragment.newInstance(preference.getContactNumber(), new EditPhoneFragment.OnSubmitClickListener() {
-                    @Override
-                    public void onSubmitClicked(String number) {
-                        Firestore firestore = new Firestore();
-                        ProfileManager manager = new ProfileManager();
-                        strContact = number;
-                        firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
-                            @Override
-                            public void onSuccess() {
-                                preference.setContactNumber(strContact);
-                                profilePhone.setText(strContact);
-                                showToastMessage(R.string.updated);
-                            }
-
-                            @Override
-                            public void onFail() {
-                                showToastMessage(R.string.update_fail);
-                            }
-                        }, number, manager.getuId());
-                    }
-                }).show(getSupportFragmentManager(), "promo");
-            }
-        });
+                @Override
+                public void onFail() {
+                    showToastMessage(R.string.update_fail);
+                }
+            }, number, manager.getuId());
+        }).show(getSupportFragmentManager(), "promo"));
     }
 }

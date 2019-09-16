@@ -371,33 +371,27 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private FirestoreInterfaces.OnFetchUsersList onFetchSalesPersonList() {
-        return new FirestoreInterfaces.OnFetchUsersList() {
-            @Override
-            public void onListFetched(UserList userList) {
-                progress.dismiss();
-                if (userList.getUserList().size() > 0)
-                    openTelecallerFragment(userList.getUserList());
-                else
-                    Toast.makeText(context, "No Salesmen are present for " +
-                            leadDetails.getLocation() + ".", Toast.LENGTH_SHORT).show();
-            }
+        return userList -> {
+            progress.dismiss();
+            if (userList.getUserList().size() > 0)
+                openTelecallerFragment(userList.getUserList());
+            else
+                Toast.makeText(context, "No Salesmen are present for " +
+                        leadDetails.getLocation() + ".", Toast.LENGTH_SHORT).show();
         };
     }
 
     private void openTelecallerFragment(final List<UserDetails> userList) {
         if (userList.size() != 0) {
             TelecallerEditLeadFragment.newInstance(
-                    leadDetails, userList, new TelecallerEditLeadFragment.OnSubmitClickListener() {
-                        @Override
-                        public void onSubmitClicked(LeadDetails dialogLeadDetails) {
-                            progress = new ProgressDialog(context);
-                            progress.setMessage("Loading..");
-                            progress.setCancelable(false);
-                            progress.setCanceledOnTouchOutside(false);
-                            progress.show();
+                    leadDetails, userList, dialogLeadDetails -> {
+                        progress = new ProgressDialog(context);
+                        progress.setMessage("Loading..");
+                        progress.setCancelable(false);
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
 
-                            firestore.updateLeadDetails(onUpdateLead(), dialogLeadDetails);
-                        }
+                        firestore.updateLeadDetails(onUpdateLead(), dialogLeadDetails);
                     }).show(getFragmentManager(), "promo");
         }
     }
