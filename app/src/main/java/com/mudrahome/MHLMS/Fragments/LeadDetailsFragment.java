@@ -324,29 +324,47 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedOn.setText(leadDetails.getAssignDate());
         assignedAt.setText(leadDetails.getAssignTime());
 
-        firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
-            @Override
-            public void onSuccess(UserDetails userDetails) {
-                assignerContact.setText(userDetails.getContactNumber());
-            }
+        try {
+            firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+                @Override
+                public void onSuccess(UserDetails userDetails) {
 
-            @Override
-            public void fail() {
+                    assignerContact.setText(userDetails.getContactNumber());
 
-            }
-        },leadDetails.getAssignerUId());
 
-        firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
-            @Override
-            public void onSuccess(UserDetails userDetails) {
-                assigneeContact.setText(userDetails.getContactNumber());
-            }
+                }
 
-            @Override
-            public void fail() {
+                @Override
+                public void fail() {
 
-            }
-        },leadDetails.getAssignedToUId());
+                }
+            },leadDetails.getAssignerUId());
+        }catch (Exception e){
+
+        }
+
+
+        try {
+
+            firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+                @Override
+                public void onSuccess(UserDetails userDetails) {
+
+                    assigneeContact.setText(userDetails.getContactNumber());
+
+
+                }
+
+                @Override
+                public void fail() {
+
+                }
+            },leadDetails.getAssignedToUId());
+        }catch (Exception e){
+            assigneeContact.setVisibility(View.INVISIBLE);
+        }
+
+
 
         callerRemarksLayout.removeAllViewsInLayout();
 
