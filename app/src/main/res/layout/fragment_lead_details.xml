@@ -135,6 +135,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/employment_type_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -407,6 +408,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/salesman_remarks_heading_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -417,7 +419,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Salesman's remarks : " />
-
 
                     </LinearLayout>
 
@@ -475,6 +476,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/customer_remarks_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"

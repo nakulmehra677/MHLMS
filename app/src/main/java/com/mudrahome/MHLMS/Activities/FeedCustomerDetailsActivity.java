@@ -253,7 +253,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 if (isNetworkConnected()) {
                     getDetails();
                     if (checkEmpty()) {
-                        checkSMSPermission();
+                        uploadDetails();
                     } else
                         showToastMessage(R.string.fill_details_correctly);
                 } else
@@ -313,30 +313,12 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         }
     }
 
-    private void checkSMSPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.SEND_SMS}, 0);
-
-        } else {
-            sendSMS();
-        }
-    }
-
-    private void sendSMS() {
+    private void startSMSIntent() {
         String currentUserName = sharedPreferences.getString(getString(R.string.SH_user_name), "");
         String currentUserNumber = sharedPreferences.getString(getString(R.string.SH_user_number), "");
 
         String[] currentUserFirstName = currentUserName.split(" ");
         String[] assigneeUserFirstName = strAssignTo.split(" ");
-
-//        SmsManager smsManager = SmsManager.getDefault();
-//        smsManager.sendTextMessage(strContactNumber,
-//                null, "Thanks for connecting mudrahome.com. You were speaking with " +
-//                        currentUserFirstName[0] + " " + currentUserNumber + ". " + assigneeUserFirstName[0] + " " +
-//                        strAssigneeContact + " will connect you for further processing your loan.", null, null);
-
 
         Uri uri = Uri.parse("smsto:" + strContactNumber);
         Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
@@ -344,26 +326,11 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 currentUserFirstName[0] + " " + currentUserNumber + ". " + assigneeUserFirstName[0] + " " +
                 strAssigneeContact + " will connect you for further processing your loan.");
         startActivity(intent);
-        uploadDetails();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 0: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    sendSMS();
-
-                } else {
-                    return;
-                }
-            }
-        }
-    }
 
     private void getSalesmanListByLocation() {
-        /*progress = new ProgressDialog(this);
+        /*progress = new ProgressDialog(t.khis);
         progress.setMessage("Loading..");
         progress.setCancelable(false);
         progress.setCanceledOnTouchOutside(false);
@@ -432,13 +399,12 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String assignerUId = sharedPreferences.getString(getString(R.string.SH_user_uid), "");
         String assignerContact = sharedPreferences.getString(getString(R.string.SH_user_number), "");
 
-        ArrayList<String> salesmanreson = new ArrayList<>();
-        salesmanreson.add("None");
+
         leadDetails = new LeadDetails(strName, strContactNumber, assignerContact,
                 strAssigneeContact, strLoanAmount, strEmployment, strEmploymentType, strLoanType,
                 strPropertyType, strLocation, strRemarks, timeModel.getDate(), strAssignTo,
-                "Active", assigner, "", "None", strAssignToUId,
-                assignerUId, salesmanreson, timeModel.getTime(), timeModel.getDate(),
+                "Active", assigner, "", strAssignToUId,
+                assignerUId, timeModel.getTime(), timeModel.getDate(),
                 timeModel.getTime(), timeModel.getTimeStamp());
     }
 
@@ -446,13 +412,10 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         return new FirestoreInterfaces.OnUploadCustomerDetails() {
             @Override
             public void onDataUploaded() {
-                Log.i("No of Nodes", "Uploaded");
                 progress.dismiss();
                 finish();
-                /*showToastMessage(R.string.data_uploaded);
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);*/
+                showToastMessage(R.string.data_uploaded);
+                startSMSIntent();
             }
 
             @Override

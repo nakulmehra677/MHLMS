@@ -165,9 +165,7 @@ public class Firestore {
         Query query = db.collection("leadList");
 
         if (!locationFilter.equals("All"))
-
             query = query.whereEqualTo("location", locationFilter);
-        Log.d("Query", "onSuccess: run location " + locationFilter);
         if (!assignerFilter.equals("All"))
             query = query.whereEqualTo("assigner", assignerFilter);
         if (!assigneeFilter.equals("All"))

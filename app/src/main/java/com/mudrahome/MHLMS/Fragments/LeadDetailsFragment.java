@@ -63,7 +63,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView assigneeContact;
 
     private Button button;
-    private LinearLayout assignedToLayout, assignerLayout, callerRemarksLayout, sallerRemarksLayout;
+    private LinearLayout assignedToLayout, assignerLayout, callerRemarksLayout, sallerRemarksLayout, employmentTypeLayout;
+    private LinearLayout salesmanRemarksHeadingLayout;
+    private LinearLayout customerRemarksLayout;
     private ProgressDialog progress;
     private Context context;
 
@@ -147,7 +149,11 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assigneeContact = view.findViewById(R.id.assignee_contact_number);
         callerRemarksLayout = view.findViewById(R.id.caller_remarks_layout);
         sallerRemarksLayout = view.findViewById(R.id.sales_remarks_layout);
+        customerRemarksLayout = view.findViewById(R.id.customer_remarks_layout);
 
+        salesmanRemarksHeadingLayout = view.findViewById(R.id.salesman_remarks_heading_layout);
+
+        employmentTypeLayout = view.findViewById(R.id.employment_type_layout);
         assignedToLayout = view.findViewById(R.id.assigned_to_layout);
         assignerLayout = view.findViewById(R.id.assigner_layout);
         button = view.findViewById(R.id.edit_lead_details);
@@ -268,17 +274,50 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         else
             button.setVisibility(View.GONE);
 
+        if (leadDetails.getEmploymentType().equals("None") || leadDetails.getEmploymentType().isEmpty()) {
+            employmentTypeLayout.setVisibility(View.GONE);
+        } else {
+            employmentType.setText(leadDetails.getEmploymentType());
+        }
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2);
+
+        if (leadDetails.getSalesmanReason().size() == 0 && leadDetails.getSalesmanReason().get(0).equals("None")) {
+            salesmanRemarksHeadingLayout.setVisibility(View.GONE);
+            sallerRemarksLayout.setVisibility(View.GONE);
+        } else {
+            View view2 = new View(getContext());
+            view2.setLayoutParams(layoutParams);
+            view2.setBackgroundColor(getResources().getColor(R.color.colorGray));
+            sallerRemarksLayout.addView(view2);
+
+            for (int i = leadDetails.getSalesmanReason().size() - 1; i >= 0; i--) {
+                TextView textView = new TextView(getContext());
+                textView.setTextColor(getResources().getColor(R.color.coloBlack));
+                textView.setText(leadDetails.getSalesmanReason().get(i));
+                sallerRemarksLayout.addView(textView);
+
+                View view3 = new View(getContext());
+                view3.setLayoutParams(layoutParams);
+                view3.setBackgroundColor(getResources().getColor(R.color.colorGray));
+                sallerRemarksLayout.addView(view3);
+            }
+        }
+
+        if (leadDetails.getSalesmanRemarks().equals("None") || leadDetails.getSalesmanRemarks().isEmpty()) {
+            customerRemarksLayout.setVisibility(View.GONE);
+        } else {
+            customerRemarks.setText(leadDetails.getSalesmanRemarks());
+        }
         name.setText(leadDetails.getName());
         loan.setText(leadDetails.getLoanAmount());
         number.setText(leadDetails.getContactNumber());
         employment.setText(leadDetails.getEmployment());
-        employmentType.setText(leadDetails.getEmploymentType());
         loanType.setText(leadDetails.getLoanType());
         propertyType.setText(leadDetails.getPropertyType());
         location.setText(leadDetails.getLocation());
         assignedTo.setText(leadDetails.getAssignedTo());
         assigner.setText(leadDetails.getAssigner());
-        customerRemarks.setText(leadDetails.getSalesmanRemarks());
         status.setText(leadDetails.getStatus());
         workDate.setText(leadDetails.getDate());
         workTime.setText(leadDetails.getTime());
@@ -295,40 +334,21 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         String bankList = csvBuilder.toString();
         bankNames.setText(bankList);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2);
-
         View view = new View(getContext());
         view.setLayoutParams(layoutParams);
         view.setBackgroundColor(getResources().getColor(R.color.colorGray));
         callerRemarksLayout.addView(view);
 
-        for (String s : leadDetails.getTelecallerRemarks()) {
+        for (int i = leadDetails.getTelecallerRemarks().size() - 1; i >= 0; i--) {
             TextView textView = new TextView(getContext());
             textView.setTextColor(getResources().getColor(R.color.coloBlack));
-            textView.setText(s);
+            textView.setText(leadDetails.getTelecallerRemarks().get(i));
             callerRemarksLayout.addView(textView);
 
             View view1 = new View(getContext());
             view1.setLayoutParams(layoutParams);
             view1.setBackgroundColor(getResources().getColor(R.color.colorGray));
             callerRemarksLayout.addView(view1);
-        }
-
-        View view2 = new View(getContext());
-        view2.setLayoutParams(layoutParams);
-        view2.setBackgroundColor(getResources().getColor(R.color.colorGray));
-        sallerRemarksLayout.addView(view2);
-
-        for (String s : leadDetails.getSalesmanReason()) {
-            TextView textView = new TextView(getContext());
-            textView.setTextColor(getResources().getColor(R.color.coloBlack));
-            textView.setText(s);
-            sallerRemarksLayout.addView(textView);
-
-            View view3 = new View(getContext());
-            view3.setLayoutParams(layoutParams);
-            view3.setBackgroundColor(getResources().getColor(R.color.colorGray));
-            sallerRemarksLayout.addView(view3);
         }
     }
 
