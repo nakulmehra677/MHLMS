@@ -197,8 +197,18 @@ public class Firestore {
                 Log.d("Query", "onSuccess: run");
                 List<LeadDetails> leads = new ArrayList<>();
                 for (QueryDocumentSnapshot document : documentSnapshots) {
-                    LeadDetails l = document.toObject(LeadDetails.class);
-                    leads.add(l);
+
+                    if(document.contains("salesmanRemarks") ){
+                        LeadDetails l = document.toObject(LeadDetails.class);
+                        leads.add(l);
+                    }else {
+                        LeadDetails l = document.toObject(LeadDetails.class);
+                        l.setSalesmanRemarks("None");
+                        leads.add(l);
+                    }
+
+
+
                 }
 
                 DocumentSnapshot lastVisible = null;

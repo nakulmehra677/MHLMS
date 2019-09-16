@@ -1,5 +1,7 @@
 package com.mudrahome.MHLMS.Models;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,7 @@ public class LeadDetails {
             assigner, assignedToUId, assignerUId,
             time, assignDate, assignTime;
 
-    ArrayList<String> telecallerRemarks, salesmanReason;
+    ArrayList<String>  telecallerRemarks,salesmanReason;
     long timeStamp;
 
     public String getAssignerContact() {
@@ -226,8 +228,8 @@ public class LeadDetails {
                        String assigneeContact, String loanAmount, String employment,
                        String employmentType, String loanType, String propertyType, String location,
                        ArrayList<String> telecallerRemarks, String date, String assignedTo, String status,
-                       String assigner, String key, String assignedToUId,
-                       String assignerUId, String time, String assignDate,
+                       String assigner, String key, String salesmanRemarks, String assignedToUId,
+                       String assignerUId, ArrayList<String> salesmanReason, String time, String assignDate,
                        String assignTime, long timeStamp) {
         this.name = name;
         this.contactNumber = contactNumber;
@@ -246,6 +248,7 @@ public class LeadDetails {
         this.assigner = assigner;
         this.telecallerRemarks = telecallerRemarks;
         this.salesmanRemarks = salesmanRemarks;
+        this.salesmanReason = salesmanReason;
         this.assignedToUId = assignedToUId;
         this.assignerUId = assignerUId;
         this.time = time;

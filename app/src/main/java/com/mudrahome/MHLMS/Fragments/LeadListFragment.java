@@ -199,16 +199,19 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         firestore.getOffers(new FirestoreInterfaces.FetchOffer() {
                                 @Override
                                 public void onSuccess(List<OfferDetails> details) {
+
                                     if (details.size() > 0) {
+                                        Log.d("LeadListDetails", " size 1   " + leadDetailsList.size());
                                         leadDetailsList.addAll(details);
+                                        Log.d("LeadListDetails", " size 2   " + leadDetailsList.size());
                                         adapter.notifyDataSetChanged();
                                     }
-                                    fetchLeads();
+                                   fetchLeads();
                                 }
 
                                 @Override
                                 public void onFail() {
-                                    fetchLeads();
+                                   fetchLeads();
                                 }
                             },
                 preferences.getUserName(),
@@ -217,6 +220,8 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
     }
 
     private void fetchLeads() {
+
+
         String s;
         if (userType == R.string.telecaller)
             s = "assigner";
@@ -238,8 +243,9 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                     isLastItemFetched = true;
 
                 bottomVisibleItem = lastVisible;
-
+                Log.d("LeadListDetails", " size 3   " + leadDetailsList.size());
                 leadDetailsList.addAll(l);
+                Log.d("LeadListDetails", " size 4   " + leadDetailsList.size());
                 adapter.notifyDataSetChanged();
 
                 if (mySwipeRefreshLayout.isRefreshing())
@@ -280,18 +286,12 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
 
         if (resultCode == 201) {
-            Log.d("fragment", "filter called: " + requestCode);
             assignerFilter = data.getStringExtra("assigner_filter");
             assigneeFilter = data.getStringExtra("assignee_filter");
             locationFilter = data.getStringExtra("location_filter");
             loanTypeFilter = data.getStringExtra("loan_type_filter");
             statusFilter = data.getStringExtra("status_filter");
 
-            Log.d("Fillter", assignerFilter);
-            Log.d("Fillter", assigneeFilter);
-            Log.d("Fillter", locationFilter);
-            Log.d("Fillter", loanTypeFilter);
-            Log.d("Fillter", statusFilter);
 
             leadDetailsList.clear();
             adapter.notifyDataSetChanged();

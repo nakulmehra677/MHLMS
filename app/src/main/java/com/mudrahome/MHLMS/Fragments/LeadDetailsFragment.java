@@ -199,44 +199,38 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         } else {
 
-            assigneeContact.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    PermissionManager permission = new PermissionManager(getContext());
-
-                    if (permission.checkCallPhone()) {
-//                    if (permission.checkReadPhoneState()) {
-//                        if (permission.checkRecordAudio()) {
-                        callCustomer(leadDetails.getAssigneeContact());
-//                        } else
-//                            permission.requestRecordAudio();
-//                    } else
-//                        permission.requestReadPhoneState();
-                    } else
-                        permission.requestCallPhone();
-                }
-            });
-
-        }
-
-        number.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            assigneeContact.setOnClickListener(view12 -> {
 
                 PermissionManager permission = new PermissionManager(getContext());
 
                 if (permission.checkCallPhone()) {
 //                    if (permission.checkReadPhoneState()) {
 //                        if (permission.checkRecordAudio()) {
-                    callCustomer(leadDetails.getContactNumber());
+                    callCustomer(leadDetails.getAssigneeContact());
 //                        } else
 //                            permission.requestRecordAudio();
 //                    } else
 //                        permission.requestReadPhoneState();
                 } else
                     permission.requestCallPhone();
-            }
+            });
+
+        }
+
+        number.setOnClickListener(view1 -> {
+
+            PermissionManager permission = new PermissionManager(getContext());
+
+            if (permission.checkCallPhone()) {
+//                    if (permission.checkReadPhoneState()) {
+//                        if (permission.checkRecordAudio()) {
+                callCustomer(leadDetails.getContactNumber());
+//                        } else
+//                            permission.requestRecordAudio();
+//                    } else
+//                        permission.requestReadPhoneState();
+            } else
+                permission.requestCallPhone();
         });
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -286,7 +280,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2);
 
-        if (leadDetails.getSalesmanReason().size() == 0 && leadDetails.getSalesmanReason().get(0).equals("None")) {
+        if (leadDetails.getSalesmanReason() == null  || leadDetails.getSalesmanReason().get(0).equals("None")) {
             salesmanRemarksHeadingLayout.setVisibility(View.GONE);
             sallerRemarksLayout.setVisibility(View.GONE);
         } else {
@@ -352,6 +346,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
         },leadDetails.getAssignedToUId());
 
+        callerRemarksLayout.removeAllViewsInLayout();
 
 
 
@@ -417,49 +412,46 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private void openSalesmanFragment() {
-        SalesmanEditLeadFragment.newInstance(leadDetails, new SalesmanEditLeadFragment.OnSalesmanSubmitClickListener() {
-            @Override
-            public void onSubmitClicked(String dialogSalesmanRemarks, String dialogSalesmanReason, List<String> banks) {
+        SalesmanEditLeadFragment.newInstance(leadDetails, (dialogSalesmanRemarks, dialogSalesmanReason, banks) -> {
 
-                TimeManager timeManager = new TimeManager();
-                TimeModel timeModel = timeManager.getTime();
+            TimeManager timeManager = new TimeManager();
+            TimeModel timeModel = timeManager.getTime();
 
-                leadDetails.setDate(timeModel.getDate());
-                leadDetails.setTime(timeModel.getTime());
-                leadDetails.setTimeStamp(timeModel.getTimeStamp());
-                leadDetails.setBanks(banks);
+            leadDetails.setDate(timeModel.getDate());
+            leadDetails.setTime(timeModel.getTime());
+            leadDetails.setTimeStamp(timeModel.getTimeStamp());
+            leadDetails.setBanks(banks);
 
-                ArrayList<String> salesmanReson = leadDetails.getSalesmanReason();
-                salesmanReson.add(dialogSalesmanReason);
+            ArrayList<String> salesmanReson = leadDetails.getSalesmanReason();
+            salesmanReson.add(dialogSalesmanReason);
 
-                leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
-                leadDetails.setSalesmanReason(salesmanReson);
+            leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
+            leadDetails.setSalesmanReason(salesmanReson);
 
-                if (dialogSalesmanRemarks.equals(customerNotInterested))
-                    leadDetails.setStatus(getString(R.string.inactive));
-                else if (dialogSalesmanRemarks.equals(documentPicked))
-                    leadDetails.setStatus(getString(R.string.work_in_progress));
-                else if (dialogSalesmanRemarks.equals(documentPickedFileLoggedIn))
-                    leadDetails.setStatus(getString(R.string.closed));
-                else if (dialogSalesmanRemarks.equals(customerFollowUp))
-                    leadDetails.setStatus(getString(R.string.follow_up));
-                else if (dialogSalesmanRemarks.equals(customerNotContactable))
-                    leadDetails.setStatus(getString(R.string.inactive));
-                else if (dialogSalesmanRemarks.equals(customerInterestedButDocumentPending))
-                    leadDetails.setStatus(getString(R.string.work_in_progress));
-                else if (dialogSalesmanRemarks.equals(notDoable))
-                    leadDetails.setStatus(getString(R.string.not_doable));
-                else
-                    leadDetails.setStatus(getString(R.string.active));
+            if (dialogSalesmanRemarks.equals(customerNotInterested))
+                leadDetails.setStatus(getString(R.string.inactive));
+            else if (dialogSalesmanRemarks.equals(documentPicked))
+                leadDetails.setStatus(getString(R.string.work_in_progress));
+            else if (dialogSalesmanRemarks.equals(documentPickedFileLoggedIn))
+                leadDetails.setStatus(getString(R.string.closed));
+            else if (dialogSalesmanRemarks.equals(customerFollowUp))
+                leadDetails.setStatus(getString(R.string.follow_up));
+            else if (dialogSalesmanRemarks.equals(customerNotContactable))
+                leadDetails.setStatus(getString(R.string.inactive));
+            else if (dialogSalesmanRemarks.equals(customerInterestedButDocumentPending))
+                leadDetails.setStatus(getString(R.string.work_in_progress));
+            else if (dialogSalesmanRemarks.equals(notDoable))
+                leadDetails.setStatus(getString(R.string.not_doable));
+            else
+                leadDetails.setStatus(getString(R.string.active));
 
-                progress = new ProgressDialog(context);
-                progress.setMessage("Loading..");
-                progress.setCancelable(false);
-                progress.setCanceledOnTouchOutside(false);
-                progress.show();
+            progress = new ProgressDialog(context);
+            progress.setMessage("Loading..");
+            progress.setCancelable(false);
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
 
-                firestore.updateLeadDetails(onUpdateLead(), leadDetails);
-            }
+            firestore.updateLeadDetails(onUpdateLead(), leadDetails);
         }).show(getFragmentManager(), "promo");
     }
 

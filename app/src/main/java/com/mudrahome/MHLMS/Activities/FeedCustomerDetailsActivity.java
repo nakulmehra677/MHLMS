@@ -342,7 +342,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private boolean checkEmpty() {
         if (strName.isEmpty() || strContactNumber.length() != 10 || strLoanAmount.isEmpty() ||
-                strRemarks.isEmpty() || strAssignTo.equals("None") || strEmployment.equals("None")) {
+                strRemarks.size() == 0 || strAssignTo.equals("None") || strEmployment.equals("None")) {
             return false;
         }
         if (strEmployment.equals("Self Employed")) {
@@ -391,7 +391,10 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         strContactNumber = contactNumber.getText().toString().trim();
         strLoanAmount = loanAmount.getText().toString().trim();
 
-        strRemarks.add(remarks.getText().toString().trim());
+        if(!remarks.getText().toString().isEmpty()){
+            strRemarks.add(remarks.getText().toString().trim());
+        }
+
     }
 
     private void makeObject(TimeModel timeModel) {
@@ -399,12 +402,13 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         String assignerUId = sharedPreferences.getString(getString(R.string.SH_user_uid), "");
         String assignerContact = sharedPreferences.getString(getString(R.string.SH_user_number), "");
 
-
+        ArrayList<String> salesmanreson = new ArrayList<>();
+        salesmanreson.add("None");
         leadDetails = new LeadDetails(strName, strContactNumber, assignerContact,
                 strAssigneeContact, strLoanAmount, strEmployment, strEmploymentType, strLoanType,
                 strPropertyType, strLocation, strRemarks, timeModel.getDate(), strAssignTo,
-                "Active", assigner, "", strAssignToUId,
-                assignerUId, timeModel.getTime(), timeModel.getDate(),
+                "Active", assigner, "", "None", strAssignToUId,
+                assignerUId, salesmanreson, timeModel.getTime(), timeModel.getDate(),
                 timeModel.getTime(), timeModel.getTimeStamp());
     }
 

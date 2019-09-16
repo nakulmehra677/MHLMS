@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mudrahome.MHLMS">
 
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -18,7 +19,8 @@
 
         <activity
             android:name=".Activities.ProfileDetailsActivity"
-            android:label="Profile Details" />
+            android:label="Profile Details"
+            android:parentActivityName=".Activities.ProfileDetailsActivity"/>
         <activity
             android:name=".Activities.NotificationActivity"
             android:label="Notifications"
