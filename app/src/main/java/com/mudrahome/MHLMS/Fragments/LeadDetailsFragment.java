@@ -280,10 +280,12 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2);
 
+        sallerRemarksLayout.removeAllViewsInLayout();
         if (leadDetails.getSalesmanReason() == null  || leadDetails.getSalesmanReason().get(0).equals("None")) {
             salesmanRemarksHeadingLayout.setVisibility(View.GONE);
             sallerRemarksLayout.setVisibility(View.GONE);
         } else {
+
             View view2 = new View(getContext());
             view2.setLayoutParams(layoutParams);
             view2.setBackgroundColor(getResources().getColor(R.color.colorGray));
