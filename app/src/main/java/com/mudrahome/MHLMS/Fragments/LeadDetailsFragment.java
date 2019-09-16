@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Managers.PermissionManager;
 import com.mudrahome.MHLMS.Models.TimeModel;
@@ -81,6 +82,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
     private String notDoable = "Not Doable";
     private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
+
+
+
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context, String userType) {
         this.leadDetails = leadDetails;
@@ -323,8 +327,33 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         workTime.setText(leadDetails.getTime());
         assignedOn.setText(leadDetails.getAssignDate());
         assignedAt.setText(leadDetails.getAssignTime());
-        assignerContact.setText(leadDetails.getAssignerContact());
-        assigneeContact.setText(leadDetails.getAssigneeContact());
+
+        firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+            @Override
+            public void onSuccess(UserDetails userDetails) {
+                assignerContact.setText(userDetails.getContactNumber());
+            }
+
+            @Override
+            public void fail() {
+
+            }
+        },leadDetails.getAssignerUId());
+
+        firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+            @Override
+            public void onSuccess(UserDetails userDetails) {
+                assigneeContact.setText(userDetails.getContactNumber());
+            }
+
+            @Override
+            public void fail() {
+
+            }
+        },leadDetails.getAssignedToUId());
+
+
+
 
         StringBuilder csvBuilder = new StringBuilder();
         for (String bank : leadDetails.getBanks()) {
@@ -362,33 +391,27 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private FirestoreInterfaces.OnFetchUsersList onFetchSalesPersonList() {
-        return new FirestoreInterfaces.OnFetchUsersList() {
-            @Override
-            public void onListFetched(UserList userList) {
-                progress.dismiss();
-                if (userList.getUserList().size() > 0)
-                    openTelecallerFragment(userList.getUserList());
-                else
-                    Toast.makeText(context, "No Salesmen are present for " +
-                            leadDetails.getLocation() + ".", Toast.LENGTH_SHORT).show();
-            }
+        return userList -> {
+            progress.dismiss();
+            if (userList.getUserList().size() > 0)
+                openTelecallerFragment(userList.getUserList());
+            else
+                Toast.makeText(context, "No Salesmen are present for " +
+                        leadDetails.getLocation() + ".", Toast.LENGTH_SHORT).show();
         };
     }
 
     private void openTelecallerFragment(final List<UserDetails> userList) {
         if (userList.size() != 0) {
             TelecallerEditLeadFragment.newInstance(
-                    leadDetails, userList, new TelecallerEditLeadFragment.OnSubmitClickListener() {
-                        @Override
-                        public void onSubmitClicked(LeadDetails dialogLeadDetails) {
-                            progress = new ProgressDialog(context);
-                            progress.setMessage("Loading..");
-                            progress.setCancelable(false);
-                            progress.setCanceledOnTouchOutside(false);
-                            progress.show();
+                    leadDetails, userList, dialogLeadDetails -> {
+                        progress = new ProgressDialog(context);
+                        progress.setMessage("Loading..");
+                        progress.setCancelable(false);
+                        progress.setCanceledOnTouchOutside(false);
+                        progress.show();
 
-                            firestore.updateLeadDetails(onUpdateLead(), dialogLeadDetails);
-                        }
+                        firestore.updateLeadDetails(onUpdateLead(), dialogLeadDetails);
                     }).show(getFragmentManager(), "promo");
         }
     }
