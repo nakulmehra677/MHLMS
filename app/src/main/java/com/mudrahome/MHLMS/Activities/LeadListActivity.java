@@ -191,12 +191,9 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                         //editor.clear();
                         onBackPressed();
                     }
-                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int u) {
+                }).setNegativeButton("No", (dialogInterface, u) -> {
 
-            }
-        });
+                });
         androidx.appcompat.app.AlertDialog alert = build.create();
         alert.show();
     }
@@ -205,27 +202,24 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         final UserDataSharedPreference userDataSharedPreference =
                 new UserDataSharedPreference(LeadListActivity.this);
 
-        ChangePasswordFragment.newInstance(new ChangePasswordFragment.OnPasswordChangedClicked() {
-            @Override
-            public void onPasswordChange(String oldPassword, String newPassword) {
+        ChangePasswordFragment.newInstance((oldPassword, newPassword) -> {
 
-                showProgressDialog("Please wait...", LeadListActivity.this);
-                Authentication authentication = new Authentication(LeadListActivity.this);
-                authentication.UpdatePassword(
-                        oldPassword,
-                        newPassword,
-                        userDataSharedPreference.getUserEmail(),
-                        new OnPasswordChange() {
-                            @Override
-                            public void onSucess(String result) {
+            showProgressDialog("Please wait...", LeadListActivity.this);
+            Authentication authentication = new Authentication(LeadListActivity.this);
+            authentication.UpdatePassword(
+                    oldPassword,
+                    newPassword,
+                    userDataSharedPreference.getUserEmail(),
+                    new OnPasswordChange() {
+                        @Override
+                        public void onSucess(String result) {
 
-                                hideKeyboard(LeadListActivity.this);
-                                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                                dismissProgressDialog();
+                            hideKeyboard(LeadListActivity.this);
+                            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+                            dismissProgressDialog();
 
-                            }
-                        });
-            }
+                        }
+                    });
         }).show(getSupportFragmentManager(), "changepassword");
     }
 

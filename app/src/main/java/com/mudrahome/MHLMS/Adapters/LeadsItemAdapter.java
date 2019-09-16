@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.Toast;
 
 import com.mudrahome.MHLMS.Fragments.LeadDetailsFragment;
 import com.mudrahome.MHLMS.Models.LeadDetails;
@@ -100,12 +101,9 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 } else
                     vh2.assign.setVisibility(View.GONE);
 
-                vh2.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context, currentUserType);
-                        leadDetailsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "f");
-                    }
+                vh2.itemView.setOnClickListener(view -> {
+                    LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, context, currentUserType);
+                    leadDetailsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "f");
                 });
                 break;
         }

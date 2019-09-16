@@ -218,14 +218,10 @@ public class Firestore {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("userList").document(uId);
 
-        dRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @SuppressLint("RestrictedApi")
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
+        dRef.get().addOnSuccessListener(documentSnapshot -> {
 
-                UserDetails userDetails = documentSnapshot.toObject(UserDetails.class);
-                onGetUserDetails.onSuccess(userDetails);
-            }
+            UserDetails userDetails = documentSnapshot.toObject(UserDetails.class);
+            onGetUserDetails.onSuccess(userDetails);
         });
     }
 

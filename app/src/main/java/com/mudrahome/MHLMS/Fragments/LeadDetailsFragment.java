@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Managers.PermissionManager;
 import com.mudrahome.MHLMS.Models.TimeModel;
@@ -79,6 +80,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
     private String notDoable = "Not Doable";
     private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
+
+
+
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context, String userType) {
         this.leadDetails = leadDetails;
@@ -284,8 +288,33 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         workTime.setText(leadDetails.getTime());
         assignedOn.setText(leadDetails.getAssignDate());
         assignedAt.setText(leadDetails.getAssignTime());
-        assignerContact.setText(leadDetails.getAssignerContact());
-        assigneeContact.setText(leadDetails.getAssigneeContact());
+
+        firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+            @Override
+            public void onSuccess(UserDetails userDetails) {
+                assignerContact.setText(userDetails.getContactNumber());
+            }
+
+            @Override
+            public void fail() {
+
+            }
+        },leadDetails.getAssignerUId());
+
+        firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+            @Override
+            public void onSuccess(UserDetails userDetails) {
+                assigneeContact.setText(userDetails.getContactNumber());
+            }
+
+            @Override
+            public void fail() {
+
+            }
+        },leadDetails.getAssignedToUId());
+
+
+
 
         StringBuilder csvBuilder = new StringBuilder();
         for (String bank : leadDetails.getBanks()) {

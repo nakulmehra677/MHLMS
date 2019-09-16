@@ -57,11 +57,12 @@ public class ProfileDetailsActivity extends BaseActivity {
         Set<String> locationset = new HashSet<>();
         locationset = preference.getLocation();
 
+        Log.d("LocationProfile", locationset.toString());
         for (String s : locationset) {
             if (userlocation == "") {
                 userlocation = s;
             } else {
-                userlocation = ", " + s;
+                userlocation += "," + s;
             }
         }
 
