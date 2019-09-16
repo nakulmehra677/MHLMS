@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.util.Log;
 
+import com.mudrahome.MHLMS.Activities.LeadListActivity;
 import com.mudrahome.MHLMS.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -26,17 +27,27 @@ import static android.app.Notification.DEFAULT_VIBRATE;
 public class NotificationService extends FirebaseMessagingService {
 
     int id = 12;
+    PendingIntent pendingIntent;
+    Intent resultIntent;
 
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Log.i("NotificationMsg", "sgdg" + remoteMessage.getNotification().getTitle());
+        Log.i("NotificationMsg", "MessageNotification " + remoteMessage.getNotification().getBody());
 
         showNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
     }
 
     public void showNotification(String title, String message) {
+
+
+        resultIntent = new Intent(NotificationService.this, LeadListActivity.class);
+
+
+
+        pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notification_channel_id), "User Notification", NotificationManager.IMPORTANCE_HIGH);
@@ -60,7 +71,8 @@ public class NotificationService extends FirebaseMessagingService {
                 .setVibrate(new long[]{100, 1000, 100, 1000})
                 .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
-                .setContentText(message);
+                .setContentText(message)
+                .setContentIntent(pendingIntent);
 
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(NotificationService.this);
         managerCompat.notify(id, builder.build());
