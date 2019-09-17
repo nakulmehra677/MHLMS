@@ -168,6 +168,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             assignerContact.setClickable(false);
             assignerContact.setCompoundDrawables(null, null, null, null);
             assignerContact.setText("Not available");
+
         } else {
 
             try{
@@ -179,6 +180,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                                 assignerContact.setText(userDetails.getContactNumber());
                             }catch (Exception e){
                                 assignerContact.setText("Not available");
+
+                                assignerContact.setClickable(false);
+                                assignerContact.setCompoundDrawables(null, null, null, null);
                             }
 
                     }
@@ -190,6 +194,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 },leadDetails.getAssignerUId());
             }catch (Exception e){
                 assignerContact.setText("Not available");
+
+                assignerContact.setClickable(false);
+                assignerContact.setCompoundDrawables(null, null, null, null);
             }
 
 
@@ -228,6 +235,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                             assigneeContact.setText(userDetails.getContactNumber());
                         }catch (Exception e){
                             assigneeContact.setText("Not available");
+
+                            assigneeContact.setClickable(false);
+                            assigneeContact.setCompoundDrawables(null, null, null, null);
                             Log.d("AssigneeContact", " error " + e.getMessage());
                         }
 
@@ -242,6 +252,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 },leadDetails.getAssignedToUId());
             }catch (Exception e){
                 assigneeContact.setText("Not available");
+
+                assigneeContact.setClickable(false);
+                assigneeContact.setCompoundDrawables(null, null, null, null);
+
             }
 
 
