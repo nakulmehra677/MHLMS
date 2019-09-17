@@ -312,7 +312,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
         }
     }
-//dsrgftrtg
+
     private void startSMSIntent() {
         String currentUserName = sharedPreferences.getString(getString(R.string.SH_user_name), "");
         String currentUserNumber = sharedPreferences.getString(getString(R.string.SH_user_number), "");

@@ -26,8 +26,6 @@ public class FirestoreInterfaces {
     public interface OnFetchLeadList {
         void onLeadAdded(List<LeadDetails> l, DocumentSnapshot lastVisible);
 
-        void onLeadChanged(LeadDetails l);
-
         void onFailer();
     }
 
@@ -44,26 +42,31 @@ public class FirestoreInterfaces {
 
     public interface OnRemoveAd {
         void onSuccess();
+
         void onFail();
     }
 
     public interface OnUploadOffer {
         void onSuccess();
+
         void onFail();
     }
 
     public interface OnUpdateUser {
         void onSuccess();
+
         void onFail();
     }
 
     public interface OnUploadCustomerDetails {
         void onDataUploaded();
+
         void failedToUpload();
     }
 
     public interface OnUpdateLead {
         void onLeadUpdated();
+
         void onFailer();
     }
 }

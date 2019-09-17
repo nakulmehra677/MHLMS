@@ -28,10 +28,7 @@ import com.mudrahome.MHLMS.Activities.FilterActivity;
 import com.mudrahome.MHLMS.Activities.StartOfferActivity;
 import com.mudrahome.MHLMS.Adapters.LeadsItemAdapter;
 import com.mudrahome.MHLMS.ExtraViews;
-import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
-import com.mudrahome.MHLMS.Interfaces.ManagerInterfaces;
-import com.mudrahome.MHLMS.Managers.LeadManager;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.LeadFilter;
 import com.mudrahome.MHLMS.Models.OfferDetails;
@@ -49,14 +46,13 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ProgressBar progressBar, firstPageProgressBar;
 
-    private Firestore firestore;
-    private LeadManager leadManager;
+    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
 
     private SharedPreferences sharedPreferences;
     //    private ProfileManager profileManager;
     private Fragment fragment = null;
 
-    private List<Object> leadList = new ArrayList<>();
+    private List<Object> leadDetailsList = new ArrayList<>();
     private LeadsItemAdapter adapter;
     private boolean isSrolling;
     private boolean isLastItemFetched;
@@ -95,13 +91,12 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         filter = v.findViewById(R.id.filter1);
 
         preferences = new UserDataSharedPreference(getContext());
-        firestore = new Firestore(getContext());
-        leadManager = new LeadManager();
+        firestore = new com.mudrahome.MHLMS.Firebase.Firestore(getContext());
 
         linearLayoutManager = new LinearLayoutManager(getContext());
         filter.setOnClickListener(this);
 
-        adapter = new LeadsItemAdapter(leadList, getContext(), getString(userType));
+        adapter = new LeadsItemAdapter(leadDetailsList, getContext(), getString(userType));
         recyclerView.setAdapter(adapter);
         setLayoutByUser();
 
@@ -146,7 +141,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onRefresh() {
-                        leadList.clear();
+                        leadDetailsList.clear();
                         adapter.notifyDataSetChanged();
                         isLastItemFetched = false;
                         bottomVisibleItem = null;
@@ -196,7 +191,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                 }
             });
         }
-        leadList.clear();
+        leadDetailsList.clear();
         getOffer();
     }
 
@@ -205,11 +200,8 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         firestore.getOffers(new FirestoreInterfaces.FetchOffer() {
                                 @Override
                                 public void onSuccess(List<OfferDetails> details) {
-
                                     if (details.size() > 0) {
-                                        Log.d("LeadListDetails", " size 1   " + leadList.size());
-                                        leadList.addAll(details);
-                                        Log.d("LeadListDetails", " size 2   " + leadList.size());
+                                        leadDetailsList.addAll(details);
                                         adapter.notifyDataSetChanged();
                                     }
                                     fetchLeads();
@@ -226,6 +218,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
     }
 
     private void fetchLeads() {
+        Log.d("FecthLead", locationFilter + assignerFilter + assigneeFilter + loanTypeFilter + statusFilter);
         String s;
         if (userType == R.string.telecaller)
             s = "assigner";
@@ -235,13 +228,21 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
             s = "Admin";
 
         LeadFilter leadFilter = new LeadFilter(locationFilter, assignerFilter, assigneeFilter, loanTypeFilter, statusFilter);
-        leadManager.getLeadLists(new ManagerInterfaces.GetLeadListListener() {
+        firestore.downloadLeadList(onFetchLeadList(),
+                s, preferences.getUserName(), bottomVisibleItem,
+                leadFilter);
+    }
+
+    private FirestoreInterfaces.OnFetchLeadList onFetchLeadList() {
+        return new FirestoreInterfaces.OnFetchLeadList() {
             @Override
-            public void onSuccess(List<LeadDetails> leadDetailsList) {
-                if (leadDetailsList.size() < 20)
+            public void onLeadAdded(List<LeadDetails> l, DocumentSnapshot lastVisible) {
+                if (l.size() < 20)
                     isLastItemFetched = true;
 
-                leadDetailsList.addAll(leadDetailsList);
+                bottomVisibleItem = lastVisible;
+
+                leadDetailsList.addAll(l);
                 adapter.notifyDataSetChanged();
 
                 if (mySwipeRefreshLayout.isRefreshing())
@@ -252,13 +253,16 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
             }
 
             @Override
-            public void onFail() {
+            public void onFailer() {
                 extraViews.showToast(R.string.no_internet, getContext());
+
+                //if (progress.isShowing())
+                //  progress.dismiss();
                 mySwipeRefreshLayout.setRefreshing(false);
                 firstPageProgressBar.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
             }
-        }, s, preferences.getUserName(), leadFilter);
+        };
     }
 
     @Override
@@ -268,21 +272,26 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
 
         if (resultCode == 201) {
-            
+            Log.d("fragment", "filter called: " + requestCode);
             assignerFilter = data.getStringExtra("assigner_filter");
             assigneeFilter = data.getStringExtra("assignee_filter");
             locationFilter = data.getStringExtra("location_filter");
             loanTypeFilter = data.getStringExtra("loan_type_filter");
             statusFilter = data.getStringExtra("status_filter");
 
+            Log.d("Fillter", assignerFilter);
+            Log.d("Fillter", assigneeFilter);
+            Log.d("Fillter", locationFilter);
+            Log.d("Fillter", loanTypeFilter);
+            Log.d("Fillter", statusFilter);
 
-            leadList.clear();
+            leadDetailsList.clear();
             adapter.notifyDataSetChanged();
             isLastItemFetched = false;
             bottomVisibleItem = null;
             firstPageProgressBar.setVisibility(View.VISIBLE);
 
-            getOffer();
+            fetchLeads();
         }
     }
 
