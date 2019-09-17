@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -28,11 +29,13 @@ import com.mudrahome.MHLMS.Adapters.LeadListPagerAdapter;
 import com.mudrahome.MHLMS.Firebase.Authentication;
 import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Fragments.ChangePasswordFragment;
+import com.mudrahome.MHLMS.Fragments.LeadDetailsFragment;
 import com.mudrahome.MHLMS.Fragments.LeadListFragment;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Interfaces.OnPasswordChange;
 //import com.mudrahome.MHLMS.Managers.LeadManager;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
+import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
@@ -47,6 +50,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,8 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView.setNavigationItemSelectedListener(this);
 
+        intent = getIntent();
+
         firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
             @Override
             public void onSuccess(UserDetails userDetails) {
@@ -78,14 +84,70 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
                 if (profileManager.getCurrentUserType().contains(getString(R.string.admin)) &&
                         profileManager.getCurrentUserType().contains(getString(R.string.salesman))) {
-                    openViewPager(R.string.admin_and_salesman);
+
+                    if(intent.hasExtra("UIDNotification")){
+
+                        String uid = intent.getStringExtra("UIDNotification");
+
+                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
+                            @Override
+                            public void onSucces(LeadDetails leadDetails) {
+                                openLeadDetailsFragment(leadDetails,getString(R.string.admin_and_salesman));
+                            }
+                        },uid);
+                    }else {
+                        openViewPager(R.string.admin_and_salesman);
+                    }
+
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.telecaller))) {
-                    openFragment(R.string.telecaller);
+                    if(intent.hasExtra("UIDNotification")){
+
+                        String uid = intent.getStringExtra("UIDNotification");
+
+                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
+                            @Override
+                            public void onSucces(LeadDetails leadDetails) {
+                                openLeadDetailsFragment(leadDetails,getString(R.string.telecaller));
+                            }
+                        },uid);
+                    }else {
+                        openFragment(R.string.telecaller);
+                    }
+
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.admin))) {
-                    openFragment(R.string.admin);
+
+                    if(intent.hasExtra("UIDNotification")){
+
+                        String uid = intent.getStringExtra("UIDNotification");
+
+                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
+                            @Override
+                            public void onSucces(LeadDetails leadDetails) {
+                                openLeadDetailsFragment(leadDetails,getString(R.string.admin));
+                            }
+                        },uid);
+                    }else {
+                        openFragment(R.string.admin);
+                    }
+
 
                 } else {
-                    openFragment(R.string.salesman);
+
+                    if(intent.hasExtra("UIDNotification")){
+
+                        String uid = intent.getStringExtra("UIDNotification");
+
+                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
+                            @Override
+                            public void onSucces(LeadDetails leadDetails) {
+                                openLeadDetailsFragment(leadDetails,getString(R.string.salesman));
+                            }
+                        },uid);
+                    }else {
+                        openFragment(R.string.salesman);
+                    }
+
+
                 }
             }
 
@@ -94,7 +156,18 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
             }
         }, profileManager.getuId());
+
+
+
+
+
     }
+
+    private void openLeadDetailsFragment(LeadDetails model,String currentUserType){
+        LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, LeadListActivity.this, currentUserType);
+        leadDetailsFragment.show((LeadListActivity.this).getSupportFragmentManager(), "f");
+    }
+
 
     private void openFragment(int userType) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

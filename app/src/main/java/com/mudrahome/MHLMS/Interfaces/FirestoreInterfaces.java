@@ -69,4 +69,8 @@ public class FirestoreInterfaces {
 
         void onFailer();
     }
+
+    public interface OnLeadDetails{
+        void onSucces(LeadDetails leadDetails);
+    }
 }

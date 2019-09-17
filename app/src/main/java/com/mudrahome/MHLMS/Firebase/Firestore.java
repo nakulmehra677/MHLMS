@@ -190,34 +190,31 @@ public class Firestore {
                     .limit(20);
         }
 
-        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
+        query.get().addOnSuccessListener(documentSnapshots -> {
 
-                Log.d("Query", "onSuccess: run");
-                List<LeadDetails> leads = new ArrayList<>();
-                for (QueryDocumentSnapshot document : documentSnapshots) {
+            Log.d("Query", "onSuccess: run");
+            List<LeadDetails> leads = new ArrayList<>();
+            for (QueryDocumentSnapshot document : documentSnapshots) {
 
-                    if (document.contains("salesmanRemarks") && document.contains("telecallerRemarks")) {
-                        LeadDetails l = document.toObject(LeadDetails.class);
-                        leads.add(l);
-                    } else {
-                        ArrayList<String> list = new ArrayList<>();
-                        list.add("None");
-                        LeadDetails l = document.toObject(LeadDetails.class);
-                        l.setSalesmanRemarks("None");
-                        l.setTelecallerRemarks(list);
-                        leads.add(l);
-                    }
+                if (document.contains("salesmanRemarks") && document.contains("telecallerRemarks")) {
+                    LeadDetails l = document.toObject(LeadDetails.class);
+                    leads.add(l);
+                } else {
+                    ArrayList<String> list = new ArrayList<>();
+                    list.add("None");
+                    LeadDetails l = document.toObject(LeadDetails.class);
+                    l.setSalesmanRemarks("None");
+                    l.setTelecallerRemarks(list);
+                    leads.add(l);
                 }
-
-                DocumentSnapshot lastVisible = null;
-                if (documentSnapshots.size() > 0)
-                    lastVisible = documentSnapshots.getDocuments()
-                            .get(documentSnapshots.size() - 1);
-
-                listener.onLeadAdded(leads, lastVisible);
             }
+
+            DocumentSnapshot lastVisible = null;
+            if (documentSnapshots.size() > 0)
+                lastVisible = documentSnapshots.getDocuments()
+                        .get(documentSnapshots.size() - 1);
+
+            listener.onLeadAdded(leads, lastVisible);
         });
     }
 
@@ -323,5 +320,16 @@ public class Firestore {
         DocumentReference dRef = db.collection("userList").document(uId);
 
         dRef.update("workingLocation", location);
+    }
+
+    public void getLeadDetails(FirestoreInterfaces.OnLeadDetails onLeadDetails , String uid){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("leadList").document(uid);
+
+        dRef.get().addOnSuccessListener(documentSnapshot -> {
+
+            LeadDetails leadDetails = documentSnapshot.toObject(LeadDetails.class);
+            onLeadDetails.onSucces(leadDetails);
+        });
     }
 }

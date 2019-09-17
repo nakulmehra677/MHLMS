@@ -84,8 +84,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
 
 
-
-
     public LeadDetailsFragment(LeadDetails leadDetails, Context context, String userType) {
         this.leadDetails = leadDetails;
         this.context = context;
@@ -171,19 +169,19 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         } else {
 
-            try{
+            try {
                 firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
                     @Override
                     public void onSuccess(UserDetails userDetails) {
 
-                            try {
-                                assignerContact.setText(userDetails.getContactNumber());
-                            }catch (Exception e){
-                                assignerContact.setText("Not available");
+                        try {
+                            assignerContact.setText(userDetails.getContactNumber());
+                        } catch (Exception e) {
+                            assignerContact.setText("Not available");
 
-                                assignerContact.setClickable(false);
-                                assignerContact.setCompoundDrawables(null, null, null, null);
-                            }
+                            assignerContact.setClickable(false);
+                            assignerContact.setCompoundDrawables(null, null, null, null);
+                        }
 
                     }
 
@@ -191,8 +189,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                     public void fail() {
 
                     }
-                },leadDetails.getAssignerUId());
-            }catch (Exception e){
+                }, leadDetails.getAssignerUId());
+            } catch (Exception e) {
                 assignerContact.setText("Not available");
 
                 assignerContact.setClickable(false);
@@ -233,7 +231,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
                         try {
                             assigneeContact.setText(userDetails.getContactNumber());
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             assigneeContact.setText("Not available");
 
                             assigneeContact.setClickable(false);
@@ -242,23 +240,20 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         }
 
 
-
                     }
 
                     @Override
                     public void fail() {
 
                     }
-                },leadDetails.getAssignedToUId());
-            }catch (Exception e){
+                }, leadDetails.getAssignedToUId());
+            } catch (Exception e) {
                 assigneeContact.setText("Not available");
 
                 assigneeContact.setClickable(false);
                 assigneeContact.setCompoundDrawables(null, null, null, null);
 
             }
-
-
 
 
             assigneeContact.setOnClickListener(view12 -> {
@@ -295,30 +290,27 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 permission.requestCallPhone();
         });
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ConnectivityManager cm = (ConnectivityManager) getActivity()
-                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+        button.setOnClickListener(view14 -> {
+            ConnectivityManager cm = (ConnectivityManager) getActivity()
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-                if (cm.getActiveNetworkInfo() != null) {
-                    if (userType.equals(getString(R.string.telecaller))) {
-                        progress = new ProgressDialog(context);
-                        progress.setMessage("Loading...");
-                        progress.setCancelable(false);
-                        progress.setCanceledOnTouchOutside(false);
-                        progress.show();
+            if (cm.getActiveNetworkInfo() != null) {
+                if (userType.equals(getString(R.string.telecaller))) {
+                    progress = new ProgressDialog(context);
+                    progress.setMessage("Loading...");
+                    progress.setCancelable(false);
+                    progress.setCanceledOnTouchOutside(false);
+                    progress.show();
 
-                        firestore.fetchUsersByUserType(
-                                onFetchSalesPersonList(),
-                                leadDetails.getLocation(),
-                                getString(R.string.salesman));
-                    } else {
-                        openSalesmanFragment();
-                    }
-                } else
-                    Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show();
-            }
+                    firestore.fetchUsersByUserType(
+                            onFetchSalesPersonList(),
+                            leadDetails.getLocation(),
+                            getString(R.string.salesman));
+                } else {
+                    openSalesmanFragment();
+                }
+            } else
+                Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show();
         });
 
         dialog.setContentView(view);
@@ -343,10 +335,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2);
 
         sallerRemarksLayout.removeAllViewsInLayout();
-        if (leadDetails.getSalesmanReason() == null  || leadDetails.getSalesmanReason().get(0).equals("None")) {
+
+
+        if (leadDetails.getSalesmanReason() == null || (leadDetails.getSalesmanReason().get(0).equals("None") && leadDetails.getSalesmanReason().size() == 1))
+        {
+            Log.d("123456", "setLayoutFields: "+leadDetails.getSalesmanReason().toString());
             salesmanRemarksHeadingLayout.setVisibility(View.GONE);
             sallerRemarksLayout.setVisibility(View.GONE);
-        } else {
+        } else{
 
             View view2 = new View(getContext());
             view2.setLayoutParams(layoutParams);
@@ -354,8 +350,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             sallerRemarksLayout.addView(view2);
 
             for (int i = leadDetails.getSalesmanReason().size() - 1; i >= 0; i--) {
-
-                if(!leadDetails.getSalesmanReason().get(i).isEmpty()){
+                Log.d("123456", "setLayoutFields: "+leadDetails.getSalesmanReason().get(i));
+                if (!leadDetails.getSalesmanReason().get(i).isEmpty() && !leadDetails.getSalesmanReason().get(i).equals("None")) {
                     TextView textView = new TextView(getContext());
                     textView.setTextColor(getResources().getColor(R.color.coloBlack));
                     textView.setText(leadDetails.getSalesmanReason().get(i));
@@ -391,9 +387,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedAt.setText(leadDetails.getAssignTime());
 
 
-
         callerRemarksLayout.removeAllViewsInLayout();
-
 
 
         StringBuilder csvBuilder = new StringBuilder();
@@ -411,7 +405,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         for (int i = leadDetails.getTelecallerRemarks().size() - 1; i >= 0; i--) {
 
-            if(!leadDetails.getTelecallerRemarks().get(i).isEmpty()){
+            if (!leadDetails.getTelecallerRemarks().get(i).isEmpty()) {
                 TextView textView = new TextView(getContext());
                 textView.setTextColor(getResources().getColor(R.color.coloBlack));
                 textView.setText(leadDetails.getTelecallerRemarks().get(i));

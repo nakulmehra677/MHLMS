@@ -8,14 +8,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.mudrahome.MHLMS.Firebase.Authentication;
 import com.mudrahome.MHLMS.Firebase.Firestore;
+import com.mudrahome.MHLMS.Fragments.LeadDetailsFragment;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Interfaces.OnUserLogin;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
+import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
@@ -111,6 +114,8 @@ public class LoginActivity extends BaseActivity {
             cardView.setVisibility(View.VISIBLE);
         }
     }
+
+
 
     private FirestoreInterfaces.OnGetUserDetails onGetUserDetails() {
         return new FirestoreInterfaces.OnGetUserDetails() {
