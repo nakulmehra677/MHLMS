@@ -164,40 +164,88 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         setLayoutFields();
 
-        if (leadDetails.getAssignerContact() == null) {
+        if (leadDetails.getAssignerUId() == null) {
             assignerContact.setClickable(false);
             assignerContact.setCompoundDrawables(null, null, null, null);
-
+            assignerContact.setText("Not available");
         } else {
 
-            assignerContact.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+            try{
+                firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+                    @Override
+                    public void onSuccess(UserDetails userDetails) {
 
-                    PermissionManager permission = new PermissionManager(getContext());
+                            try {
+                                assignerContact.setText(userDetails.getContactNumber());
+                            }catch (Exception e){
+                                assignerContact.setText("Not available");
+                            }
 
-                    if (permission.checkCallPhone()) {
+                    }
+
+                    @Override
+                    public void fail() {
+
+                    }
+                },leadDetails.getAssignerUId());
+            }catch (Exception e){
+                assignerContact.setText("Not available");
+            }
+
+
+            assignerContact.setOnClickListener(view13 -> {
+
+                PermissionManager permission = new PermissionManager(getContext());
+
+                if (permission.checkCallPhone()) {
 //                    if (permission.checkReadPhoneState()) {
 //                        if (permission.checkRecordAudio()) {
-                        callCustomer(leadDetails.getAssignerContact());
+                    callCustomer(leadDetails.getAssignerContact());
 //                        } else
 //                            permission.requestRecordAudio();
 //                    } else
 //                        permission.requestReadPhoneState();
-                    } else
-                        permission.requestCallPhone();
-                }
+                } else
+                    permission.requestCallPhone();
             });
 
         }
 
-        if (leadDetails.getAssigneeContact() == null) {
+        if (leadDetails.getAssignedToUId() == null) {
             /*assigneeCallbutton.setVisibility(View.GONE);*/
 
             assigneeContact.setClickable(false);
             assigneeContact.setCompoundDrawables(null, null, null, null);
-
+            assigneeContact.setText("Not available");
         } else {
+
+            try {
+                firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+                    @Override
+                    public void onSuccess(UserDetails userDetails) {
+
+                        try {
+                            assigneeContact.setText(userDetails.getContactNumber());
+                        }catch (Exception e){
+                            assigneeContact.setText("Not available");
+                            Log.d("AssigneeContact", " error " + e.getMessage());
+                        }
+
+
+
+                    }
+
+                    @Override
+                    public void fail() {
+
+                    }
+                },leadDetails.getAssignedToUId());
+            }catch (Exception e){
+                assigneeContact.setText("Not available");
+            }
+
+
+
 
             assigneeContact.setOnClickListener(view12 -> {
 
@@ -292,15 +340,19 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             sallerRemarksLayout.addView(view2);
 
             for (int i = leadDetails.getSalesmanReason().size() - 1; i >= 0; i--) {
-                TextView textView = new TextView(getContext());
-                textView.setTextColor(getResources().getColor(R.color.coloBlack));
-                textView.setText(leadDetails.getSalesmanReason().get(i));
-                sallerRemarksLayout.addView(textView);
 
-                View view3 = new View(getContext());
-                view3.setLayoutParams(layoutParams);
-                view3.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                sallerRemarksLayout.addView(view3);
+                if(!leadDetails.getSalesmanReason().get(i).isEmpty()){
+                    TextView textView = new TextView(getContext());
+                    textView.setTextColor(getResources().getColor(R.color.coloBlack));
+                    textView.setText(leadDetails.getSalesmanReason().get(i));
+                    sallerRemarksLayout.addView(textView);
+
+                    View view3 = new View(getContext());
+                    view3.setLayoutParams(layoutParams);
+                    view3.setBackgroundColor(getResources().getColor(R.color.colorGray));
+                    sallerRemarksLayout.addView(view3);
+                }
+
             }
         }
 
@@ -324,46 +376,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedOn.setText(leadDetails.getAssignDate());
         assignedAt.setText(leadDetails.getAssignTime());
 
-        try {
-            firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
-                @Override
-                public void onSuccess(UserDetails userDetails) {
-
-                    assignerContact.setText(userDetails.getContactNumber());
-
-
-                }
-
-                @Override
-                public void fail() {
-
-                }
-            },leadDetails.getAssignerUId());
-        }catch (Exception e){
-
-        }
-
-
-        try {
-
-            firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
-                @Override
-                public void onSuccess(UserDetails userDetails) {
-
-                    assigneeContact.setText(userDetails.getContactNumber());
-
-
-                }
-
-                @Override
-                public void fail() {
-
-                }
-            },leadDetails.getAssignedToUId());
-        }catch (Exception e){
-            assigneeContact.setVisibility(View.INVISIBLE);
-        }
-
 
 
         callerRemarksLayout.removeAllViewsInLayout();
@@ -384,15 +396,19 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         callerRemarksLayout.addView(view);
 
         for (int i = leadDetails.getTelecallerRemarks().size() - 1; i >= 0; i--) {
-            TextView textView = new TextView(getContext());
-            textView.setTextColor(getResources().getColor(R.color.coloBlack));
-            textView.setText(leadDetails.getTelecallerRemarks().get(i));
-            callerRemarksLayout.addView(textView);
 
-            View view1 = new View(getContext());
-            view1.setLayoutParams(layoutParams);
-            view1.setBackgroundColor(getResources().getColor(R.color.colorGray));
-            callerRemarksLayout.addView(view1);
+            if(!leadDetails.getTelecallerRemarks().get(i).isEmpty()){
+                TextView textView = new TextView(getContext());
+                textView.setTextColor(getResources().getColor(R.color.coloBlack));
+                textView.setText(leadDetails.getTelecallerRemarks().get(i));
+                callerRemarksLayout.addView(textView);
+
+                View view1 = new View(getContext());
+                view1.setLayoutParams(layoutParams);
+                view1.setBackgroundColor(getResources().getColor(R.color.colorGray));
+                callerRemarksLayout.addView(view1);
+            }
+
         }
     }
 
