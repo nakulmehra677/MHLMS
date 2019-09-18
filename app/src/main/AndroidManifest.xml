@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.mudrahome.MHLMS">
+    package="com.mudrahome.mhlms">
 
 
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -20,33 +20,33 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".Activities.ProfileDetailsActivity"
+            android:name="com.mudrahome.mhlms.Activities.ProfileDetailsActivity"
             android:label="Profile Details"
-            android:parentActivityName=".Activities.ProfileDetailsActivity" />
+            android:parentActivityName="com.mudrahome.mhlms.Activities.ProfileDetailsActivity" />
         <activity
-            android:name=".Activities.NotificationActivity"
+            android:name="com.mudrahome.mhlms.Activities.NotificationActivity"
             android:label="Notifications"
             android:screenOrientation="portrait">
 
         </activity>
         <activity
-            android:name=".Activities.StartOfferActivity"
+            android:name="com.mudrahome.mhlms.Activities.StartOfferActivity"
             android:label="Start Ad"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activities.FilterActivity"
+            android:name="com.mudrahome.mhlms.Activities.FilterActivity"
             android:label="Filter Leads"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activities.LeadListActivity"
+            android:name="com.mudrahome.mhlms.Activities.LeadListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBarLead" />
         <activity
-            android:name=".Activities.FeedCustomerDetailsActivity"
+            android:name="com.mudrahome.mhlms.Activities.FeedCustomerDetailsActivity"
             android:label="Feed Customer Details"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activities.LoginActivity"
+            android:name="com.mudrahome.mhlms.Activities.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
 
@@ -67,14 +67,14 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <receiver android:name=".Services.AlertReceiver" />
+        <receiver android:name="com.mudrahome.mhlms.Services.AlertReceiver" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/notification_channel_id"/>
 
         <service
-            android:name=".Services.NotificationService"
+            android:name="com.mudrahome.mhlms.Services.NotificationService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="connectedDevice"

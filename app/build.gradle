@@ -3,6 +3,11 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
+
+    dataBinding{
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.development.mhleadmanagementsystemdev"
         minSdkVersion 16
