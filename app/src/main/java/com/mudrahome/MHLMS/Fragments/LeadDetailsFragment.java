@@ -71,7 +71,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private Context context;
 
     private LeadDetails leadDetails;
-    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
+    private Firestore firestore;
     private BroadcastReceiver br;
     private String userType;
 
@@ -128,7 +128,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
 
 //        br = new CallStatus();
-        firestore = new com.mudrahome.MHLMS.Firebase.Firestore();
+        firestore = new Firestore();
 
         name = view.findViewById(R.id.customer_name);
         loan = view.findViewById(R.id.loan_amount);
@@ -339,7 +339,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         if (leadDetails.getSalesmanReason() == null || (leadDetails.getSalesmanReason().get(0).equals("None") && leadDetails.getSalesmanReason().size() == 1))
         {
-            Log.d("123456", "setLayoutFields: "+leadDetails.getSalesmanReason().toString());
             salesmanRemarksHeadingLayout.setVisibility(View.GONE);
             sallerRemarksLayout.setVisibility(View.GONE);
         } else{
@@ -350,7 +349,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             sallerRemarksLayout.addView(view2);
 
             for (int i = leadDetails.getSalesmanReason().size() - 1; i >= 0; i--) {
-                Log.d("123456", "setLayoutFields: "+leadDetails.getSalesmanReason().get(i));
                 if (!leadDetails.getSalesmanReason().get(i).isEmpty() && !leadDetails.getSalesmanReason().get(i).equals("None")) {
                     TextView textView = new TextView(getContext());
                     textView.setTextColor(getResources().getColor(R.color.coloBlack));
