@@ -93,12 +93,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         recyclerView.setAdapter(adapter);
         setLayoutByUser();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                firstPageProgressBar.setVisibility(View.GONE);
-            }
-        }, 5000);
+        new Handler().postDelayed(() -> firstPageProgressBar.setVisibility(View.GONE), 5000);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -130,25 +125,21 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         });
 
         mySwipeRefreshLayout.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
+                () -> {
+                    leadDetailsList.clear();
+                    adapter.notifyDataSetChanged();
+                    isLastItemFetched = false;
+                    bottomVisibleItem = null;
+                    firstPageProgressBar.setVisibility(View.VISIBLE);
 
-                    @Override
-                    public void onRefresh() {
-                        leadDetailsList.clear();
-                        adapter.notifyDataSetChanged();
-                        isLastItemFetched = false;
-                        bottomVisibleItem = null;
-                        firstPageProgressBar.setVisibility(View.VISIBLE);
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                firstPageProgressBar.setVisibility(View.GONE);
-                            }
-                        }, 5000);
-                        //linearLayoutManager = new LinearLayoutManager(LeadListActivity.this);
-                        getOffer();
-                    }
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            firstPageProgressBar.setVisibility(View.GONE);
+                        }
+                    }, 5000);
+                    //linearLayoutManager = new LinearLayoutManager(LeadListActivity.this);
+                    getOffer();
                 }
         );
 

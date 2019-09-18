@@ -34,35 +34,24 @@ public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Log.i("NotificationMsg", "messageremte" +
-                " " + remoteMessage.getData());
-
         showNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
     }
+
+
 
     public void showNotification(String title, String message) {
 
 
-        resultIntent = new Intent(NotificationService.this, LeadListActivity.class);
+        String[] bodymessage = message.split("@@");
 
+        resultIntent = new Intent(NotificationService.this, LeadListActivity.class)
+        .putExtra("UIDNotification",bodymessage[1]);
+
+        Log.d("UIDNotification", bodymessage[1]);
 
 
         pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notification_channel_id), "User Notification", NotificationManager.IMPORTANCE_HIGH);
-            channel.enableVibration(true);
-            channel.enableLights(true);
-            channel.setLightColor(Color.BLUE);
-            channel.setShowBadge(true);
-            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
-            channel.setVibrationPattern(new long[]{100, 1000, 100, 1000});
-
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            assert manager != null;
-            manager.createNotificationChannel(channel);
-        }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this, getResources().getString(R.string.notification_channel_id))
                 .setContentTitle(title)
@@ -72,7 +61,7 @@ public class NotificationService extends FirebaseMessagingService {
                 .setVibrate(new long[]{100, 1000, 100, 1000})
                 .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
-                .setContentText(message)
+                .setContentText(bodymessage[0])
                 .setContentIntent(pendingIntent);
 
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(NotificationService.this);

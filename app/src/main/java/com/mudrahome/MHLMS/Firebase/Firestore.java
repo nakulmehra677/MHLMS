@@ -1,12 +1,12 @@
 package com.mudrahome.MHLMS.Firebase;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
 import android.util.Log;
 
-import com.mudrahome.MHLMS.Activities.LeadListActivity;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.LeadFilter;
@@ -25,10 +25,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Firestore {
     Context context;
@@ -52,8 +49,18 @@ public class Firestore {
         leadDetails.setKey(dRef.getId());
 
         dRef.set(leadDetails)
-                .addOnCompleteListener(task -> listener.onDataUploaded())
-                .addOnFailureListener(e -> Log.e("TAG", "Error adding document", e));
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        listener.onDataUploaded();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("TAG", "Error adding document", e);
+                    }
+                });
     }
 
     public void fetchUsersByUserType(
@@ -72,15 +79,18 @@ public class Firestore {
 
         query = query.orderBy("userName", Query.Direction.ASCENDING);
 
-        query.get().addOnSuccessListener(documentSnapshots -> {
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
 
-            List<UserDetails> salesPersonList = new ArrayList<>();
-            for (QueryDocumentSnapshot document : documentSnapshots) {
-                UserDetails l = document.toObject(UserDetails.class);
-                salesPersonList.add(l);
+                List<UserDetails> salesPersonList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : documentSnapshots) {
+                    UserDetails l = document.toObject(UserDetails.class);
+                    salesPersonList.add(l);
+                }
+                UserList userList = new UserList(salesPersonList);
+                listener.onListFetched(userList);
             }
-            UserList userList = new UserList(salesPersonList);
-            listener.onListFetched(userList);
         });
     }
 
@@ -103,8 +113,17 @@ public class Firestore {
                 "timeStamp", updateLead.getTimeStamp(),
                 "banks", updateLead.getBanks())
 
-                .addOnSuccessListener(aVoid -> listener.onLeadUpdated())
-                .addOnFailureListener(e -> listener.onFailer());
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onLeadUpdated();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFailer();
+            }
+        });
     }
 
     public void getOffers(final FirestoreInterfaces.FetchOffer fetchOffer,
@@ -121,15 +140,20 @@ public class Firestore {
         if (singleItem)
             query = query.limit(1);
 
-        query.get().addOnSuccessListener(documentSnapshots -> {
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
 
-            List<OfferDetails> offerDetails = new ArrayList<>();
-            for (QueryDocumentSnapshot document : documentSnapshots) {
-                OfferDetails l = document.toObject(OfferDetails.class);
-                offerDetails.add(l);
+                List<OfferDetails> offerDetails = new ArrayList<>();
+                for (QueryDocumentSnapshot document : documentSnapshots) {
+                    OfferDetails l = document.toObject(OfferDetails.class);
+                    offerDetails.add(l);
+//                    Log.d("offerr", l.getTitle());
+//                    Log.d("offerr", l.getDescription());
+                }
+
+                fetchOffer.onSuccess(offerDetails);
             }
-
-            fetchOffer.onSuccess(offerDetails);
         });
     }
 
@@ -167,20 +191,22 @@ public class Firestore {
         }
 
         query.get().addOnSuccessListener(documentSnapshots -> {
+
+            Log.d("Query", "onSuccess: run");
             List<LeadDetails> leads = new ArrayList<>();
             for (QueryDocumentSnapshot document : documentSnapshots) {
 
-//                if (document.contains("salesmanRemarks") && document.contains("telecallerRemarks")) {
-                LeadDetails l = document.toObject(LeadDetails.class);
-                leads.add(l);
-                /*} else {
+                if (document.contains("salesmanRemarks") && document.contains("telecallerRemarks")) {
+                    LeadDetails l = document.toObject(LeadDetails.class);
+                    leads.add(l);
+                } else {
                     ArrayList<String> list = new ArrayList<>();
                     list.add("None");
                     LeadDetails l = document.toObject(LeadDetails.class);
                     l.setSalesmanRemarks("None");
                     l.setTelecallerRemarks(list);
                     leads.add(l);
-                }*/
+                }
             }
 
             DocumentSnapshot lastVisible = null;
@@ -224,20 +250,35 @@ public class Firestore {
 
         details.setKey(dRef.getId());
 
-        dRef.set(details)
-                .addOnCompleteListener(task -> listener.onSuccess())
-                .addOnFailureListener(e -> {
-                    listener.onFail();
-                    Log.e("TAG", "Error adding document", e);
-                });
+        dRef.set(details).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                listener.onSuccess();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                listener.onFail();
+                Log.e("TAG", "Error adding document", e);
+            }
+        });
     }
 
     public void removeAd(final FirestoreInterfaces.OnRemoveAd removeAd, OfferDetails details) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("offerList").document(details.getKey());
 
-        dRef.delete().addOnSuccessListener(aVoid -> removeAd.onSuccess())
-                .addOnFailureListener(e -> removeAd.onFail());
+        dRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                removeAd.onSuccess();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                removeAd.onFail();
+            }
+        });
     }
 
     public void updateUserDetails(final FirestoreInterfaces.OnUpdateUser updateUser, String number, String uId) {
@@ -245,19 +286,32 @@ public class Firestore {
         DocumentReference dRef = db.collection("userList").document(uId);
 
         dRef.update("contactNumber", number)
-                .addOnSuccessListener(aVoid -> updateUser.onSuccess())
-                .addOnFailureListener(e -> updateUser.onFail());
+
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        updateUser.onSuccess();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                updateUser.onFail();
+            }
+        });
     }
 
     public void getBankList(final FirestoreInterfaces.OnFetchBankList list) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("bankList").document("banks");
 
-        dRef.get().addOnSuccessListener(snapshot -> {
-            ArrayList arrList = new ArrayList<String>();
-            arrList = (ArrayList) snapshot.get("bankName");
+        dRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot snapshot) {
+                ArrayList arrList = new ArrayList<String>();
+                arrList = (ArrayList) snapshot.get("bankName");
 
-            list.onSuccess(arrList);
+                list.onSuccess(arrList);
+            }
         });
     }
 
@@ -266,5 +320,16 @@ public class Firestore {
         DocumentReference dRef = db.collection("userList").document(uId);
 
         dRef.update("workingLocation", location);
+    }
+
+    public void getLeadDetails(FirestoreInterfaces.OnLeadDetails onLeadDetails , String uid){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference dRef = db.collection("leadList").document(uid);
+
+        dRef.get().addOnSuccessListener(documentSnapshot -> {
+
+            LeadDetails leadDetails = documentSnapshot.toObject(LeadDetails.class);
+            onLeadDetails.onSucces(leadDetails);
+        });
     }
 }

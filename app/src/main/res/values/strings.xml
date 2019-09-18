@@ -73,6 +73,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
+    <string name="emoji">Made with &#128153; by Nakul</string>
+
     <string-array name="property_type">
         <item>Self Occupied Residential Property</item>
         <item>Self Occupied Commercial Property</item>
@@ -158,6 +160,4 @@
         <item>Loan Type</item>
         <item>Status</item>
     </string-array>
-
-    <string name="emoji">Made with &#128153; by Nakul</string>
 </resources>
