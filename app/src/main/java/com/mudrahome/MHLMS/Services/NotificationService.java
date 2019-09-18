@@ -38,53 +38,55 @@ public class NotificationService extends FirebaseMessagingService {
     }
 
 
-
     public void showNotification(String title, String message) {
 
 
         String[] bodymessage = message.split("@@");
 
-        resultIntent = new Intent(NotificationService.this, LeadListActivity.class)
-        .putExtra("UIDNotification",bodymessage[1]);
+        try {
+            resultIntent = new Intent(NotificationService.this, LeadListActivity.class)
+                    .putExtra("UIDNotification", bodymessage[1]);
 
-        Log.d("UIDNotification", bodymessage[1]);
+            pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+                NotificationChannel channel = new NotificationChannel("com.mudrahome.MHLMS", "Notification", NotificationManager.IMPORTANCE_HIGH);
+                channel.enableLights(true);
+                channel.setLightColor(Color.BLUE);
+                channel.enableVibration(true);
+                channel.setShowBadge(true);
+                channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+                channel.setVibrationPattern(new long[]{100, 1000, 100, 1000, 100});
 
-            NotificationChannel channel=new NotificationChannel("com.mudrahome.MHLMS","Notification", NotificationManager.IMPORTANCE_HIGH);
-            channel.enableLights(true);
-            channel.setLightColor(Color.BLUE);
-            channel.enableVibration(true);
-            channel.setShowBadge(true);
-            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
-            channel.setVibrationPattern(new long[]{100, 1000, 100, 1000, 100});
+                NotificationManager manager = getSystemService(NotificationManager.class);
+                assert manager != null;
+                manager.createNotificationChannel(channel);
+            }
 
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            assert manager != null;
-            manager.createNotificationChannel(channel);
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this, getResources().getString(R.string.notification_channel_id))
+                    .setContentTitle(title)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setVibrate(new long[]{100, 1000, 100, 1000})
+                    .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
+                    .setContentText(bodymessage[0])
+                    .setContentIntent(pendingIntent);
+
+            NotificationManagerCompat managerCompat = NotificationManagerCompat.from(NotificationService.this);
+            managerCompat.notify(id, builder.build());
+            id++;
+
+            //if(title.equals("New Lead")){
+            // startTimer();
+            ///}
+
+        } catch (Exception e) {
+
         }
-
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this, getResources().getString(R.string.notification_channel_id))
-                .setContentTitle(title)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setVibrate(new long[]{100, 1000, 100, 1000})
-                .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message.trim()))
-                .setContentText(bodymessage[0])
-                .setContentIntent(pendingIntent);
-
-        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(NotificationService.this);
-        managerCompat.notify(id, builder.build());
-        id++;
-
-        //if(title.equals("New Lead")){
-        // startTimer();
-        ///}
     }
 
     private void startTimer() {

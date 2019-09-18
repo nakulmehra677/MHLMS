@@ -1,16 +1,12 @@
 package com.mudrahome.MHLMS.Activities;
 
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,10 +21,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
+import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Managers.Alarm;
 import com.mudrahome.MHLMS.Managers.TimeManager;
@@ -37,6 +31,7 @@ import com.mudrahome.MHLMS.Models.TimeModel;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.Models.UserList;
 import com.mudrahome.MHLMS.R;
+import com.mudrahome.MHLMS.SharedPreferences.UserDataSharedPreference;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -77,8 +72,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     private RadioGroup selfEmploymentTypeRadioGroup;
 
     private LeadDetails leadDetails;
-    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
-    private SharedPreferences sharedPreferences;
+    private Firestore firestore;
 
     private List<UserDetails> salesPersonList;
 
@@ -102,9 +96,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         dateTextView = findViewById(R.id.date);
         timeTextView = findViewById(R.id.time);
 
-        firestore = new com.mudrahome.MHLMS.Firebase.Firestore(this);
-        sharedPreferences = getSharedPreferences(
-                getString(R.string.SH_user_details), AppCompatActivity.MODE_PRIVATE);
+        firestore = new Firestore(this);
 
         initializeLoanTypeSpinner();
         initializeLocationSpinner();
@@ -314,8 +306,10 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     }
 
     private void startSMSIntent() {
-        String currentUserName = sharedPreferences.getString(getString(R.string.SH_user_name), "");
-        String currentUserNumber = sharedPreferences.getString(getString(R.string.SH_user_number), "");
+        UserDataSharedPreference preference = new UserDataSharedPreference(this);
+
+        String currentUserName = preference.getUserName();
+        String currentUserNumber = preference.getContactNumber();
 
         String[] currentUserFirstName = currentUserName.split(" ");
         String[] assigneeUserFirstName = strAssignTo.split(" ");
@@ -391,24 +385,25 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         strContactNumber = contactNumber.getText().toString().trim();
         strLoanAmount = loanAmount.getText().toString().trim();
 
-        if(!remarks.getText().toString().isEmpty()){
+        if (!remarks.getText().toString().isEmpty()) {
             strRemarks.add(remarks.getText().toString().trim());
         }
 
     }
 
     private void makeObject(TimeModel timeModel) {
-        String assigner = sharedPreferences.getString(getString(R.string.SH_user_name), "");
-        String assignerUId = sharedPreferences.getString(getString(R.string.SH_user_uid), "");
-        String assignerContact = sharedPreferences.getString(getString(R.string.SH_user_number), "");
 
-        ArrayList<String> salesmanreson = new ArrayList<>();
-        salesmanreson.add("None");
-        leadDetails = new LeadDetails(strName, strContactNumber, assignerContact,
+        UserDataSharedPreference preference = new UserDataSharedPreference(this);
+
+        String currentUserName = preference.getUserName();
+        String currentUserNumber = preference.getContactNumber();
+        String currentUserUId = preference.getUserUid();
+
+        leadDetails = new LeadDetails(strName, strContactNumber, currentUserNumber,
                 strAssigneeContact, strLoanAmount, strEmployment, strEmploymentType, strLoanType,
                 strPropertyType, strLocation, strRemarks, timeModel.getDate(), strAssignTo,
-                "Active", assigner, "", "None", strAssignToUId,
-                assignerUId, salesmanreson, timeModel.getTime(), timeModel.getDate(),
+                "Active", currentUserName, "", "None", strAssignToUId,
+                currentUserUId, timeModel.getTime(), timeModel.getDate(),
                 timeModel.getTime(), timeModel.getTimeStamp());
     }
 

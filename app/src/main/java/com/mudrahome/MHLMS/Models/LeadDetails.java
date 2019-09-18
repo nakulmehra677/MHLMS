@@ -1,37 +1,36 @@
 package com.mudrahome.MHLMS.Models;
 
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class LeadDetails {
-    private String name = "None";
-    private String contactNumber = "None";
-    private String assignerContact = "None";
-    private String assigneeContact = "None";
-    private String loanAmount = "None";
-    private String loanType = "None";
-    private String propertyType = "None";
-    private String employment = "None";
-    private String employmentType = "None";
-    private String location = "None";
-    private String salesmanRemarks = "None";
-    private String date = "None";
-    private String assignedTo = "None";
-    private String status = "None";
-    private String key = "None";
-    private String assigner = "None";
-    private String assignedToUId = "None";
-    private String assignerUId = "None";
-    private String time = "None";
-    private String assignDate = "None";
-    private String assignTime = "None";
 
-    private ArrayList<String> telecallerRemarks = new ArrayList<>(Collections.singletonList("None"));
-    private ArrayList<String> salesmanReason = new ArrayList<>(Collections.singletonList("None"));
+public class LeadDetails {
+    private String name = "Not available";
+    private String contactNumber = "Not available";
+    private String assignerContact = "Not available";
+    private String assigneeContact = "Not available";
+    private String loanAmount = "Not available";
+    private String loanType = "Not available";
+    private String propertyType = "Not available";
+    private String employment = "Not available";
+    private String employmentType = "Not available";
+    private String location = "Not available";
+    private String salesmanRemarks = "Not available";
+    private String date = "Not available";
+    private String assignedTo = "Not available";
+    private String status = "Not available";
+    private String key = "Not available";
+    private String assigner = "Not available";
+    private String assignedToUId = "Not available";
+    private String assignerUId = "Not available";
+    private String time = "Not available";
+    private String assignDate = "Not available";
+    private String assignTime = "Not available";
+
+    private ArrayList<String> telecallerRemarks = new ArrayList<>(Collections.singletonList("Not available"));
+    private ArrayList<String> salesmanReason = new ArrayList<>(Collections.singletonList("Not available"));
     private long timeStamp;
 
     public String getAssignerContact() {
@@ -249,7 +248,7 @@ public class LeadDetails {
                        String employmentType, String loanType, String propertyType, String location,
                        ArrayList<String> telecallerRemarks, String date, String assignedTo, String status,
                        String assigner, String key, String salesmanRemarks, String assignedToUId,
-                       String assignerUId, ArrayList<String> salesmanReason, String time, String assignDate,
+                       String assignerUId, String time, String assignDate,
                        String assignTime, long timeStamp) {
         if (name != null)
             this.name = name;
@@ -285,8 +284,6 @@ public class LeadDetails {
             this.telecallerRemarks = telecallerRemarks;
         if (salesmanRemarks != null)
             this.salesmanRemarks = salesmanRemarks;
-        if (salesmanReason != null)
-            this.salesmanReason = salesmanReason;
         if (assignedToUId != null)
             this.assignedToUId = assignedToUId;
         if (assignerUId != null)
