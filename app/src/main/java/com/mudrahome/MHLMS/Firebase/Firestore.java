@@ -196,17 +196,17 @@ public class Firestore {
             List<LeadDetails> leads = new ArrayList<>();
             for (QueryDocumentSnapshot document : documentSnapshots) {
 
-                if (document.contains("salesmanRemarks") && document.contains("telecallerRemarks")) {
+//                if (document.contains("salesmanRemarks") && document.contains("telecallerRemarks")) {
                     LeadDetails l = document.toObject(LeadDetails.class);
                     leads.add(l);
-                } else {
+                /*} else {
                     ArrayList<String> list = new ArrayList<>();
                     list.add("None");
                     LeadDetails l = document.toObject(LeadDetails.class);
                     l.setSalesmanRemarks("None");
                     l.setTelecallerRemarks(list);
                     leads.add(l);
-                }
+                }*/
             }
 
             DocumentSnapshot lastVisible = null;
