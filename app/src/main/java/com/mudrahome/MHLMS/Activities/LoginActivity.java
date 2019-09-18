@@ -18,7 +18,6 @@ import com.mudrahome.MHLMS.Fragments.LeadDetailsFragment;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Interfaces.OnUserLogin;
 import com.mudrahome.MHLMS.Managers.ProfileManager;
-import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.UserDetails;
 import com.mudrahome.MHLMS.R;
 import com.google.android.play.core.appupdate.AppUpdateInfo;

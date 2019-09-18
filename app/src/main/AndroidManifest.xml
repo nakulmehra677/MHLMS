@@ -3,11 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.mudrahome.MHLMS">
 
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,15 +11,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
         <activity
             android:name=".Activities.ProfileDetailsActivity"
             android:label="Profile Details"
-            android:parentActivityName=".Activities.ProfileDetailsActivity"/>
+            android:parentActivityName=".Activities.ProfileDetailsActivity" />
         <activity
             android:name=".Activities.NotificationActivity"
             android:label="Notifications"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+
+        </activity>
         <activity
             android:name=".Activities.StartOfferActivity"
             android:label="Start Ad"
@@ -45,8 +41,10 @@
             android:name=".Activities.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
+
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -54,10 +52,12 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/coloBlack" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <receiver android:name=".Services.AlertReceiver" />
 
@@ -72,7 +72,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
     </application>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
