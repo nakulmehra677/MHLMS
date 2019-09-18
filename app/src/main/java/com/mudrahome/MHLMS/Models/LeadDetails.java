@@ -3,16 +3,36 @@ package com.mudrahome.MHLMS.Models;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class LeadDetails {
-    String name, contactNumber, assignerContact, assigneeContact, loanAmount, loanType, propertyType, employment,
-            employmentType, location, salesmanRemarks, date, assignedTo, status, key,
-            assigner, assignedToUId, assignerUId,
-            time, assignDate, assignTime;
+    private String name = "None";
+    private String contactNumber = "None";
+    private String assignerContact = "None";
+    private String assigneeContact = "None";
+    private String loanAmount = "None";
+    private String loanType = "None";
+    private String propertyType = "None";
+    private String employment = "None";
+    private String employmentType = "None";
+    private String location = "None";
+    private String salesmanRemarks = "None";
+    private String date = "None";
+    private String assignedTo = "None";
+    private String status = "None";
+    private String key = "None";
+    private String assigner = "None";
+    private String assignedToUId = "None";
+    private String assignerUId = "None";
+    private String time = "None";
+    private String assignDate = "None";
+    private String assignTime = "None";
 
-    ArrayList<String>  telecallerRemarks,salesmanReason;
-    long timeStamp;
+    private ArrayList<String> telecallerRemarks = new ArrayList<>(Collections.singletonList("None"));
+    private ArrayList<String> salesmanReason = new ArrayList<>(Collections.singletonList("None"));
+    private long timeStamp;
 
     public String getAssignerContact() {
         return assignerContact;
@@ -231,29 +251,52 @@ public class LeadDetails {
                        String assigner, String key, String salesmanRemarks, String assignedToUId,
                        String assignerUId, ArrayList<String> salesmanReason, String time, String assignDate,
                        String assignTime, long timeStamp) {
-        this.name = name;
-        this.contactNumber = contactNumber;
-        this.assignerContact = assignerContact;
-        this.assigneeContact = assigneeContact;
-        this.propertyType = propertyType;
-        this.employment = employment;
-        this.loanType = loanType;
-        this.location = location;
-        this.loanAmount = loanAmount;
-        this.date = date;
-        this.assignedTo = assignedTo;
-        this.status = status;
-        this.key = key;
-        this.employmentType = employmentType;
-        this.assigner = assigner;
-        this.telecallerRemarks = telecallerRemarks;
-        this.salesmanRemarks = salesmanRemarks;
-        this.salesmanReason = salesmanReason;
-        this.assignedToUId = assignedToUId;
-        this.assignerUId = assignerUId;
-        this.time = time;
-        this.assignDate = assignDate;
-        this.assignTime = assignTime;
+        if (name != null)
+            this.name = name;
+        if (contactNumber != null)
+            this.contactNumber = contactNumber;
+        if (assignerContact != null)
+            this.assignerContact = assignerContact;
+        if (assigneeContact != null)
+            this.assigneeContact = assigneeContact;
+        if (propertyType != null)
+            this.propertyType = propertyType;
+        if (employment != null)
+            this.employment = employment;
+        if (loanType != null)
+            this.loanType = loanType;
+        if (location != null)
+            this.location = location;
+        if (loanAmount != null)
+            this.loanAmount = loanAmount;
+        if (date != null)
+            this.date = date;
+        if (assignedTo != null)
+            this.assignedTo = assignedTo;
+        if (status != null)
+            this.status = status;
+        if (key != null)
+            this.key = key;
+        if (employmentType != null)
+            this.employmentType = employmentType;
+        if (assigner != null)
+            this.assigner = assigner;
+        if (telecallerRemarks != null)
+            this.telecallerRemarks = telecallerRemarks;
+        if (salesmanRemarks != null)
+            this.salesmanRemarks = salesmanRemarks;
+        if (salesmanReason != null)
+            this.salesmanReason = salesmanReason;
+        if (assignedToUId != null)
+            this.assignedToUId = assignedToUId;
+        if (assignerUId != null)
+            this.assignerUId = assignerUId;
+        if (time != null)
+            this.time = time;
+        if (assignDate != null)
+            this.assignDate = assignDate;
+        if (assignTime != null)
+            this.assignTime = assignTime;
         this.timeStamp = timeStamp;
     }
 }

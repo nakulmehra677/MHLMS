@@ -28,6 +28,7 @@ import com.mudrahome.MHLMS.Activities.FilterActivity;
 import com.mudrahome.MHLMS.Activities.StartOfferActivity;
 import com.mudrahome.MHLMS.Adapters.LeadsItemAdapter;
 import com.mudrahome.MHLMS.ExtraViews;
+import com.mudrahome.MHLMS.Firebase.Firestore;
 import com.mudrahome.MHLMS.Interfaces.FirestoreInterfaces;
 import com.mudrahome.MHLMS.Models.LeadDetails;
 import com.mudrahome.MHLMS.Models.LeadFilter;
@@ -46,23 +47,14 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ProgressBar progressBar, firstPageProgressBar;
 
-    private com.mudrahome.MHLMS.Firebase.Firestore firestore;
-
-    private SharedPreferences sharedPreferences;
-    //    private ProfileManager profileManager;
-    private Fragment fragment = null;
+    private Firestore firestore;
 
     private List<Object> leadDetailsList = new ArrayList<>();
+    LeadFilter leadFilter;
     private LeadsItemAdapter adapter;
     private boolean isSrolling;
     private boolean isLastItemFetched;
     private DocumentSnapshot bottomVisibleItem = null;
-
-    private String assignerFilter = "All";
-    private String assigneeFilter = "All";
-    private String locationFilter = "All";
-    private String statusFilter = "All";
-    private String loanTypeFilter = "All";
 
     private ExtraViews extraViews;
     private FloatingActionButton filter;
@@ -91,7 +83,8 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         filter = v.findViewById(R.id.filter1);
 
         preferences = new UserDataSharedPreference(getContext());
-        firestore = new com.mudrahome.MHLMS.Firebase.Firestore(getContext());
+        firestore = new Firestore(getContext());
+        leadFilter = new LeadFilter();
 
         linearLayoutManager = new LinearLayoutManager(getContext());
         filter.setOnClickListener(this);
@@ -218,7 +211,6 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
     }
 
     private void fetchLeads() {
-        Log.d("FecthLead", locationFilter + assignerFilter + assigneeFilter + loanTypeFilter + statusFilter);
         String s;
         if (userType == R.string.telecaller)
             s = "assigner";
@@ -227,7 +219,6 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         else
             s = "Admin";
 
-        LeadFilter leadFilter = new LeadFilter(locationFilter, assignerFilter, assigneeFilter, loanTypeFilter, statusFilter);
         firestore.downloadLeadList(onFetchLeadList(),
                 s, preferences.getUserName(), bottomVisibleItem,
                 leadFilter);
@@ -272,18 +263,11 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
 
         if (resultCode == 201) {
-            Log.d("fragment", "filter called: " + requestCode);
-            assignerFilter = data.getStringExtra("assigner_filter");
-            assigneeFilter = data.getStringExtra("assignee_filter");
-            locationFilter = data.getStringExtra("location_filter");
-            loanTypeFilter = data.getStringExtra("loan_type_filter");
-            statusFilter = data.getStringExtra("status_filter");
-
-            Log.d("Fillter", assignerFilter);
-            Log.d("Fillter", assigneeFilter);
-            Log.d("Fillter", locationFilter);
-            Log.d("Fillter", loanTypeFilter);
-            Log.d("Fillter", statusFilter);
+            leadFilter.setAssigner(data.getStringExtra("assigner_filter"));
+            leadFilter.setAssignee(data.getStringExtra("assignee_filter"));
+            leadFilter.setLocation(data.getStringExtra("location_filter"));
+            leadFilter.setLoanType(data.getStringExtra("loan_type_filter"));
+            leadFilter.setStatus(data.getStringExtra("status_filter"));
 
             leadDetailsList.clear();
             adapter.notifyDataSetChanged();

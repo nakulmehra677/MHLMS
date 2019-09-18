@@ -1,15 +1,19 @@
 package com.mudrahome.MHLMS.Models;
 
 public class LeadFilter {
-    private String location, assigner, assignee, status, loanType;
-
-    public LeadFilter(String location, String assigner, String assignee, String loanType, String status) {
-        this.location = location;
-        this.assigner = assigner;
-        this.assignee = assignee;
-        this.status = status;
-        this.loanType = loanType;
-    }
+    private String location = "All";
+    private String assigner = "All";
+    private String assignee = "All";
+    private String status = "All";
+    private String loanType = "All";
+//
+//    public LeadFilter(String location, String assigner, String assignee, String loanType, String status) {
+//        this.location = location;
+//        this.assigner = assigner;
+//        this.assignee = assignee;
+//        this.status = status;
+//        this.loanType = loanType;
+//    }
 
     public String getLocation() {
         return location;
@@ -29,5 +33,25 @@ public class LeadFilter {
 
     public String getLoanType() {
         return loanType;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setAssigner(String assigner) {
+        this.assigner = assigner;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setLoanType(String loanType) {
+        this.loanType = loanType;
     }
 }
