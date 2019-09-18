@@ -49,8 +49,22 @@ public class NotificationService extends FirebaseMessagingService {
 
         Log.d("UIDNotification", bodymessage[1]);
 
-
         pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+
+            NotificationChannel channel=new NotificationChannel("com.mudrahome.MHLMS","Notification", NotificationManager.IMPORTANCE_HIGH);
+            channel.enableLights(true);
+            channel.setLightColor(Color.BLUE);
+            channel.enableVibration(true);
+            channel.setShowBadge(true);
+            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+            channel.setVibrationPattern(new long[]{100, 1000, 100, 1000, 100});
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            assert manager != null;
+            manager.createNotificationChannel(channel);
+        }
 
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this, getResources().getString(R.string.notification_channel_id))
