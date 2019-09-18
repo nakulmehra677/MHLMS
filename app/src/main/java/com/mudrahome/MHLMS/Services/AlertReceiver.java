@@ -23,7 +23,6 @@ public class AlertReceiver extends BroadcastReceiver {
 
         String customerName = intent.getStringExtra("name");
         Log.d("AlertReceiver", " context " );
-
         NotificationHelper notificationHelper = new NotificationHelper(context, customerName);
         NotificationCompat.Builder nb = notificationHelper.getChannelNotification();
         notificationHelper.getManager().notify(customerName.hashCode(), nb.build());

@@ -326,7 +326,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         else
             button.setVisibility(View.GONE);
 
-        if (leadDetails.getEmploymentType().equals("None") || leadDetails.getEmploymentType().isEmpty()) {
+        if (leadDetails.getEmploymentType().equals("None") || leadDetails.getEmploymentType().isEmpty() || leadDetails.getEmploymentType() == null) {
             employmentTypeLayout.setVisibility(View.GONE);
         } else {
             employmentType.setText(leadDetails.getEmploymentType());
