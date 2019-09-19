@@ -12,7 +12,7 @@ public class UserDetails {
         this.key = key;
     }
 
-    private String uId, userName, mail, key, deviceToken, contactNumber,workingLocation;
+    private String uId, userName, mail, key, deviceToken, contactNumber, workingLocation;
     private List<String> userType;
     private Map<String, Boolean> location;
 
@@ -21,7 +21,7 @@ public class UserDetails {
     }
 
     public UserDetails(String uId, String userName, String mail, Map<String, Boolean> location,
-                       List<String> userType, String key, String deviceToken,String workingLocation) {
+                       List<String> userType, String key, String deviceToken, String workingLocation) {
         this.uId = uId;
         this.userName = userName;
         this.mail = mail;

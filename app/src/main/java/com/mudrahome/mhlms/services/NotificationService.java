@@ -44,58 +44,60 @@ public class NotificationService extends FirebaseMessagingService {
 
         String[] bodymessage = message.split("@@");
 
-        Log.d("NotificationService", "showNotification: reviced");
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notification_channel_id), "User Notification", NotificationManager.IMPORTANCE_HIGH);
+                channel.enableLights(true);
+                channel.setLightColor(Color.BLUE);
+                channel.enableVibration(true);
+                channel.setShowBadge(true);
+                channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+                channel.setVibrationPattern(new long[]{100, 1000, 100, 1000, 100});
 
-            NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notification_channel_id), "User Notification", NotificationManager.IMPORTANCE_HIGH);
-            channel.enableLights(true);
-            channel.setLightColor(Color.BLUE);
-            channel.enableVibration(true);
-            channel.setShowBadge(true);
-            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
-            channel.setVibrationPattern(new long[]{100, 1000, 100, 1000, 100});
+                NotificationManager manager = getSystemService(NotificationManager.class);
+                assert manager != null;
+                manager.createNotificationChannel(channel);
 
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            assert manager != null;
-            manager.createNotificationChannel(channel);
+                Log.d("NotificationService", "showNotification: channel created");
+            }
+            if (!bodymessage[1].isEmpty()) {
 
-            Log.d("NotificationService", "showNotification: channel created");
+                resultIntent = new Intent(NotificationService.this, LeadListActivity.class)
+                        .putExtra("UIDNotification", bodymessage[1]);
+
+                Log.d("UIDNotification", bodymessage[1] + "      " + bodymessage[0]);
+
+                pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this, getResources().getString(R.string.notification_channel_id))
+                        .setContentTitle(title)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setAutoCancel(true)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setVibrate(new long[]{100, 1000, 100, 1000})
+                        .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(bodymessage[0].trim()))
+                        .setContentText(bodymessage[0])
+                        .setContentIntent(pendingIntent);
+
+                NotificationManagerCompat managerCompat = NotificationManagerCompat.from(NotificationService.this);
+                managerCompat.notify(id, builder.build());
+                id++;
+
+                Log.d("NotificationService", "showNotification: notification show");
+
+            }
+
+
+            Log.d("AlertReceiver", "showNotification: ");
+
+            //if(title.equals("New Lead")){
+            // startTimer();
+            ///}
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (!bodymessage[1].isEmpty()) {
-
-            resultIntent = new Intent(NotificationService.this, LeadListActivity.class)
-                    .putExtra("UIDNotification", bodymessage[1]);
-
-            Log.d("UIDNotification", bodymessage[1] + "      " + bodymessage[0]);
-
-            pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(NotificationService.this, getResources().getString(R.string.notification_channel_id))
-                    .setContentTitle(title)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setAutoCancel(true)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setVibrate(new long[]{100, 1000, 100, 1000})
-                    .setDefaults(DEFAULT_SOUND | DEFAULT_VIBRATE)
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(bodymessage[0].trim()))
-                    .setContentText(bodymessage[0])
-                    .setContentIntent(pendingIntent);
-
-            NotificationManagerCompat managerCompat = NotificationManagerCompat.from(NotificationService.this);
-            managerCompat.notify(id, builder.build());
-            id++;
-
-            Log.d("NotificationService", "showNotification: notification show");
-
-        }
-
-
-        Log.d("AlertReceiver", "showNotification: ");
-
-        //if(title.equals("New Lead")){
-        // startTimer();
-        ///}
     }
 
     private void startTimer() {
