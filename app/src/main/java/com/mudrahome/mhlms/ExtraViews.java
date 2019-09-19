@@ -4,7 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.mudrahome.mhlms.Interfaces.AddFeature;
+import com.mudrahome.mhlms.interfaces.AddFeature;
 
 public class ExtraViews implements AddFeature {
     public ProgressDialog progress;

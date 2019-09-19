@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mudrahome.mhlms.Activities.StartOfferActivity">
+    tools:context="com.mudrahome.mhlms.activities.StartOfferActivity">
 
-    <com.mudrahome.mhlms.ViewPagers.CustomViewPager
+    <com.mudrahome.mhlms.viewPagers.CustomViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
