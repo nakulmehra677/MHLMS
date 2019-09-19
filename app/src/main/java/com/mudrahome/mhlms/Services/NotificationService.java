@@ -12,6 +12,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import android.graphics.Color;
 import android.os.Build;
+import android.util.Log;
 
 import com.mudrahome.mhlms.Activities.LeadListActivity;
 import com.mudrahome.mhlms.R;
@@ -50,7 +51,7 @@ public class NotificationService extends FirebaseMessagingService {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-                NotificationChannel channel = new NotificationChannel("com.mudrahome.MHLMS", "Notification", NotificationManager.IMPORTANCE_HIGH);
+                NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notification_channel_id), "User Notification", NotificationManager.IMPORTANCE_HIGH);
                 channel.enableLights(true);
                 channel.setLightColor(Color.BLUE);
                 channel.enableVibration(true);
@@ -78,7 +79,7 @@ public class NotificationService extends FirebaseMessagingService {
             NotificationManagerCompat managerCompat = NotificationManagerCompat.from(NotificationService.this);
             managerCompat.notify(id, builder.build());
             id++;
-
+            Log.d("NotificationService", "showNotification: run");
             //if(title.equals("New Lead")){
             // startTimer();
             ///}
