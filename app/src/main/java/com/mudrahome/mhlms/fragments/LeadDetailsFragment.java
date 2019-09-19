@@ -12,6 +12,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.mudrahome.mhlms.firebase.Firestore;
+import com.mudrahome.mhlms.fragments.SalesmanEditLeadFragment;
+import com.mudrahome.mhlms.fragments.TelecallerEditLeadFragment;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.managers.PermissionManager;
 import com.mudrahome.mhlms.model.TimeModel;
@@ -68,7 +71,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private Context context;
 
     private LeadDetails leadDetails;
-    private com.mudrahome.mhlms.firebase.Firestore firestore;
+    private Firestore firestore;
     private BroadcastReceiver br;
     private String userType;
 
@@ -125,7 +128,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         View view = View.inflate(getContext(), R.layout.fragment_lead_details, null);
 
 //        br = new CallStatus();
-        firestore = new com.mudrahome.mhlms.firebase.Firestore();
+        firestore = new Firestore();
 
         name = view.findViewById(R.id.customer_name);
         loan = view.findViewById(R.id.loan_amount);
@@ -159,41 +162,30 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         setLayoutFields();
 
-        if (leadDetails.getAssignerUId() == null) {
+        if (leadDetails.getAssignerUId().equals("Not available")) {
             assignerContact.setClickable(false);
             assignerContact.setCompoundDrawables(null, null, null, null);
             assignerContact.setText("Not available");
-
         } else {
-
-            try {
-                firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
-                    @Override
-                    public void onSuccess(UserDetails userDetails) {
-
-                        try {
-                            assignerContact.setText(userDetails.getContactNumber());
-                        } catch (Exception e) {
-                            assignerContact.setText("Not available");
-
-                            assignerContact.setClickable(false);
-                            assignerContact.setCompoundDrawables(null, null, null, null);
-                        }
-
+            firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+                @Override
+                public void onSuccess(UserDetails userDetails) {
+                    if (userDetails != null) {
+                        assignerContact.setText(userDetails.getContactNumber());
+                    } else {
+                        assignerContact.setText("Not available");
+                        assignerContact.setClickable(false);
+                        assignerContact.setCompoundDrawables(null, null, null, null);
                     }
+                }
 
-                    @Override
-                    public void fail() {
-
-                    }
-                }, leadDetails.getAssignerUId());
-            } catch (Exception e) {
-                assignerContact.setText("Not available");
-
-                assignerContact.setClickable(false);
-                assignerContact.setCompoundDrawables(null, null, null, null);
-            }
-
+                @Override
+                public void fail() {
+                    assignerContact.setText("Not available");
+                    assignerContact.setClickable(false);
+                    assignerContact.setCompoundDrawables(null, null, null, null);
+                }
+            }, leadDetails.getAssignerUId());
 
             assignerContact.setOnClickListener(view13 -> {
 
@@ -213,45 +205,30 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         }
 
-        if (leadDetails.getAssignedToUId() == null) {
-            /*assigneeCallbutton.setVisibility(View.GONE);*/
-
+        if (leadDetails.getAssignedToUId().equals("Not available")) {
             assigneeContact.setClickable(false);
             assigneeContact.setCompoundDrawables(null, null, null, null);
             assigneeContact.setText("Not available");
         } else {
-
-            try {
-                firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
-                    @Override
-                    public void onSuccess(UserDetails userDetails) {
-
-                        try {
-                            assigneeContact.setText(userDetails.getContactNumber());
-                        } catch (Exception e) {
-                            assigneeContact.setText("Not available");
-
-                            assigneeContact.setClickable(false);
-                            assigneeContact.setCompoundDrawables(null, null, null, null);
-                            Log.d("AssigneeContact", " error " + e.getMessage());
-                        }
-
-
+            firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
+                @Override
+                public void onSuccess(UserDetails userDetails) {
+                    if (userDetails != null) {
+                        assigneeContact.setText(userDetails.getContactNumber());
+                    } else {
+                        assigneeContact.setText("Not available");
+                        assigneeContact.setClickable(false);
+                        assigneeContact.setCompoundDrawables(null, null, null, null);
                     }
+                }
 
-                    @Override
-                    public void fail() {
-
-                    }
-                }, leadDetails.getAssignedToUId());
-            } catch (Exception e) {
-                assigneeContact.setText("Not available");
-
-                assigneeContact.setClickable(false);
-                assigneeContact.setCompoundDrawables(null, null, null, null);
-
-            }
-
+                @Override
+                public void fail() {
+                    assigneeContact.setText("Not available");
+                    assigneeContact.setClickable(false);
+                    assigneeContact.setCompoundDrawables(null, null, null, null);
+                }
+            }, leadDetails.getAssignedToUId());
 
             assigneeContact.setOnClickListener(view12 -> {
 
@@ -272,7 +249,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         }
 
         number.setOnClickListener(view1 -> {
-
             PermissionManager permission = new PermissionManager(getContext());
 
             if (permission.checkCallPhone()) {
@@ -287,7 +263,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 permission.requestCallPhone();
         });
 
-        button.setOnClickListener(view14 -> {
+        button.setOnClickListener(view14 ->
+
+        {
             ConnectivityManager cm = (ConnectivityManager) getActivity()
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -323,7 +301,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         else
             button.setVisibility(View.GONE);
 
-        if (leadDetails.getEmploymentType().equals("None") || leadDetails.getEmploymentType().isEmpty() || leadDetails.getEmploymentType() == null) {
+        if (leadDetails.getEmploymentType().equals("None") || leadDetails.getEmploymentType().isEmpty()) {
             employmentTypeLayout.setVisibility(View.GONE);
         } else {
             employmentType.setText(leadDetails.getEmploymentType());
@@ -370,6 +348,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         name.setText(leadDetails.getName());
         loan.setText(leadDetails.getLoanAmount());
         number.setText(leadDetails.getContactNumber());
+        if (leadDetails.getContactNumber().equals("Not available")) {
+            number.setClickable(false);
+            number.setCompoundDrawables(null, null, null, null);
+        }
         employment.setText(leadDetails.getEmployment());
         loanType.setText(leadDetails.getLoanType());
         propertyType.setText(leadDetails.getPropertyType());
@@ -382,9 +364,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedOn.setText(leadDetails.getAssignDate());
         assignedAt.setText(leadDetails.getAssignTime());
 
-
         callerRemarksLayout.removeAllViewsInLayout();
-
 
         StringBuilder csvBuilder = new StringBuilder();
         for (String bank : leadDetails.getBanks()) {
@@ -412,7 +392,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 view1.setBackgroundColor(getResources().getColor(R.color.colorGray));
                 callerRemarksLayout.addView(view1);
             }
-
         }
     }
 
