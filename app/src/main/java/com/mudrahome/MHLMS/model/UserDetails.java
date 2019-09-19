@@ -1,5 +1,7 @@
 package com.mudrahome.mhlms.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +14,14 @@ public class UserDetails {
         this.key = key;
     }
 
-    private String uId, userName, mail, key, deviceToken, contactNumber, workingLocation;
-    private List<String> userType;
+    private String uId = "Not available";
+    private String userName = "Not available";
+    private String mail = "Not available";
+    private String key = "Not available";
+    private String deviceToken = "Not available";
+    private String contactNumber = "Not available";
+    private String workingLocation = "Not available";
+    private List<String> userType = new ArrayList<>(Collections.singletonList("Not available"));
     private Map<String, Boolean> location;
 
 
@@ -22,14 +30,22 @@ public class UserDetails {
 
     public UserDetails(String uId, String userName, String mail, Map<String, Boolean> location,
                        List<String> userType, String key, String deviceToken, String workingLocation) {
-        this.uId = uId;
-        this.userName = userName;
-        this.mail = mail;
-        this.location = location;
-        this.userType = userType;
-        this.key = key;
-        this.deviceToken = deviceToken;
-        this.workingLocation = workingLocation;
+        if (uId != null)
+            this.uId = uId;
+        if (userName != null)
+            this.userName = userName;
+        if (mail != null)
+            this.mail = mail;
+        if (location != null)
+            this.location = location;
+        if (userType != null)
+            this.userType = userType;
+        if (key != null)
+            this.key = key;
+        if (deviceToken != null)
+            this.deviceToken = deviceToken;
+        if (workingLocation != null)
+            this.workingLocation = workingLocation;
     }
 
     public String getWorkingLocation() {
