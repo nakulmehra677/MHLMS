@@ -170,7 +170,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
                 @Override
                 public void onSuccess(UserDetails userDetails) {
-                    if (userDetails != null) {
+                    if (!userDetails.getContactNumber().equals("Not available")) {
                         assignerContact.setText(userDetails.getContactNumber());
                     } else {
                         assignerContact.setText("Not available");
@@ -202,7 +202,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 } else
                     permission.requestCallPhone();
             });
-
         }
 
         if (leadDetails.getAssignedToUId().equals("Not available")) {
@@ -213,7 +212,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
                 @Override
                 public void onSuccess(UserDetails userDetails) {
-                    if (userDetails != null) {
+                    if (!userDetails.getContactNumber().equals("Not available")) {
                         assigneeContact.setText(userDetails.getContactNumber());
                     } else {
                         assigneeContact.setText("Not available");
@@ -348,6 +347,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         name.setText(leadDetails.getName());
         loan.setText(leadDetails.getLoanAmount());
         number.setText(leadDetails.getContactNumber());
+        Log.d("number", leadDetails.getContactNumber());
         if (leadDetails.getContactNumber().equals("Not available")) {
             number.setClickable(false);
             number.setCompoundDrawables(null, null, null, null);
