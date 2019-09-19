@@ -13,8 +13,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.mudrahome.mhlms.firebase.Firestore;
-import com.mudrahome.mhlms.fragments.SalesmanEditLeadFragment;
-import com.mudrahome.mhlms.fragments.TelecallerEditLeadFragment;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.managers.PermissionManager;
 import com.mudrahome.mhlms.model.TimeModel;
@@ -163,9 +161,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         setLayoutFields();
 
         if (leadDetails.getAssignerUId().equals("Not available")) {
-            assignerContact.setClickable(false);
-            assignerContact.setCompoundDrawables(null, null, null, null);
-            assignerContact.setText("Not available");
+            hideAssignerContact();
         } else {
             firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
                 @Override
@@ -173,24 +169,18 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                     if (!userDetails.getContactNumber().equals("Not available")) {
                         assignerContact.setText(userDetails.getContactNumber());
                     } else {
-                        assignerContact.setText("Not available");
-                        assignerContact.setClickable(false);
-                        assignerContact.setCompoundDrawables(null, null, null, null);
+                        hideAssignerContact();
                     }
                 }
 
                 @Override
                 public void fail() {
-                    assignerContact.setText("Not available");
-                    assignerContact.setClickable(false);
-                    assignerContact.setCompoundDrawables(null, null, null, null);
+                    hideAssignerContact();
                 }
             }, leadDetails.getAssignerUId());
 
             assignerContact.setOnClickListener(view13 -> {
-
                 PermissionManager permission = new PermissionManager(getContext());
-
                 if (permission.checkCallPhone()) {
 //                    if (permission.checkReadPhoneState()) {
 //                        if (permission.checkRecordAudio()) {
@@ -205,9 +195,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         }
 
         if (leadDetails.getAssignedToUId().equals("Not available")) {
-            assigneeContact.setClickable(false);
-            assigneeContact.setCompoundDrawables(null, null, null, null);
-            assigneeContact.setText("Not available");
+            hideAssigneeContact();
         } else {
             firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
                 @Override
@@ -215,17 +203,13 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                     if (!userDetails.getContactNumber().equals("Not available")) {
                         assigneeContact.setText(userDetails.getContactNumber());
                     } else {
-                        assigneeContact.setText("Not available");
-                        assigneeContact.setClickable(false);
-                        assigneeContact.setCompoundDrawables(null, null, null, null);
+                        hideAssigneeContact();
                     }
                 }
 
                 @Override
                 public void fail() {
-                    assigneeContact.setText("Not available");
-                    assigneeContact.setClickable(false);
-                    assigneeContact.setCompoundDrawables(null, null, null, null);
+                    hideAssigneeContact();
                 }
             }, leadDetails.getAssignedToUId());
 
@@ -290,6 +274,18 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         dialog.setContentView(view);
         mBehavior = BottomSheetBehavior.from((View) view.getParent());
         return dialog;
+    }
+
+    private void hideAssignerContact() {
+        assignerContact.setText("Not available");
+        assignerContact.setClickable(false);
+        assignerContact.setCompoundDrawables(null, null, null, null);
+    }
+
+    private void hideAssigneeContact() {
+        assigneeContact.setClickable(false);
+        assigneeContact.setCompoundDrawables(null, null, null, null);
+        assigneeContact.setText("Not available");
     }
 
     private void setLayoutFields() {

@@ -196,8 +196,8 @@ public class Firestore {
             for (QueryDocumentSnapshot document : documentSnapshots) {
 
 //                if (document.contains("salesmanRemarks") && document.contains("telecallerRemarks")) {
-                    LeadDetails l = document.toObject(LeadDetails.class);
-                    leads.add(l);
+                LeadDetails l = document.toObject(LeadDetails.class);
+                leads.add(l);
                 /*} else {
                     ArrayList<String> list = new ArrayList<>();
                     list.add("None");
@@ -223,9 +223,13 @@ public class Firestore {
         DocumentReference dRef = db.collection("userList").document(uId);
 
         dRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                UserDetails userDetails = documentSnapshot.toObject(UserDetails.class);
+                onGetUserDetails.onSuccess(userDetails);
+            } else {
+                onGetUserDetails.fail();
+            }
 
-            UserDetails userDetails = documentSnapshot.toObject(UserDetails.class);
-            onGetUserDetails.onSuccess(userDetails);
         });
     }
 
@@ -321,7 +325,7 @@ public class Firestore {
         dRef.update("workingLocation", location);
     }
 
-    public void getLeadDetails(FirestoreInterfaces.OnLeadDetails onLeadDetails , String uid){
+    public void getLeadDetails(FirestoreInterfaces.OnLeadDetails onLeadDetails, String uid) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference dRef = db.collection("leadList").document(uid);
 

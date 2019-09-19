@@ -42,9 +42,8 @@ public class NotificationService extends FirebaseMessagingService {
 
     public void showNotification(String title, String message) {
 
-        String[] bodymessage = message.split("@@");
-
         try {
+            String[] bodymessage = message.split("@@");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
                 NotificationChannel channel = new NotificationChannel(getResources().getString(R.string.notification_channel_id), "User Notification", NotificationManager.IMPORTANCE_HIGH);

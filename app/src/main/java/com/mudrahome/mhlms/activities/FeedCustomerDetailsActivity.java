@@ -336,7 +336,7 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
     private boolean checkEmpty() {
         if (strName.isEmpty() || strContactNumber.length() != 10 || strLoanAmount.isEmpty() ||
-                strRemarks.size() == 0 || strAssignTo.equals("None") || strEmployment.equals("None")) {
+                remarks.getText().toString().isEmpty() || strAssignTo.equals("None") || strEmployment.equals("None")) {
             return false;
         }
         if (strEmployment.equals("Self Employed")) {
@@ -354,6 +354,8 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.i("Fields filled", "All the fields are filled");
+
+                        strRemarks.add(remarks.getText().toString().trim());
 
                         TimeManager timeManager = new TimeManager();
                         TimeModel timeModel = timeManager.getTime();
@@ -385,9 +387,9 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
         strContactNumber = contactNumber.getText().toString().trim();
         strLoanAmount = loanAmount.getText().toString().trim();
 
-        if (!remarks.getText().toString().isEmpty()) {
+        /*if (!remarks.getText().toString().isEmpty()) {
             strRemarks.add(remarks.getText().toString().trim());
-        }
+        }*/
 
     }
 
