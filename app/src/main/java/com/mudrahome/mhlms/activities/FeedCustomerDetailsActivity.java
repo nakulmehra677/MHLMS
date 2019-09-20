@@ -259,19 +259,14 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
                 mDay = c.get(Calendar.DAY_OF_MONTH);
 
                 DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                        new DatePickerDialog.OnDateSetListener() {
+                        (view1, year, monthOfYear, dayOfMonth) -> {
 
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int monthOfYear, int dayOfMonth) {
+                            alarmDay = dayOfMonth;
+                            alarmMonth = monthOfYear;
+                            alarmYear = year;
 
-                                alarmDay = dayOfMonth;
-                                alarmMonth = monthOfYear;
-                                alarmYear = year;
+                            dateTextView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
 
-                                dateTextView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
-
-                            }
                         }, mYear, mMonth, mDay);
 
                 datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
@@ -285,17 +280,12 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
 
                 // Launch TimeModel Picker Dialog
                 TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                        new TimePickerDialog.OnTimeSetListener() {
+                        (view12, hourOfDay, minute) -> {
 
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
+                            alarmHour = hourOfDay;
+                            alarmMinute = minute;
 
-                                alarmHour = hourOfDay;
-                                alarmMinute = minute;
-
-                                timeTextView.setText(hourOfDay + ":" + minute);
-                            }
+                            timeTextView.setText(hourOfDay + ":" + minute);
                         }, mHour, mMinute, false);
                 timePickerDialog.show();
                 break;
@@ -351,26 +341,24 @@ public class FeedCustomerDetailsActivity extends BaseActivity implements Adapter
     private void uploadDetails() {
         androidx.appcompat.app.AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setMessage("Are you sure you want to upload the details?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.i("Fields filled", "All the fields are filled");
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    Log.i("Fields filled", "All the fields are filled");
 
-                        strRemarks.add(remarks.getText().toString().trim());
+                    strRemarks.add(remarks.getText().toString().trim() + "@@" + System.currentTimeMillis());              // remarks with time steamp
 
-                        TimeManager timeManager = new TimeManager();
-                        TimeModel timeModel = timeManager.getTime();
-                        makeObject(timeModel);
+                    TimeManager timeManager = new TimeManager();
+                    TimeModel timeModel = timeManager.getTime();
+                    makeObject(timeModel);
 
-                        setAlarm();
+                    setAlarm();
 
-                        progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
-                        progress.setMessage("Uploading..");
-                        progress.setCancelable(false);
-                        progress.setCanceledOnTouchOutside(false);
-                        progress.show();
+                    progress = new ProgressDialog(FeedCustomerDetailsActivity.this);
+                    progress.setMessage("Uploading..");
+                    progress.setCancelable(false);
+                    progress.setCanceledOnTouchOutside(false);
+                    progress.show();
 
-                        firestore.uploadCustomerDetails(onUploadCustomerDetails(), leadDetails);
-                    }
+                    firestore.uploadCustomerDetails(onUploadCustomerDetails(), leadDetails);
                 })
 
                 // A null listener allows the button to dismiss the dialog and take no further action.

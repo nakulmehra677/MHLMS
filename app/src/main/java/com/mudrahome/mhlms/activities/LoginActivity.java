@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 
 import com.google.android.play.core.install.model.AppUpdateType;
@@ -15,6 +16,7 @@ import com.mudrahome.mhlms.firebase.Authentication;
 import com.mudrahome.mhlms.firebase.Firestore;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.interfaces.OnUserLogin;
+import com.mudrahome.mhlms.managers.PermissionManager;
 import com.mudrahome.mhlms.managers.ProfileManager;
 import com.mudrahome.mhlms.model.UserDetails;
 import com.mudrahome.mhlms.R;
@@ -31,6 +33,7 @@ import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
 
 public class LoginActivity extends BaseActivity {
 
+    private PermissionManager permissionManager;
     private EditText mail, password;
     private UserDetails currentUserDetails;
     private CardView cardView;
@@ -52,9 +55,11 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
         if (isNetworkConnected()) {
             appUpdateManager = AppUpdateManagerFactory.create(this);
             appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+            permissionManager = new PermissionManager(LoginActivity.this);
             checkUpdate();
 
             cardView = findViewById(R.id.card);
@@ -64,6 +69,8 @@ public class LoginActivity extends BaseActivity {
             authentication = new Authentication(this);
             firestore = new Firestore(this);
             profileManager = new ProfileManager();
+
+
         } else {
             showToastMessage(R.string.no_internet);
             finish();
@@ -104,7 +111,19 @@ public class LoginActivity extends BaseActivity {
             showToastMessage(R.string.no_internet);
     }
 
+    private void checkPermission(){
+
+        if(permissionManager.checkSmsPermission()){
+            checkLogin();
+        }else {
+            permissionManager.requestSMSPermission();
+        }
+
+    }
+
     private void checkLogin() {
+
+
         if (profileManager.checkUserExist()) {
             firestore.getUsers(onGetUserDetails(), profileManager.getuId());
         } else {
@@ -156,7 +175,8 @@ public class LoginActivity extends BaseActivity {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isUpdating();
         } else {
-            checkLogin();
+            checkPermission();
+            /*checkLogin();*/
         }
     }
 
@@ -174,6 +194,17 @@ public class LoginActivity extends BaseActivity {
             if (resultCode != RESULT_OK) {
                 finish();
             }
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode ==123){
+            checkLogin();
         }
     }
 
@@ -210,7 +241,8 @@ public class LoginActivity extends BaseActivity {
                         }
                     } else {
                         Log.d("checkUpdate", "not available");
-                        checkLogin();
+                        checkPermission();
+                        /*checkLogin();*/
                     }
                 });
     }

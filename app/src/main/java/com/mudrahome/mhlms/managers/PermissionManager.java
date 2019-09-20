@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.RECORD_AUDIO;
+import static android.Manifest.permission.SEND_SMS;
 
 public class PermissionManager {
     private Context context;
@@ -23,6 +24,11 @@ public class PermissionManager {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
+    public boolean checkSmsPermission(){
+        return  ContextCompat.checkSelfPermission(context,SEND_SMS)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
     public boolean checkReadPhoneState() {
         return ContextCompat.checkSelfPermission(context, READ_PHONE_STATE)
                 == PackageManager.PERMISSION_GRANTED;
@@ -32,6 +38,11 @@ public class PermissionManager {
         ActivityCompat.requestPermissions((Activity) context,
                 new String[]{CALL_PHONE}, 1);
 
+    }
+
+    public void requestSMSPermission(){
+        ActivityCompat.requestPermissions((Activity) context,
+                new String[]{SEND_SMS},123);
     }
 
     public void requestReadPhoneState() {

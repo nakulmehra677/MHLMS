@@ -211,7 +211,7 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
 
 
                         ArrayList<String> strReason =leadDetails.getTelecallerRemarks();
-                        strReason.add(telecallerReason.getText().toString());
+                        strReason.add(telecallerReason.getText().toString() + "@@" +System.currentTimeMillis());         // Save remark with time steamp
 
 
 

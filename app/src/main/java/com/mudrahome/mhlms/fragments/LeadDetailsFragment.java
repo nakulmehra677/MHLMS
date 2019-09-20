@@ -20,6 +20,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,10 @@ import com.mudrahome.mhlms.model.UserDetails;
 import com.mudrahome.mhlms.R;
 
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @SuppressLint("ValidFragment")
@@ -80,6 +84,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String customerInterestedButDocumentPending = "Customer Interested but Document Pending";
     private String notDoable = "Not Doable";
     private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
+
 
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context, String userType) {
@@ -306,8 +311,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         sallerRemarksLayout.removeAllViewsInLayout();
 
-
-        if (leadDetails.getSalesmanReason() == null || (leadDetails.getSalesmanReason().get(0).equals("None") && leadDetails.getSalesmanReason().size() == 1)) {
+        if(leadDetails.getSalesmanReason()==null || leadDetails.getSalesmanReason().size() == 1){
             salesmanRemarksHeadingLayout.setVisibility(View.GONE);
             sallerRemarksLayout.setVisibility(View.GONE);
         } else {
@@ -321,9 +325,24 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 if (!leadDetails.getSalesmanReason().get(i).isEmpty() &&
                         !leadDetails.getSalesmanReason().get(i).equals("None") &&
                         !leadDetails.getSalesmanReason().get(i).equals("Not available")) {
+
+
                     TextView textView = new TextView(getContext());
                     textView.setTextColor(getResources().getColor(R.color.coloBlack));
-                    textView.setText(leadDetails.getSalesmanReason().get(i));
+
+                    String remark = leadDetails.getSalesmanReason().get(i);
+
+                    if(remark.contains("@@")){
+                        String remarkWithTime[] = remark.split("@@");
+
+                        DateFormat sdf = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
+                        Date resultdate = new Date(Long.parseLong(remarkWithTime[1]));
+                        textView.setText(Html.fromHtml("<font color=\"#196587\">"     +sdf.format(resultdate) +  "</font>" + "<br>" + remarkWithTime[0]));
+                    }else {
+                        textView.setText(remark);
+                    }
+
+
                     sallerRemarksLayout.addView(textView);
 
                     View view3 = new View(getContext());
@@ -335,7 +354,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
         }
 
-        if (leadDetails.getSalesmanRemarks().equals("None") || leadDetails.getSalesmanRemarks().isEmpty()) {
+        if (leadDetails.getSalesmanRemarks() == null || leadDetails.getSalesmanRemarks().equals("Not available") ) {
             customerRemarksLayout.setVisibility(View.GONE);
         } else {
             customerRemarks.setText(leadDetails.getSalesmanRemarks());
@@ -378,9 +397,22 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         for (int i = leadDetails.getTelecallerRemarks().size() - 1; i >= 0; i--) {
 
             if (!leadDetails.getTelecallerRemarks().get(i).isEmpty()) {
+
                 TextView textView = new TextView(getContext());
                 textView.setTextColor(getResources().getColor(R.color.coloBlack));
-                textView.setText(leadDetails.getTelecallerRemarks().get(i));
+
+
+                String remark = leadDetails.getTelecallerRemarks().get(i);
+
+                if(remark.contains("@@")){
+                    String[] remarkwithtime = leadDetails.getTelecallerRemarks().get(i).split("@@");
+                    DateFormat sdf = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
+                    Date resultdate = new Date(Long.parseLong(remarkwithtime[1]));
+                    textView.setText(Html.fromHtml("<font color=\"#196587\">"     +sdf.format(resultdate) +  "</font>" + "<br>" + remarkwithtime[0]));
+                }else {
+                    textView.setText(remark);
+                }
+
                 callerRemarksLayout.addView(textView);
 
                 View view1 = new View(getContext());
@@ -426,6 +458,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         }
     }
 
+
+
     private void openSalesmanFragment() {
         SalesmanEditLeadFragment.newInstance(leadDetails, (dialogSalesmanRemarks, dialogSalesmanReason, banks) -> {
 
@@ -438,7 +472,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             leadDetails.setBanks(banks);
 
             ArrayList<String> salesmanReson = leadDetails.getSalesmanReason();
-            salesmanReson.add(dialogSalesmanReason);
+            salesmanReson.add(dialogSalesmanReason + "@@" +System.currentTimeMillis());        // Set SalesmanReason with timesteamp
 
             leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
             leadDetails.setSalesmanReason(salesmanReson);
