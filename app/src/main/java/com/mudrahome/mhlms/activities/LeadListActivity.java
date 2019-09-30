@@ -240,7 +240,9 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                         //SharedPreferences.Editor editor = sharedPreferences.edit();
                         //editor.clear();
                         /*onBackPressed();*/
-                        startActivity(new Intent(LeadListActivity.this,LoginActivity.class));
+                        Intent intent = new Intent(LeadListActivity.this,LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                         finish();
                     }
                 }).setNegativeButton("No", (dialogInterface, u) -> {

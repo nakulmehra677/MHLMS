@@ -160,8 +160,11 @@ public class LoginActivity extends BaseActivity {
     private void startLeadsPage() {
         /*startActivityForResult(new Intent(
                 LoginActivity.this, LeadListActivity.class), 101);*/
-        startActivity(new Intent(LoginActivity.this,LeadListActivity.class));
+        Intent intent = new Intent(LoginActivity.this,LeadListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
         finish();
+
     }
 
     @Override
