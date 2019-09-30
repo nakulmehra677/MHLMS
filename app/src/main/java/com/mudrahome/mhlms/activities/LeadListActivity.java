@@ -164,13 +164,9 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
 
     private void openFragment(int userType) {
-        try {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.frame_layout, new LeadListFragment(userType));
             ft.commit();
-        }catch (Exception e){
-
-        }
 
     }
 
