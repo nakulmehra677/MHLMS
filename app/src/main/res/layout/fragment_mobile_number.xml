@@ -21,4 +21,32 @@
         android:maxLength="10"
         android:padding="12dp" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:id="@+id/updateContact"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:text="Cancel"
+            android:layout_toLeftOf="@+id/updateContact"
+            android:id="@+id/cancelUpdate"
+            android:layout_marginEnd="20dp"
+            android:layout_toStartOf="@+id/updateContact" />
+
+    </RelativeLayout>
+
 </LinearLayout>

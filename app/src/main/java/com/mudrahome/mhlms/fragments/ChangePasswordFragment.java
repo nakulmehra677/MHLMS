@@ -55,38 +55,30 @@ public class ChangePasswordFragment extends AppCompatDialogFragment {
         TextView canceldialoftextview = view.findViewById(R.id.canceldialoftextview);
 
 
-        updatepassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        updatepassword.setOnClickListener(view1 -> {
 
-                final String currentPassword = currentPasswordEdittext.getText().toString();
-                final String newPassword = newPasswordEditText.getText().toString();
-                final String confirmPassword = confirmPasswordEditText.getText().toString();
+            final String currentPassword = currentPasswordEdittext.getText().toString();
+            final String newPassword = newPasswordEditText.getText().toString();
+            final String confirmPassword = confirmPasswordEditText.getText().toString();
 
-                if(currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()){
+            if(currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()){
 
-                    Toast.makeText(getContext(), "Please Fill all Fields" + currentPassword , Toast.LENGTH_SHORT).show();
-                }else if(newPassword.matches(confirmPassword)){
+                Toast.makeText(getContext(), "Please Fill all Fields" + currentPassword , Toast.LENGTH_SHORT).show();
+            }else if(newPassword.matches(confirmPassword)){
 
-                    if(newPassword.length() >= 6){
-                        onPasswordChangedClicked.onPasswordChange(currentPassword,newPassword);
-                    }else {
-                        Toast.makeText(getContext(), "You have to enter atleast 6 digit password", Toast.LENGTH_SHORT).show();
-                    }
-
-
+                if(newPassword.length() >= 6){
+                    onPasswordChangedClicked.onPasswordChange(currentPassword,newPassword);
                 }else {
-                    Toast.makeText(getContext(), "Confirm Password doesn't matched" ,  Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "You have to enter atleast 6 digit password", Toast.LENGTH_SHORT).show();
                 }
+
+
+            }else {
+                Toast.makeText(getContext(), "Confirm Password doesn't matched" ,  Toast.LENGTH_SHORT).show();
             }
         });
 
-        canceldialoftextview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
+        canceldialoftextview.setOnClickListener(view12 -> dismiss());
 
 
 

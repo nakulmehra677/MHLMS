@@ -4,7 +4,10 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
@@ -16,6 +19,8 @@ public class EditPhoneFragment extends AppCompatDialogFragment {
     private String number;
     private OnSubmitClickListener listener;
     private EditText phone;
+    private Button update;
+    private TextView cancel;
 
     public EditPhoneFragment(String number, OnSubmitClickListener listener) {
         this.number = number;
@@ -34,21 +39,24 @@ public class EditPhoneFragment extends AppCompatDialogFragment {
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_mobile_number, null);
 
         phone = v.findViewById(R.id.mobile_number);
+        update = v.findViewById(R.id.updateContact);
+        cancel = v.findViewById(R.id.cancelUpdate);
 
-        builder.setView(v)
-                .setTitle("Edit Number")
-                .setPositiveButton("Change", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        listener.onSubmitClicked("+91" + phone.getText().toString());
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+        builder.setView(v);
 
-                    }
-                }).setCancelable(false);
+        update.setOnClickListener(view -> {
+
+            if(phone.getText().toString().length() != 10){
+                Toast.makeText(getContext(), "Invalid Number", Toast.LENGTH_SHORT).show();
+            }else {
+                listener.onSubmitClicked("+91" + phone.getText().toString());
+                dismiss();
+            }
+
+        });
+
+        cancel.setOnClickListener(view -> {dismiss();});
+
 
         return builder.create();
     }

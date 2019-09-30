@@ -3,6 +3,7 @@ package com.mudrahome.mhlms.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -83,12 +84,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
                         String uid = intent.getStringExtra("UIDNotification");
 
-                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
-                            @Override
-                            public void onSucces(LeadDetails leadDetails) {
-                                openLeadDetailsFragment(leadDetails,getString(R.string.admin_and_salesman));
-                            }
-                        },uid);
+                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.admin_and_salesman)),uid);
                     }else {
                         openViewPager(R.string.admin_and_salesman);
                     }
@@ -98,12 +94,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
                         String uid = intent.getStringExtra("UIDNotification");
 
-                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
-                            @Override
-                            public void onSucces(LeadDetails leadDetails) {
-                                openLeadDetailsFragment(leadDetails,getString(R.string.telecaller));
-                            }
-                        },uid);
+                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.telecaller)),uid);
                     }else {
                         openFragment(R.string.telecaller);
                     }
@@ -114,12 +105,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
                         String uid = intent.getStringExtra("UIDNotification");
 
-                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
-                            @Override
-                            public void onSucces(LeadDetails leadDetails) {
-                                openLeadDetailsFragment(leadDetails,getString(R.string.admin));
-                            }
-                        },uid);
+                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.admin)),uid);
                     }else {
                         openFragment(R.string.admin);
                     }
@@ -131,12 +117,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
                         String uid = intent.getStringExtra("UIDNotification");
 
-                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
-                            @Override
-                            public void onSucces(LeadDetails leadDetails) {
-                                openLeadDetailsFragment(leadDetails,getString(R.string.salesman));
-                            }
-                        },uid);
+                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.salesman)),uid);
                     }else {
                         openFragment(R.string.salesman);
                     }
@@ -203,10 +184,18 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
-        Intent intent = new Intent();
+        /*super.onBackPressed();*/
+
+        /*Intent intent = new Intent();
         intent.putExtra("loggedIn", profileManager.checkUserExist());
-        setResult(101, intent);
+        Log.d("profileManager", "onBackPressed: " + profileManager.checkUserExist());
+        setResult(101,intent);
+        finish();*/
+
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
         finish();
     }
 
@@ -250,7 +239,9 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 //                        kghv k
                         //SharedPreferences.Editor editor = sharedPreferences.edit();
                         //editor.clear();
-                        onBackPressed();
+                        /*onBackPressed();*/
+                        startActivity(new Intent(LeadListActivity.this,LoginActivity.class));
+                        finish();
                     }
                 }).setNegativeButton("No", (dialogInterface, u) -> {
 
@@ -271,15 +262,12 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     oldPassword,
                     newPassword,
                     userDataSharedPreference.getUserEmail(),
-                    new OnPasswordChange() {
-                        @Override
-                        public void onSucess(String result) {
+                    result -> {
 
-                            hideKeyboard(LeadListActivity.this);
-                            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                            dismissProgressDialog();
+                        hideKeyboard(LeadListActivity.this);
+                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+                        dismissProgressDialog();
 
-                        }
                     });
         }).show(getSupportFragmentManager(), "changepassword");
     }

@@ -111,15 +111,7 @@ public class LoginActivity extends BaseActivity {
             showToastMessage(R.string.no_internet);
     }
 
-    private void checkPermission(){
 
-        if(permissionManager.checkSmsPermission()){
-            checkLogin();
-        }else {
-            permissionManager.requestSMSPermission();
-        }
-
-    }
 
     private void checkLogin() {
 
@@ -137,6 +129,7 @@ public class LoginActivity extends BaseActivity {
         return new FirestoreInterfaces.OnGetUserDetails() {
             @Override
             public void onSuccess(UserDetails userDetails) {
+                cardView.setVisibility(View.GONE);
                 String strDeviceToken = FirebaseInstanceId.getInstance().getToken();
 
                 userDetails.setDeviceToken(strDeviceToken);
@@ -165,8 +158,10 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void startLeadsPage() {
-        startActivityForResult(new Intent(
-                LoginActivity.this, LeadListActivity.class), 101);
+        /*startActivityForResult(new Intent(
+                LoginActivity.this, LeadListActivity.class), 101);*/
+        startActivity(new Intent(LoginActivity.this,LeadListActivity.class));
+        finish();
     }
 
     @Override
@@ -175,16 +170,17 @@ public class LoginActivity extends BaseActivity {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isUpdating();
         } else {
-            checkPermission();
-            /*checkLogin();*/
+            /*checkPermission();*/
+            checkLogin();
         }
     }
 
-    @Override
+   /* @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // check if the request code is same as what is passed  here it is 2
         if (resultCode == 101) {
+            Log.d("profileManager", "onBackPressed: 1" + data.hasExtra("loggedIn"));
             if (data.getBooleanExtra("loggedIn", true))
                 finish();
             else
@@ -197,16 +193,18 @@ public class LoginActivity extends BaseActivity {
         }
 
 
-    }
+    }*/
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(requestCode ==123){
-            checkLogin();
-        }
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+        finish();
     }
+
+
 
     private void checkUpdate() {
         appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
@@ -241,8 +239,8 @@ public class LoginActivity extends BaseActivity {
                         }
                     } else {
                         Log.d("checkUpdate", "not available");
-                        checkPermission();
-                        /*checkLogin();*/
+                        /*checkPermission();*/
+                        checkLogin();
                     }
                 });
     }
