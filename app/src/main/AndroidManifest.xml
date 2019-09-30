@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <!--<uses-permission android:name="android.permission.SEND_SMS"/>-->
 
     <application
         android:allowBackup="true"
@@ -25,16 +25,19 @@
         <activity
             android:name="com.mudrahome.mhlms.activities.NotificationActivity"
             android:label="Notifications"
+            android:parentActivityName=".activities.NotificationActivity"
             android:screenOrientation="portrait">
 
         </activity>
         <activity
             android:name="com.mudrahome.mhlms.activities.StartOfferActivity"
             android:label="Start Ad"
+            android:parentActivityName=".activities.StartOfferActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.mudrahome.mhlms.activities.FilterActivity"
             android:label="Filter Leads"
+            android:parentActivityName=".activities.FilterActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.mudrahome.mhlms.activities.LeadListActivity"
@@ -43,6 +46,7 @@
         <activity
             android:name="com.mudrahome.mhlms.activities.FeedCustomerDetailsActivity"
             android:label="Feed Customer Details"
+            android:parentActivityName=".activities.FeedCustomerDetailsActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.mudrahome.mhlms.activities.LoginActivity"

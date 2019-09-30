@@ -45,6 +45,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     NavigationView navigationView;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     Intent intent;
+    private Boolean comeFromLeadDetailsFragment = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,10 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         navigationView.setNavigationItemSelectedListener(this);
 
         intent = getIntent();
+
+        if(intent.hasExtra("LeadDetailsFragment")){
+            comeFromLeadDetailsFragment = intent.getBooleanExtra("LeadDetailsFragment",false);
+        }
 
         firestore.getUsers(new FirestoreInterfaces.OnGetUserDetails() {
             @Override
@@ -131,12 +136,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
                         String uid = intent.getStringExtra("UIDNotification");
 
-                        firestore.getLeadDetails(new FirestoreInterfaces.OnLeadDetails() {
-                            @Override
-                            public void onSucces(LeadDetails leadDetails) {
-                                openLeadDetailsFragment(leadDetails,getString(R.string.salesman));
-                            }
-                        },uid);
+                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.salesman)),uid);
                     }else {
                         openFragment(R.string.salesman);
                     }
@@ -164,9 +164,14 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
 
     private void openFragment(int userType) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.frame_layout, new LeadListFragment(userType));
-        ft.commit();
+        try {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.frame_layout, new LeadListFragment(userType));
+            ft.commit();
+        }catch (Exception e){
+
+        }
+
     }
 
     private void openViewPager(int userType) {
@@ -204,10 +209,20 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
-        Intent intent = new Intent();
-        intent.putExtra("loggedIn", profileManager.checkUserExist());
-        setResult(101, intent);
-        finish();
+        if(comeFromLeadDetailsFragment){
+
+            Intent startMain = new Intent(Intent.ACTION_MAIN);
+            startMain.addCategory(Intent.CATEGORY_HOME);
+            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(startMain);
+
+        }else {
+            Intent intent = new Intent();
+            intent.putExtra("loggedIn", profileManager.checkUserExist());
+            setResult(101, intent);
+            finish();
+        }
+
     }
 
     @Override
@@ -271,15 +286,12 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     oldPassword,
                     newPassword,
                     userDataSharedPreference.getUserEmail(),
-                    new OnPasswordChange() {
-                        @Override
-                        public void onSucess(String result) {
+                    result -> {
 
-                            hideKeyboard(LeadListActivity.this);
-                            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                            dismissProgressDialog();
+                        hideKeyboard(LeadListActivity.this);
+                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+                        dismissProgressDialog();
 
-                        }
                     });
         }).show(getSupportFragmentManager(), "changepassword");
     }

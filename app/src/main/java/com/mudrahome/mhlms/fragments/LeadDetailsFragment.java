@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.mudrahome.mhlms.activities.LeadListActivity;
 import com.mudrahome.mhlms.firebase.Firestore;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.managers.PermissionManager;
@@ -22,6 +24,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import android.text.Html;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -85,7 +88,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private String notDoable = "Not Doable";
     private String documentPickedFileLoggedIn = "Document Picked and File Logged in";
 
-
+    private Boolean isLeadEdit = false;
 
     public LeadDetailsFragment(LeadDetails leadDetails, Context context, String userType) {
         this.leadDetails = leadDetails;
@@ -112,13 +115,18 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 @Override
                 public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 }
+
+
             });
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+
     }
+
+
 
     @NonNull
     @Override
@@ -165,6 +173,23 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         setLayoutFields();
 
+        dialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
+
+            if(keyEvent.getKeyCode() ==  KeyEvent.KEYCODE_BACK){
+                if(isLeadEdit){
+                    Intent intent = new Intent(getContext(),LeadListActivity.class);
+                    intent.putExtra("LeadDetailsFragment",true);
+                    startActivity(intent);
+                    return true;
+                }else {
+                    return false;
+                }
+            }else {
+                return false;
+            }
+
+        });
+
         if (leadDetails.getAssignerUId().equals("Not available")) {
             hideAssignerContact();
         } else {
@@ -173,6 +198,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 public void onSuccess(UserDetails userDetails) {
                     if (!userDetails.getContactNumber().equals("Not available")) {
                         assignerContact.setText(userDetails.getContactNumber());
+                        leadDetails.setAssignerContact(userDetails.getContactNumber());
                     } else {
                         hideAssignerContact();
                     }
@@ -207,6 +233,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 public void onSuccess(UserDetails userDetails) {
                     if (!userDetails.getContactNumber().equals("Not available")) {
                         assigneeContact.setText(userDetails.getContactNumber());
+                        leadDetails.setAssigneeContact(userDetails.getContactNumber());
                     } else {
                         hideAssigneeContact();
                     }
@@ -333,9 +360,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                     String remark = leadDetails.getSalesmanReason().get(i);
 
                     if(remark.contains("@@")){
-                        String remarkWithTime[] = remark.split("@@");
+                        String[] remarkWithTime = remark.split("@@");
 
-                        DateFormat sdf = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
+                        @SuppressLint("SimpleDateFormat") DateFormat sdf = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
                         Date resultdate = new Date(Long.parseLong(remarkWithTime[1]));
                         textView.setText(Html.fromHtml("<font color=\"#196587\">"     +sdf.format(resultdate) +  "</font>" + "<br>" + remarkWithTime[0]));
                     }else {
@@ -509,6 +536,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             @Override
             public void onLeadUpdated() {
                 Toast.makeText(context, R.string.lead_update, Toast.LENGTH_SHORT).show();
+                isLeadEdit = true;
                 setLayoutFields();
                 if (progress.isShowing())
                     progress.dismiss();
@@ -527,10 +555,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         startActivity(callIntent);
     }
 
-//    @Override
-//    public void onDestroy() {
+//
+//
+//        @Override
+//        public void onDestroy() {
 //        Log.d("State", "onDestroy");
-//        context.unregisterReceiver(br);
+//
+//
+//        /*context.unregisterReceiver(br);*/
 //        super.onDestroy();
 //    }
 }

@@ -125,101 +125,79 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
             }
         });
 
-        datePickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get Current Date
-                final Calendar c = Calendar.getInstance();
-                mYear = c.get(Calendar.YEAR);
-                mMonth = c.get(Calendar.MONTH);
-                mDay = c.get(Calendar.DAY_OF_MONTH);
+        datePickerButton.setOnClickListener(v1 -> {
+            // Get Current Date
+            final Calendar c = Calendar.getInstance();
+            mYear = c.get(Calendar.YEAR);
+            mMonth = c.get(Calendar.MONTH);
+            mDay = c.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                        new DatePickerDialog.OnDateSetListener() {
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                    (view, year, monthOfYear, dayOfMonth) -> {
 
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int monthOfYear, int dayOfMonth) {
+                        alarmDay = dayOfMonth;
+                        alarmMonth = monthOfYear;
+                        alarmYear = year;
 
-                                alarmDay = dayOfMonth;
-                                alarmMonth = monthOfYear;
-                                alarmYear = year;
+                        dateTextView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
 
-                                dateTextView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                    }, mYear, mMonth, mDay);
 
-                            }
-                        }, mYear, mMonth, mDay);
-
-                datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
-                datePickerDialog.show();
-            }
+            datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
+            datePickerDialog.show();
         });
 
-        timePickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        timePickerButton.setOnClickListener(v12 -> {
 
-                // Get Current TimeModel
-                final Calendar c = Calendar.getInstance();
-                mHour = c.get(Calendar.HOUR_OF_DAY);
-                mMinute = c.get(Calendar.MINUTE);
+            // Get Current TimeModel
+            final Calendar c = Calendar.getInstance();
+            mHour = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
 
-                // Launch TimeModel Picker Dialog
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
-                        new TimePickerDialog.OnTimeSetListener() {
+            // Launch TimeModel Picker Dialog
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
+                    (view, hourOfDay, minute) -> {
 
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
+                        alarmHour = hourOfDay;
+                        alarmMinute = minute;
 
-                                alarmHour = hourOfDay;
-                                alarmMinute = minute;
-
-                                timeTextView.setText(hourOfDay + ":" + minute);
-                            }
-                        }, mHour, mMinute, false);
-                timePickerDialog.show();
-            }
+                        timeTextView.setText(hourOfDay + ":" + minute);
+                    }, mHour, mMinute, false);
+            timePickerDialog.show();
         });
 
         builder.setView(v)
                 .setTitle("Edit details")
-                .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (!salesmanReason.getText().toString().isEmpty()) {
+                .setPositiveButton("Make changes", (dialog, which) -> {
+                    if (!salesmanReason.getText().toString().isEmpty()) {
 
-                            Alarm alarm = new Alarm(getContext());
+                        Alarm alarm = new Alarm(getContext());
 
-                            if (strRemarks.equals("Customer Interested but Document Pending") ||
-                                    strRemarks.equals("Customer follow Up")) {
+                        if (strRemarks.equals("Customer Interested but Document Pending") ||
+                                strRemarks.equals("Customer follow Up")) {
 
-                                if (!dateTextView.getText().toString().equals("DD/MM/YYYY") &&
-                                        !timeTextView.getText().toString().equals("hh:mm")) {
+                            if (!dateTextView.getText().toString().equals("DD/MM/YYYY") &&
+                                    !timeTextView.getText().toString().equals("hh:mm")) {
 
-                                    Calendar c = Calendar.getInstance();
+                                Calendar c = Calendar.getInstance();
 
-                                    c.set(Calendar.DAY_OF_MONTH, alarmDay);
-                                    c.set(Calendar.MONTH, alarmMonth);
-                                    c.set(Calendar.YEAR, alarmYear);
-                                    c.set(Calendar.HOUR_OF_DAY, alarmHour);
-                                    c.set(Calendar.MINUTE, alarmMinute);
-                                    c.set(Calendar.SECOND, 0);
+                                c.set(Calendar.DAY_OF_MONTH, alarmDay);
+                                c.set(Calendar.MONTH, alarmMonth);
+                                c.set(Calendar.YEAR, alarmYear);
+                                c.set(Calendar.HOUR_OF_DAY, alarmHour);
+                                c.set(Calendar.MINUTE, alarmMinute);
+                                c.set(Calendar.SECOND, 0);
 
-                                    alarm.startAlarm(c, leadDetails.getName());
-                                }
-                            } else {
-                                alarm.cancelAlarm(leadDetails.getName());
+                                alarm.startAlarm(c, leadDetails.getName());
                             }
-                            listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString(), banks);
+                        } else {
+                            alarm.cancelAlarm(leadDetails.getName());
                         }
+                        listener.onSubmitClicked(strRemarks, salesmanReason.getText().toString(), banks);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setNegativeButton("Cancel", (dialog, which) -> {
 
-                    }
                 })
                 .setCancelable(false);
 
@@ -259,14 +237,11 @@ public class SalesmanEditLeadFragment extends AppCompatDialogFragment {
 
         checkBox.setText(bank);
 
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (((CheckBox) view).isChecked()) {
-                    banks.add((String) ((CheckBox) view).getText());
-                } else {
-                    banks.remove((String) ((CheckBox) view).getText());
-                }
+        checkBox.setOnClickListener(view -> {
+            if (((CheckBox) view).isChecked()) {
+                banks.add((String) ((CheckBox) view).getText());
+            } else {
+                banks.remove((String) ((CheckBox) view).getText());
             }
         });
         return checkBox;

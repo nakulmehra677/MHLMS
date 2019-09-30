@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
     private int userType;
     private UserDataSharedPreference preferences;
 
+
     public LeadListFragment(int userType) {
         this.userType = userType;
     }
@@ -107,6 +109,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
+
                 if (!recyclerView.canScrollVertically(1)) {
 
                     long firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
@@ -130,12 +133,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                     bottomVisibleItem = null;
                     firstPageProgressBar.setVisibility(View.VISIBLE);
 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            firstPageProgressBar.setVisibility(View.GONE);
-                        }
-                    }, 5000);
+                    new Handler().postDelayed(() -> firstPageProgressBar.setVisibility(View.GONE), 5000);
                     //linearLayoutManager = new LinearLayoutManager(LeadListActivity.this);
                     getOffer();
                 }
