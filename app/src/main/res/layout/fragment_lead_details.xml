@@ -303,16 +303,32 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Caller's remarks : " />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="View All"
+                                android:layout_marginStart="10dp"
+                                android:id="@+id/viewallCallerRemark"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginLeft="10dp" />
 
                         </LinearLayout>
 
-                        <LinearLayout
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@color/coloBlack"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/latestCallerRemark"
+                            android:layout_marginLeft="10dp" />
+
+                        <!--<LinearLayout
                             android:id="@+id/caller_remarks_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:paddingHorizontal="8dp"
-                            android:paddingVertical="4dp" />
+                            android:paddingVertical="4dp" />-->
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -422,15 +438,32 @@
                                 android:layout_height="wrap_content"
                                 android:text="Salesman's remarks : " />
 
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="View All"
+                                android:id="@+id/viewallSalesmanRemark"
+                                android:textColor="@color/colorPrimary"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginLeft="10dp" />
+
                         </LinearLayout>
 
-                        <LinearLayout
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/coloBlack"
+                            android:layout_marginStart="10dp"
+                            android:id="@+id/latestsalesmanRemark"
+                            android:layout_marginLeft="10dp" />
+
+                        <!--<LinearLayout
                             android:id="@+id/sales_remarks_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:paddingHorizontal="8dp"
-                            android:paddingVertical="4dp" />
+                            android:paddingVertical="4dp" />-->
 
                     </LinearLayout>
 

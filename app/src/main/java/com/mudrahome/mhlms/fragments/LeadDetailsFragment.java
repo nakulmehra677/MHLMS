@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.mudrahome.mhlms.fragments.ViewAllRemarksFragment.*;
+
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
@@ -67,6 +69,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     private TextView bankNames;
     private TextView assignerContact;
     private TextView assigneeContact;
+    private TextView viewallCallerRemark;
+    private TextView viewallSalesmanRemark;
+    private TextView latestsalesmanRemark;
+    private TextView latestCallerRemark;
 
     private Button button;
     private LinearLayout assignedToLayout, assignerLayout, callerRemarksLayout, sallerRemarksLayout, employmentTypeLayout;
@@ -142,6 +148,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 //        br = new CallStatus();
         firestore = new Firestore();
 
+        viewallCallerRemark = view.findViewById(R.id.viewallCallerRemark);
         name = view.findViewById(R.id.customer_name);
         loan = view.findViewById(R.id.loan_amount);
         number = view.findViewById(R.id.contact_number);
@@ -161,9 +168,12 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         bankNames = view.findViewById(R.id.bank_names);
         assignerContact = view.findViewById(R.id.assigner_contact_number);
         assigneeContact = view.findViewById(R.id.assignee_contact_number);
-        callerRemarksLayout = view.findViewById(R.id.caller_remarks_layout);
-        sallerRemarksLayout = view.findViewById(R.id.sales_remarks_layout);
+        /*callerRemarksLayout = view.findViewById(R.id.caller_remarks_layout);*/
+        /*sallerRemarksLayout = view.findViewById(R.id.sales_remarks_layout);*/
         customerRemarksLayout = view.findViewById(R.id.customer_remarks_layout);
+        viewallSalesmanRemark = view.findViewById(R.id.viewallSalesmanRemark);
+        latestCallerRemark = view.findViewById(R.id.latestCallerRemark);
+        latestsalesmanRemark = view.findViewById(R.id.latestsalesmanRemark);
 
         salesmanRemarksHeadingLayout = view.findViewById(R.id.salesman_remarks_heading_layout);
 
@@ -180,6 +190,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             {
                 if(isEdit){
                     Intent intent = new Intent(getContext(),LeadListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     if(getActivity()!=null)
                        getActivity().finish();
@@ -340,52 +351,46 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             employmentType.setText(leadDetails.getEmploymentType());
         }
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2);
-
-        sallerRemarksLayout.removeAllViewsInLayout();
-
-        if(leadDetails.getSalesmanReason()==null || leadDetails.getSalesmanReason().size() == 1){
-            salesmanRemarksHeadingLayout.setVisibility(View.GONE);
-            sallerRemarksLayout.setVisibility(View.GONE);
-        } else {
-
-            View view2 = new View(getContext());
-            view2.setLayoutParams(layoutParams);
-            view2.setBackgroundColor(getResources().getColor(R.color.colorGray));
-            sallerRemarksLayout.addView(view2);
-
-            for (int i = leadDetails.getSalesmanReason().size() - 1; i >= 0; i--) {
-                if (!leadDetails.getSalesmanReason().get(i).isEmpty() &&
-                        !leadDetails.getSalesmanReason().get(i).equals("None") &&
-                        !leadDetails.getSalesmanReason().get(i).equals("Not available")) {
-
-
-                    TextView textView = new TextView(getContext());
-                    textView.setTextColor(getResources().getColor(R.color.coloBlack));
-
-                    String remark = leadDetails.getSalesmanReason().get(i);
-
-                    if(remark.contains("@@")){
-                        String[] remarkWithTime = remark.split("@@");
-
-                        @SuppressLint("SimpleDateFormat") DateFormat sdf = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
-                        Date resultdate = new Date(Long.parseLong(remarkWithTime[1]));
-                        textView.setText(Html.fromHtml("<font color=\"#196587\">"     +sdf.format(resultdate) +  "</font>" + "<br>" + remarkWithTime[0]));
-                    }else {
-                        textView.setText(remark);
-                    }
-
-
-                    sallerRemarksLayout.addView(textView);
-
-                    View view3 = new View(getContext());
-                    view3.setLayoutParams(layoutParams);
-                    view3.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                    sallerRemarksLayout.addView(view3);
+        if(leadDetails.getSalesmanReason() != null ){
+            Log.d("SalesManRemarks", "setLayoutFields: " + leadDetails.getSalesmanReason().toString());
+            if(leadDetails.getSalesmanReason().size() != 1){
+                int temp = 1;
+                String remark = getLatestRemark(leadDetails.getSalesmanReason().get(leadDetails.getSalesmanReason().size()-temp));
+                while (remark == null){
+                    temp++;
+                    remark = getLatestRemark(leadDetails.getSalesmanReason().get(leadDetails.getSalesmanReason().size() - temp));
+                }
+                latestsalesmanRemark.setText(Html.fromHtml(remark));
+                viewallSalesmanRemark.setOnClickListener(view -> newInstance(leadDetails.getSalesmanReason(),"Salesman's").show(getChildFragmentManager(),"ShowRemarks"));
+            }
+            else
+                {
+                viewallSalesmanRemark.setText("Not available");
+                viewallSalesmanRemark.setTextColor(getResources().getColor(R.color.coloBlack));
                 }
 
+
+        }
+
+        if(leadDetails.getTelecallerRemarks() != null){
+            if(leadDetails.getTelecallerRemarks().size() !=1){
+                String remark = getLatestRemark(leadDetails.getTelecallerRemarks().get(leadDetails.getTelecallerRemarks().size() -1));
+                int temp = 1;
+                while (remark == null){
+                    temp++;
+                    remark = getLatestRemark(leadDetails.getTelecallerRemarks().get(leadDetails.getTelecallerRemarks().size() -temp));
+                }
+
+                latestCallerRemark.setText(Html.fromHtml(remark));
+                viewallCallerRemark.setOnClickListener(view -> newInstance(leadDetails.getTelecallerRemarks(),"Caller's").show(getChildFragmentManager(),"ShowRemarks"));
+            }
+            else
+            {
+                viewallCallerRemark.setText("Not available");
+                viewallCallerRemark.setTextColor(getResources().getColor(R.color.coloBlack));
             }
         }
+
 
         if (leadDetails.getSalesmanRemarks() == null || leadDetails.getSalesmanRemarks().equals("Not available") ) {
             customerRemarksLayout.setVisibility(View.GONE);
@@ -412,10 +417,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedOn.setText(leadDetails.getAssignDate());
         assignedAt.setText(leadDetails.getAssignTime());
 
-        callerRemarksLayout.removeAllViewsInLayout();
-
-
-
         StringBuilder csvBuilder = new StringBuilder();
         for (String bank : leadDetails.getBanks()) {
             csvBuilder.append(bank);
@@ -423,39 +424,27 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         }
         String bankList = csvBuilder.toString();
         bankNames.setText(bankList);
+    }
 
-        View view = new View(getContext());
-        view.setLayoutParams(layoutParams);
-        view.setBackgroundColor(getResources().getColor(R.color.colorGray));
-        callerRemarksLayout.addView(view);
+    private String getLatestRemark(String remark) {
+        String r=null;
 
-        for (int i = leadDetails.getTelecallerRemarks().size() - 1; i >= 0; i--) {
+        if(remark.contains("@@")){
 
-            if (!leadDetails.getTelecallerRemarks().get(i).isEmpty()) {
+            String[] remarkWithTime = remark.split("@@");
 
-                TextView textView = new TextView(getContext());
-                textView.setTextColor(getResources().getColor(R.color.coloBlack));
+            @SuppressLint("SimpleDateFormat") DateFormat sdf = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
+            Date resultdate = new Date(Long.parseLong(remarkWithTime[1]));
 
+            if(!remarkWithTime[0].isEmpty())
+                r = "<font color=\"#196587\">"     +sdf.format(resultdate) +  "</font>" + "<br>" + remarkWithTime[0];
+        }else {
+            if(!remark.isEmpty())
+             r = remark;
 
-                String remark = leadDetails.getTelecallerRemarks().get(i);
-
-                if(remark.contains("@@")){
-                    String[] remarkwithtime = leadDetails.getTelecallerRemarks().get(i).split("@@");
-                    DateFormat sdf = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
-                    Date resultdate = new Date(Long.parseLong(remarkwithtime[1]));
-                    textView.setText(Html.fromHtml("<font color=\"#196587\">"     +sdf.format(resultdate) +  "</font>" + "<br>" + remarkwithtime[0]));
-                }else {
-                    textView.setText(remark);
-                }
-
-                callerRemarksLayout.addView(textView);
-
-                View view1 = new View(getContext());
-                view1.setLayoutParams(layoutParams);
-                view1.setBackgroundColor(getResources().getColor(R.color.colorGray));
-                callerRemarksLayout.addView(view1);
-            }
         }
+
+        return r;
     }
 
     @Override
@@ -534,7 +523,6 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             progress.setCancelable(false);
             progress.setCanceledOnTouchOutside(false);
             progress.show();
-
             firestore.updateLeadDetails(onUpdateLead(), leadDetails);
         }).show(getFragmentManager(), "promo");
     }

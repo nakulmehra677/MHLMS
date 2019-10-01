@@ -19,8 +19,6 @@ public class EditPhoneFragment extends AppCompatDialogFragment {
     private String number;
     private OnSubmitClickListener listener;
     private EditText phone;
-    private Button update;
-    private TextView cancel;
 
     public EditPhoneFragment(String number, OnSubmitClickListener listener) {
         this.number = number;
@@ -39,8 +37,8 @@ public class EditPhoneFragment extends AppCompatDialogFragment {
         View v = getActivity().getLayoutInflater().inflate(R.layout.fragment_mobile_number, null);
 
         phone = v.findViewById(R.id.mobile_number);
-        update = v.findViewById(R.id.updateContact);
-        cancel = v.findViewById(R.id.cancelUpdate);
+        Button update = v.findViewById(R.id.updateContact);
+        TextView cancel = v.findViewById(R.id.cancelUpdate);
 
         builder.setView(v);
 

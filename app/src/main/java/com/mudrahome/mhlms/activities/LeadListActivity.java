@@ -145,9 +145,14 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
 
     private void openFragment(int userType) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.frame_layout, new LeadListFragment(userType));
-        ft.commit();
+        try {
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.frame_layout, new LeadListFragment(userType));
+            ft.commit();
+        }catch (Exception e){
+
+        }
     }
 
     private void openViewPager(int userType) {
@@ -231,20 +236,17 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
     private void showLogOutWarning() {
         AlertDialog.Builder build = new AlertDialog.Builder(LeadListActivity.this);
         build.setMessage("Are you sure you want to logout?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int u) {
-                        profileManager.signOut();
-                        showToastMessage(R.string.logged_out);
+                .setPositiveButton("Yes", (dialogInterface, u) -> {
+                    profileManager.signOut();
+                    showToastMessage(R.string.logged_out);
 //                        kghv k
-                        //SharedPreferences.Editor editor = sharedPreferences.edit();
-                        //editor.clear();
-                        /*onBackPressed();*/
-                        Intent intent = new Intent(LeadListActivity.this,LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
-                    }
+                    //SharedPreferences.Editor editor = sharedPreferences.edit();
+                    //editor.clear();
+                    /*onBackPressed();*/
+                    Intent intent = new Intent(LeadListActivity.this,LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
                 }).setNegativeButton("No", (dialogInterface, u) -> {
 
         });
