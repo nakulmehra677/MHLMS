@@ -194,7 +194,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                     startActivity(intent);
                     if(getActivity()!=null)
                        getActivity().finish();
-                    /*dialog.dismiss();*/
+                       /*dialog.dismiss();*/
                     return true;
                 }else {
                     return false;
@@ -365,8 +365,15 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
             else
                 {
-                viewallSalesmanRemark.setText("Not available");
-                viewallSalesmanRemark.setTextColor(getResources().getColor(R.color.coloBlack));
+                    if(!leadDetails.getSalesmanReason().get(0).matches("Not available")){
+                        latestsalesmanRemark.setText(Html.fromHtml(getLatestRemark(leadDetails.getSalesmanReason().get(0))));
+                        viewallSalesmanRemark.setText("");
+                    }else {
+                        latestsalesmanRemark.setVisibility(View.GONE);
+                        viewallSalesmanRemark.setText("Not available");
+                    }
+
+                     viewallSalesmanRemark.setTextColor(getResources().getColor(R.color.coloBlack));
                 }
 
 
@@ -386,7 +393,13 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
             else
             {
-                viewallCallerRemark.setText("Not available");
+                if(!leadDetails.getTelecallerRemarks().get(0).matches("Not available")){
+                    latestCallerRemark.setText(Html.fromHtml(getLatestRemark(leadDetails.getTelecallerRemarks().get(0))));
+                    viewallCallerRemark.setText("");
+                }else {
+                    viewallCallerRemark.setText("Not available");
+                    latestCallerRemark.setVisibility(View.GONE);
+                }
                 viewallCallerRemark.setTextColor(getResources().getColor(R.color.coloBlack));
             }
         }

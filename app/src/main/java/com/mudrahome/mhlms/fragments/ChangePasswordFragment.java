@@ -40,12 +40,9 @@ public class ChangePasswordFragment extends AppCompatDialogFragment {
 
         Log.d("Dialog ", "onCreateDialog: onOptionsItemSelected" + " dialog show");
 
-
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_change_password,null);
         alertDialog.setView(view);
-
-
 
 
         final EditText currentPasswordEdittext = view.findViewById(R.id.currentPasswordfragemt);
@@ -79,14 +76,6 @@ public class ChangePasswordFragment extends AppCompatDialogFragment {
         });
 
         canceldialoftextview.setOnClickListener(view12 -> dismiss());
-
-
-
-
-
-
-
-
 
         return /*super.onCreateDialog(savedInstanceState)*/alertDialog.create();
     }

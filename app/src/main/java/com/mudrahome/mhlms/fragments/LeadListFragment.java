@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -110,17 +111,20 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                 super.onScrolled(recyclerView, dx, dy);
 
 
+                long firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
+                long visibleItemCount = linearLayoutManager.getChildCount();
+                long totalItemCount = linearLayoutManager.getItemCount();
+                Log.d("onScrollStateChanged", "onScrolled: bsdfhb : \n" + "isSrolling " + isSrolling + "\nfirstVisibleItem " +firstVisibleItem + "\nvisibleItemCount " + visibleItemCount + "\ntotalItemCount " +totalItemCount );
+
                 if (!recyclerView.canScrollVertically(1)) {
 
-                    long firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
-                    long visibleItemCount = linearLayoutManager.getChildCount();
-                    long totalItemCount = linearLayoutManager.getItemCount();
 
                     if (isSrolling && (firstVisibleItem + visibleItemCount == totalItemCount) && !isLastItemFetched) {
                         isSrolling = false;
                         progressBar.setVisibility(View.VISIBLE);
                         fetchLeads();
                     }
+
                 }
             }
         });
