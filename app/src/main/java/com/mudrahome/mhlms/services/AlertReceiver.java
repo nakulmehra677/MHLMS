@@ -13,14 +13,6 @@ public class AlertReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.d("AlertReceiver", " context " );
-        try {
-            Log.d("AlertReceiver", " context " + context.getApplicationContext().getPackageName());
-        }catch (Exception e){
-
-        }
-
-
         String customerName = intent.getStringExtra("name");
         Log.d("AlertReceiver", " context " );
         NotificationHelper notificationHelper = new NotificationHelper(context, customerName);
