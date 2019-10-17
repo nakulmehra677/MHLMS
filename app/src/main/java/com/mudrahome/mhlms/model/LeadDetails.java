@@ -16,7 +16,7 @@ public class LeadDetails {
     private String employment = "Not available";
     private String employmentType = "Not available";
     private String location = "Not available";
-    private String salesmanRemarks = "a";
+    private String salesmanRemarks = "Not available";
     private String date = "Not available";
     private String assignedTo = "Not available";
     private String status = "Not available";

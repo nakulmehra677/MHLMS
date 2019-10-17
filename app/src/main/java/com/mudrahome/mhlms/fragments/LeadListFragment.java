@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,17 +22,18 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.mudrahome.mhlms.ExtraViews;
+import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.activities.FeedCustomerDetailsActivity;
 import com.mudrahome.mhlms.activities.FilterActivity;
 import com.mudrahome.mhlms.activities.StartOfferActivity;
 import com.mudrahome.mhlms.adapters.LeadsItemAdapter;
-import com.mudrahome.mhlms.ExtraViews;
 import com.mudrahome.mhlms.firebase.Firestore;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.model.LeadDetails;
 import com.mudrahome.mhlms.model.LeadFilter;
 import com.mudrahome.mhlms.model.OfferDetails;
-import com.mudrahome.mhlms.R;
+import com.mudrahome.mhlms.model.UserDetails;
 import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference;
 
 import java.util.ArrayList;
@@ -59,11 +59,12 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
     private ExtraViews extraViews;
     private FloatingActionButton filter;
     private int userType;
+    private UserDetails currentUserDetails;
     private UserDataSharedPreference preferences;
 
-
-    public LeadListFragment(int userType) {
+    public LeadListFragment(int userType, UserDetails currentUserDetails) {
         this.userType = userType;
+        this.currentUserDetails = currentUserDetails;
     }
 
     @Nullable
@@ -94,6 +95,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
         recyclerView.setAdapter(adapter);
         setLayoutByUser();
 
+
         new Handler().postDelayed(() -> firstPageProgressBar.setVisibility(View.GONE), 5000);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -114,7 +116,7 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                 long firstVisibleItem = linearLayoutManager.findFirstVisibleItemPosition();
                 long visibleItemCount = linearLayoutManager.getChildCount();
                 long totalItemCount = linearLayoutManager.getItemCount();
-                Log.d("onScrollStateChanged", "onScrolled: bsdfhb : \n" + "isSrolling " + isSrolling + "\nfirstVisibleItem " +firstVisibleItem + "\nvisibleItemCount " + visibleItemCount + "\ntotalItemCount " +totalItemCount );
+                Log.d("onScrollStateChanged", "onScrolled: bsdfhb : \n" + "isSrolling " + isSrolling + "\nfirstVisibleItem " + firstVisibleItem + "\nvisibleItemCount " + visibleItemCount + "\ntotalItemCount " + totalItemCount);
 
                 if (!recyclerView.canScrollVertically(1)) {
 
@@ -124,7 +126,6 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
                         progressBar.setVisibility(View.VISIBLE);
                         fetchLeads();
                     }
-
                 }
             }
         });
@@ -151,32 +152,33 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
 
     @SuppressLint("RestrictedApi")
     private void setLayoutByUser() {
+        Log.d("ll", getString(userType));
         if (userType == R.string.telecaller) {
             fab.setVisibility(View.VISIBLE);
-            fab.setImageResource(R.drawable.ic_add_white_24dp);
+            setFeedListActionFab();
 
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(getContext(), FeedCustomerDetailsActivity.class));
-                }
-            });
         } else if (userType == R.string.admin) {
             fab.setVisibility(View.VISIBLE);
             fab.setImageResource(R.drawable.megaphone);
 
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (isNetworkConnected()) {
-                        startActivity(new Intent(getContext(), StartOfferActivity.class));
-                    } else
-                        extraViews.showToast(R.string.no_internet, getContext());
-                }
+            fab.setOnClickListener(view -> {
+                if (isNetworkConnected()) {
+                    startActivity(new Intent(getContext(), StartOfferActivity.class));
+                } else
+                    extraViews.showToast(R.string.no_internet, getContext());
             });
+        } else if (userType == R.string.business_associate) {
+            fab.setVisibility(View.VISIBLE);
+            setFeedListActionFab();
         }
         leadDetailsList.clear();
         getOffer();
+    }
+
+    private void setFeedListActionFab() {
+        fab.setImageResource(R.drawable.ic_add_white_24dp);
+        fab.setOnClickListener(view ->
+                startActivity(new Intent(getContext(), FeedCustomerDetailsActivity.class)));
     }
 
     private void getOffer() {
@@ -207,8 +209,15 @@ public class LeadListFragment extends Fragment implements View.OnClickListener {
             s = "assigner";
         else if (userType == R.string.salesman)
             s = "assignedTo";
-        else
+        else if (userType == R.string.admin)
             s = "Admin";
+        else if (userType == R.string.business_associate) {
+            s = "Business Associate";
+            leadFilter.setLocation(currentUserDetails.getLocation().keySet().iterator().next());
+        } else {
+            s = "Teleassigner";
+            leadFilter.setLocation(currentUserDetails.getLocation().keySet().iterator().next());
+        }
 
         firestore.downloadLeadList(onFetchLeadList(),
                 s, preferences.getUserName(), bottomVisibleItem,

@@ -1,11 +1,6 @@
 package com.mudrahome.mhlms.adapters;
 
 import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +8,14 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.fragments.LeadDetailsFragment;
 import com.mudrahome.mhlms.model.LeadDetails;
 import com.mudrahome.mhlms.model.OfferDetails;
-import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.viewHolders.LeadListViewHolder;
 import com.mudrahome.mhlms.viewHolders.OfferViewHolder;
 
@@ -93,7 +92,8 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 vh2.location.setText(model.getLocation());
                 vh2.date.setText(model.getDate());
 
-                if (currentUserType.equals(context.getString(R.string.telecaller)))
+                if (currentUserType.equals(context.getString(R.string.telecaller)) ||
+                        currentUserType.equals(context.getString(R.string.business_associate)))
                     vh2.assign.setText(model.getAssignedTo());
                 else if (currentUserType.equals(context.getString(R.string.salesman))) {
                     vh2.assign.setText(model.getAssigner());

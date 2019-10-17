@@ -2,11 +2,12 @@ package com.mudrahome.mhlms.sharedPreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mudrahome.mhlms.model.UserDetails;
 import com.mudrahome.mhlms.R;
+import com.mudrahome.mhlms.model.UserDetails;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,10 +45,31 @@ public class UserDataSharedPreference {
 
         editor.putStringSet(context.getString(R.string.SH_user_location), location);
 
-        Set<String> userType = new HashSet<String>();
-        userType.addAll(details.getUserType());
-        editor.putStringSet(context.getString(R.string.SH_user_type), userType);
+//        Set<String> userType = new HashSet<String>();
+//        userType.addAll(details.getUserType());
+//        editor.putStringSet(context.getString(R.string.SH_user_type), userType);
 
+        if (details.getUserType().contains(context.getString(R.string.admin)) &&
+                details.getUserType().contains(context.getString(R.string.salesman))) {
+            editor.putString(context.getString(R.string.SH_user_type),
+                    context.getString(R.string.admin_and_salesman));
+
+        } else if (details.getUserType().contains(context.getString(R.string.telecaller))) {
+            editor.putString(context.getString(R.string.SH_user_type),
+                    context.getString(R.string.telecaller));
+
+        } else if (details.getUserType().contains(context.getString(R.string.business_associate))) {
+            editor.putString(context.getString(R.string.SH_user_type),
+                    context.getString(R.string.business_associate));
+
+        } else if (details.getUserType().contains(context.getString(R.string.teleassigner))) {
+            editor.putString(context.getString(R.string.SH_user_type),
+                    context.getString(R.string.teleassigner));
+
+        } else {
+            editor.putString(context.getString(R.string.SH_user_type),
+                    context.getString(R.string.salesman));
+        }
         editor.commit();
     }
 
@@ -80,9 +102,8 @@ public class UserDataSharedPreference {
         return preferences.getString(context.getString(R.string.SH_user_name), "");
     }
 
-    public Set<String> getUserType() {
-        Set<String> set = new HashSet<String>();
-        set.add("Salesman");
-        return preferences.getStringSet(context.getString(R.string.SH_user_type), set);
+    public String getUserType() {
+        return preferences.getString(context.getString(R.string.SH_user_type), "");
+
     }
 }

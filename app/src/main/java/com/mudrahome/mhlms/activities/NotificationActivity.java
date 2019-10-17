@@ -25,7 +25,7 @@ public class NotificationActivity extends BaseActivity {
     private com.mudrahome.mhlms.firebase.Firestore firestore;
     private List<Map<String, String>> data;
     private SimpleAdapter adapter;
-    private Set<String> currentUserType = new HashSet<>();
+    private String currentUserType;
     private String currentUserName;
     private List<String> list = new ArrayList<>();
     private ExtraViews extraViews;
@@ -51,12 +51,12 @@ public class NotificationActivity extends BaseActivity {
         extraViews.startProgressDialog("Loading...", this);
 
         String userType;
-        if (currentUserType.contains(getString(R.string.admin))) {
+        if (currentUserType.equals(getString(R.string.admin))) {
             userType = getString(R.string.admin);
-        } else if (currentUserType.contains(getString(R.string.telecaller))) {
+        } else if (currentUserType.equals(getString(R.string.telecaller))) {
             userType = getString(R.string.telecaller);
         } else {
-            userType = getString(R.string.admin);
+            userType = getString(R.string.salesman);
         }
 
         firestore.getOffers(new FirestoreInterfaces.FetchOffer() {

@@ -9,10 +9,10 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 
+import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.model.UserDetails;
 import com.mudrahome.mhlms.model.UserList;
-import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference;
 
 
@@ -83,63 +83,56 @@ public class FilterActivity extends BaseActivity {
         } else if (userType == R.string.salesman) {
             locationButton.setVisibility(View.GONE);
             assigneeButton.setVisibility(View.GONE);
+
+        } else if (userType == R.string.business_associate) {
+            locationButton.setVisibility(View.GONE);
+            assignerButton.setVisibility(View.GONE);
+
+        } else if (userType == R.string.teleassigner) {
+            locationButton.setVisibility(View.GONE);
+            assignerButton.setVisibility(View.GONE);
         }
 
         firestore = new com.mudrahome.mhlms.firebase.Firestore();
         initAllValues();
         showLocationList();
 
-        locationRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                RadioButton rb = findViewById(i);
-                strLocation = rb.getText().toString();
+        locationRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
+            RadioButton rb = findViewById(i);
+            strLocation = rb.getText().toString();
 
-                Log.d("Radio_Button", "" + strLocation);
+            Log.d("Radio_Button", "" + strLocation);
 
-                assigneeLocationChanged = true;
-                assignerLocationChanged = true;
-            }
+            assigneeLocationChanged = true;
+            assignerLocationChanged = true;
         });
 
-        assignerRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                RadioButton rb = findViewById(i);
-                strAssigner = rb.getText().toString();
+        assignerRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
+            RadioButton rb = findViewById(i);
+            strAssigner = rb.getText().toString();
 
-                Log.d("Radio_Button", "" + strAssigner);
-            }
+            Log.d("Radio_Button", "" + strAssigner);
         });
 
-        assigneeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                RadioButton rb = findViewById(i);
-                strAssignee = rb.getText().toString();
+        assigneeRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
+            RadioButton rb = findViewById(i);
+            strAssignee = rb.getText().toString();
 
-                Log.d("Radio_Button", "" + strAssignee);
-            }
+            Log.d("Radio_Button", "" + strAssignee);
         });
 
-        loanTypeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                RadioButton rb = findViewById(i);
-                strLoanType = rb.getText().toString();
+        loanTypeRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
+            RadioButton rb = findViewById(i);
+            strLoanType = rb.getText().toString();
 
-                Log.d("Radio_Button", "" + strLoanType);
-            }
+            Log.d("Radio_Button", "" + strLoanType);
         });
 
-        statusRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                RadioButton rb = findViewById(i);
-                strStatus = rb.getText().toString();
+        statusRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
+            RadioButton rb = findViewById(i);
+            strStatus = rb.getText().toString();
 
-                Log.d("Radio_Button", "" + strStatus);
-            }
+            Log.d("Radio_Button", "" + strStatus);
         });
     }
 

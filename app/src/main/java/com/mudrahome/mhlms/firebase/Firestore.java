@@ -1,27 +1,26 @@
 package com.mudrahome.mhlms.firebase;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import android.util.Log;
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.model.LeadDetails;
 import com.mudrahome.mhlms.model.LeadFilter;
 import com.mudrahome.mhlms.model.OfferDetails;
 import com.mudrahome.mhlms.model.UserDetails;
 import com.mudrahome.mhlms.model.UserList;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +102,8 @@ public class Firestore {
                 "contactNumber", updateLead.getContactNumber(),
                 "assignedTo", updateLead.getAssignedTo(),
                 "assignedToUId", updateLead.getAssignedToUId(),
+                "assignDate", updateLead.getAssignDate(),
+                "assignTime", updateLead.getAssignTime(),
                 "telecallerRemarks", updateLead.getTelecallerRemarks(),
                 "salesmanRemarks", updateLead.getSalesmanRemarks(),
                 "salesmanReason", updateLead.getSalesmanReason(),
@@ -175,13 +176,13 @@ public class Firestore {
             query = query.whereEqualTo("status", filter.getStatus());
 
         if (lastLead == null) {
-            if (!assign.equals("Admin"))
+            if (!assign.equals("Admin") && !assign.equals("Business Associate") && !assign.equals("Teleassigner"))
                 query = query.whereEqualTo(assign, userName);
 
             query = query.orderBy("timeStamp", Query.Direction.DESCENDING)
                     .limit(20);
         } else {
-            if (!assign.equals("Admin"))
+            if (!assign.equals("Admin") && !assign.equals("Business Associate") && !assign.equals("Teleassigner"))
                 query = query.whereEqualTo(assign, userName);
 
             query = query.orderBy("timeStamp", Query.Direction.DESCENDING)

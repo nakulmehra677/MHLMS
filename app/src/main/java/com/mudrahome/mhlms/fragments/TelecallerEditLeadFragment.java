@@ -4,28 +4,24 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.managers.Alarm;
 import com.mudrahome.mhlms.managers.UpdateLead;
 import com.mudrahome.mhlms.model.LeadDetails;
 import com.mudrahome.mhlms.model.UserDetails;
-import com.mudrahome.mhlms.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,7 +33,7 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
     private OnSubmitClickListener listener;
     private ArrayAdapter<CharSequence> assignedToAdapter;
     private Spinner assignedToSpinner;
-    List<UserDetails> salesPersonList = new ArrayList();
+    List<UserDetails> salesPersonList;
 
     private EditText customerName;
     private EditText loanAmount;
@@ -50,6 +46,11 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
     private TextView reasontextview;
 
     private LinearLayout reminderLayout;
+    private LinearLayout nameLayout;
+    private LinearLayout contactLayout;
+    private LinearLayout amountLayout;
+    private LinearLayout assignToLayout;
+    private LinearLayout reasonLayout;
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private int alarmYear, alarmMonth, alarmDay, alarmHour, alarmMinute;
@@ -57,18 +58,23 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
 
     private LeadDetails leadDetails;
     private Boolean reasonshow = false;
+    private String userType;
 
 
-    public TelecallerEditLeadFragment(LeadDetails leadDetails, List<UserDetails> salesPersonList, OnSubmitClickListener listener) {
+    public TelecallerEditLeadFragment(LeadDetails leadDetails, List<UserDetails> salesPersonList,
+                                      OnSubmitClickListener listener, String userType) {
         this.leadDetails = leadDetails;
         this.listener = listener;
         this.salesPersonList = salesPersonList;
+        this.userType = userType;
     }
 
     public static TelecallerEditLeadFragment newInstance(
-            LeadDetails leadDetails, List<UserDetails> salesPersonList, OnSubmitClickListener listener) {
+            LeadDetails leadDetails, List<UserDetails> salesPersonList,
+            OnSubmitClickListener listener, String userType) {
 
-        TelecallerEditLeadFragment f = new TelecallerEditLeadFragment(leadDetails, salesPersonList, listener);
+        TelecallerEditLeadFragment f = new TelecallerEditLeadFragment(
+                leadDetails, salesPersonList, listener, userType);
         return f;
     }
 
@@ -87,31 +93,44 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
         dateTextView = v.findViewById(R.id.date);
         timeTextView = v.findViewById(R.id.time);
         reminderLayout = v.findViewById(R.id.reminder_layout);
+        nameLayout = v.findViewById(R.id.customer_name_layout);
+        contactLayout = v.findViewById(R.id.contact_number_layout);
+        amountLayout = v.findViewById(R.id.loan_amount_layout);
+        assignToLayout = v.findViewById(R.id.linearLayout);
+        reasonLayout = v.findViewById(R.id.reason_layout);
+
         telecallerReason = v.findViewById(R.id.telecaller_reason);
 
         reasontextview = v.findViewById(R.id.reasontextview);
 
 
+        if (userType.equals(getString(R.string.teleassigner))) {
+            nameLayout.setVisibility(View.GONE);
+            amountLayout.setVisibility(View.GONE);
+            contactLayout.setVisibility(View.GONE);
+        } else if (userType.equals(getString(R.string.business_associate))) {
+            assignToLayout.setVisibility(View.GONE);
+            reasonLayout.setVisibility(View.GONE);
+            reminderLayout.setVisibility(View.GONE);
+        }
         customerName.setText(leadDetails.getName());
         loanAmount.setText(leadDetails.getLoanAmount());
         contactNumber.setText(leadDetails.getContactNumber());
 
-
-
-
         String remarks = "";
-
 
         telecallerReason.setText(remarks);
 
-        if (leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
-                leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
-            reminderLayout.setVisibility(View.VISIBLE);
-        } else {
-            reminderLayout.setVisibility(View.GONE);
+        if (!userType.equals(getString(R.string.business_associate))) {
+            if (leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
+                    leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
+                reminderLayout.setVisibility(View.VISIBLE);
+            } else {
+                reminderLayout.setVisibility(View.GONE);
 
-            dateTextView.setText("DD/MM/YYYY");
-            timeTextView.setText("hh:mm");
+                dateTextView.setText("DD/MM/YYYY");
+                timeTextView.setText("hh:mm");
+            }
         }
 
         List salesPersonNameList = new ArrayList<>();
@@ -132,9 +151,6 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
                 strAssignedTo = parent.getItemAtPosition(position).toString();
-                Log.i("Assignedto",leadDetails.getAssignedTo());
-
-                Log.i("Assignedto",strAssignedTo);
             }
 
             @Override
@@ -143,129 +159,110 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
             }
         });
 
-        datePickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get Current Date
-                final Calendar c = Calendar.getInstance();
-                mYear = c.get(Calendar.YEAR);
-                mMonth = c.get(Calendar.MONTH);
-                mDay = c.get(Calendar.DAY_OF_MONTH);
+        datePickerButton.setOnClickListener(v1 -> {
+            // Get Current Date
+            final Calendar c = Calendar.getInstance();
+            mYear = c.get(Calendar.YEAR);
+            mMonth = c.get(Calendar.MONTH);
+            mDay = c.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                        new DatePickerDialog.OnDateSetListener() {
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                    (view, year, monthOfYear, dayOfMonth) -> {
 
-                            @Override
-                            public void onDateSet(DatePicker view, int year,
-                                                  int monthOfYear, int dayOfMonth) {
+                        alarmDay = dayOfMonth;
+                        alarmMonth = monthOfYear;
+                        alarmYear = year;
 
-                                alarmDay = dayOfMonth;
-                                alarmMonth = monthOfYear;
-                                alarmYear = year;
+                        dateTextView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
 
-                                dateTextView.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                    }, mYear, mMonth, mDay);
 
-                            }
-                        }, mYear, mMonth, mDay);
-
-                datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
-                datePickerDialog.show();
-            }
+            datePickerDialog.getDatePicker().setMinDate(c.getTimeInMillis());
+            datePickerDialog.show();
         });
 
-        timePickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        timePickerButton.setOnClickListener(v12 -> {
 
-                // Get Current TimeModel
-                final Calendar c = Calendar.getInstance();
-                mHour = c.get(Calendar.HOUR_OF_DAY);
-                mMinute = c.get(Calendar.MINUTE);
+            // Get Current TimeModel
+            final Calendar c = Calendar.getInstance();
+            mHour = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
 
-                // Launch TimeModel Picker Dialog
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
-                        new TimePickerDialog.OnTimeSetListener() {
+            // Launch TimeModel Picker Dialog
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
+                    (view, hourOfDay, minute) -> {
 
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
+                        alarmHour = hourOfDay;
+                        alarmMinute = minute;
 
-                                alarmHour = hourOfDay;
-                                alarmMinute = minute;
-
-                                timeTextView.setText(hourOfDay + ":" + minute);
-                            }
-                        }, mHour, mMinute, false);
-                timePickerDialog.show();
-            }
+                        timeTextView.setText(hourOfDay + ":" + minute);
+                    }, mHour, mMinute, false);
+            timePickerDialog.show();
         });
 
         builder.setView(v)
                 .setTitle("Edit details")
-                .setPositiveButton("Make changes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String strName = customerName.getText().toString();
-                        String strLoanAmount = loanAmount.getText().toString();
-                        String strNumber = contactNumber.getText().toString();
+                .setPositiveButton("Make changes", (dialog, which) -> {
+                    String strName = customerName.getText().toString();
+                    String strLoanAmount = loanAmount.getText().toString();
+                    String strNumber = contactNumber.getText().toString();
 
 
-                        ArrayList<String> strReason =leadDetails.getTelecallerRemarks();
-                        strReason.add(telecallerReason.getText().toString() + "@@" +System.currentTimeMillis());         // Save remark with time steamp
+                    ArrayList<String> strReason = leadDetails.getTelecallerRemarks();
+                    if (!userType.equals(getString(R.string.business_associate)))
+                        strReason.add(telecallerReason.getText().toString() + "@@" + System.currentTimeMillis());         // Save remark with time steamp
 
 
+                    if (!strName.isEmpty() &&
+                            !strLoanAmount.isEmpty() &&
+                            !strNumber.isEmpty()) {
 
-                        if (!strName.isEmpty() &&
-                                !strLoanAmount.isEmpty() &&
-                                !strNumber.isEmpty() &&
-                                strReason.size() != 0) {
+                        UpdateLead updateLead = new UpdateLead(leadDetails);
 
-                            UpdateLead updateLead = new UpdateLead(leadDetails);
+                        updateLead.taleCaller(strName, strLoanAmount, strNumber, strReason);
 
-                            updateLead.taleCaller(strName, strLoanAmount, strNumber, strReason);
+                        Alarm alarm = new Alarm(getContext());
 
-                            Alarm alarm = new Alarm(getContext());
+                        if (leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
+                                leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
 
-                            if (leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
-                                    leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
+                            if (!dateTextView.getText().toString().equals("DD/MM/YYYY") &&
+                                    !timeTextView.getText().toString().equals("hh:mm")) {
 
-                                if (!dateTextView.getText().toString().equals("DD/MM/YYYY") &&
-                                        !timeTextView.getText().toString().equals("hh:mm")) {
+                                Calendar c = Calendar.getInstance();
 
-                                    Calendar c = Calendar.getInstance();
+                                c.set(Calendar.DAY_OF_MONTH, alarmDay);
+                                c.set(Calendar.MONTH, alarmMonth);
+                                c.set(Calendar.YEAR, alarmYear);
+                                c.set(Calendar.HOUR_OF_DAY, alarmHour);
+                                c.set(Calendar.MINUTE, alarmMinute);
+                                c.set(Calendar.SECOND, 0);
 
-                                    c.set(Calendar.DAY_OF_MONTH, alarmDay);
-                                    c.set(Calendar.MONTH, alarmMonth);
-                                    c.set(Calendar.YEAR, alarmYear);
-                                    c.set(Calendar.HOUR_OF_DAY, alarmHour);
-                                    c.set(Calendar.MINUTE, alarmMinute);
-                                    c.set(Calendar.SECOND, 0);
-
-                                    alarm.startAlarm(c, leadDetails.getName());
-                                }
-                            } else {
-                                alarm.cancelAlarm(leadDetails.getName());
+                                alarm.startAlarm(c, leadDetails.getName());
                             }
-
-                            updateLead.time();
-
-                            if (!leadDetails.getAssignedTo().equals(strAssignedTo)) {
-                                for (UserDetails userDetails : salesPersonList) {
-                                    if (userDetails.getUserName().equals(strAssignedTo)) {
-                                        updateLead.assignedToDetails(strAssignedTo, userDetails.getuId());
-                                    }
-                                }
-                            }
-
-                            listener.onSubmitClicked(updateLead.getLeadDetails());
+                        } else {
+                            alarm.cancelAlarm(leadDetails.getName());
                         }
+
+                        updateLead.time();
+                        if (userType.equals(getString(R.string.teleassigner)) &&
+                                !leadDetails.getAssignedTo().equals(strAssignedTo)) {
+                            updateLead.assignDate();
+                        }
+
+                        if (!leadDetails.getAssignedTo().equals(strAssignedTo)) {
+                            for (UserDetails userDetails : salesPersonList) {
+                                if (userDetails.getUserName().equals(strAssignedTo)) {
+                                    updateLead.assignedToDetails(strAssignedTo, userDetails.getuId());
+                                }
+                            }
+                        }
+
+                        listener.onSubmitClicked(updateLead.getLeadDetails());
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setNegativeButton("Cancel", (dialog, which) -> {
 
-                    }
                 }).setCancelable(false);
 
         return builder.create();

@@ -65,14 +65,14 @@
                         android:id="@+id/salaried"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onEmployementRadioButtonClicked"
+                        android:onClick="onRadioButtonClicked"
                         android:text="@string/salaried" />
 
                     <RadioButton
                         android:id="@+id/self_employed"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onEmployementRadioButtonClicked"
+                        android:onClick="onRadioButtonClicked"
                         android:text="@string/self_employed" />
 
                 </RadioGroup>
@@ -104,21 +104,21 @@
                         android:id="@+id/partnership_firm"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onEmployementTypeRadioButtonClicked"
+                        android:onClick="onRadioButtonClicked"
                         android:text="Partnership Firm" />
 
                     <RadioButton
                         android:id="@+id/private_limited_company"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onEmployementTypeRadioButtonClicked"
+                        android:onClick="onRadioButtonClicked"
                         android:text="Private Limited Company" />
 
                     <RadioButton
                         android:id="@+id/proprietorship_firm"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:onClick="onEmployementTypeRadioButtonClicked"
+                        android:onClick="onRadioButtonClicked"
                         android:text="Proprietorship Firm" />
 
                 </RadioGroup>
@@ -168,6 +168,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/location_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
@@ -188,6 +189,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/assign_to_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="8dp"
@@ -258,8 +260,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:onClick="onUploadDetailsButtonClicked"
                         android:background="@color/colorPrimaryDark"
+                        android:onClick="onButtonClicked"
                         android:text="Select/change Date"
                         android:textColor="@color/colorWhite" />
 
@@ -289,8 +291,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:onClick="onUploadDetailsButtonClicked"
                         android:background="@color/colorPrimaryDark"
+                        android:onClick="onButtonClicked"
                         android:text="Select/change Time"
                         android:textColor="@color/colorWhite" />
 
@@ -305,7 +307,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="36dp"
                 android:background="@color/colorPrimaryDark"
-                android:onClick="onUploadDetailsButtonClicked"
+                android:onClick="onButtonClicked"
                 android:text="Upload details"
                 android:textColor="@color/colorWhite" />
 

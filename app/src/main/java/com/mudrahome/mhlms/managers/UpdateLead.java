@@ -35,7 +35,15 @@ public class UpdateLead {
         leadDetails.setTimeStamp(timeModel.getTimeStamp());
     }
 
-    public void assignedToDetails(String assignedTo, String uid){
+    public void assignDate() {
+        TimeModel timeModel = getTimeModel();
+
+        leadDetails.setAssignDate(timeModel.getDate());
+        leadDetails.setAssignTime(timeModel.getTime());
+        leadDetails.setStatus("Active");
+    }
+
+    public void assignedToDetails(String assignedTo, String uid) {
         leadDetails.setAssignedTo(assignedTo);
         leadDetails.setAssignedToUId(uid);
 
@@ -45,9 +53,9 @@ public class UpdateLead {
         leadDetails.setAssignTime(timeModel.getTime());
     }
 
-    private TimeModel getTimeModel(){
+    private TimeModel getTimeModel() {
         TimeManager timeManager = new TimeManager();
         TimeModel timeModel = timeManager.getTime();
-        return  timeModel;
+        return timeModel;
     }
 }

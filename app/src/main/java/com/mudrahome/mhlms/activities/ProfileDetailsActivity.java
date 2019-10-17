@@ -1,19 +1,16 @@
 package com.mudrahome.mhlms.activities;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.firebase.Firestore;
 import com.mudrahome.mhlms.fragments.EditPhoneFragment;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.managers.ProfileManager;
-import com.mudrahome.mhlms.R;
-
 import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class ProfileDetailsActivity extends BaseActivity {
@@ -40,23 +37,25 @@ public class ProfileDetailsActivity extends BaseActivity {
         button = findViewById(R.id.edit_number);
 
         preference = new UserDataSharedPreference(this);
-        Set<String> userType = new HashSet<>();
+        String userType;
         userType = preference.getUserType();
 
-        for (String s : userType) {
-            if (userDesignation == "") {
-                userDesignation = s;
-            } else {
-                userDesignation += ", " + s;
-            }
-        }
+        if (userType.equals(getString(R.string.admin)))
+            userDesignation = getString(R.string.admin);
+        else if (userType.equals(getString(R.string.telecaller)))
+            userDesignation = getString(R.string.telecaller);
+        else if (userType.equals(getString(R.string.business_associate)))
+            userDesignation = getString(R.string.business_associate);
+        else if (userType.equals(getString(R.string.teleassigner)))
+            userDesignation = "Caller";
+        else
+            userDesignation = getString(R.string.salesman);
 
         Set<String> locationset;
         locationset = preference.getLocation();
 
-        Log.d("LocationProfile", locationset.toString());
         for (String s : locationset) {
-            if (userlocation == "") {
+            if (userlocation.equals("")) {
                 userlocation = s;
             } else {
                 userlocation += "," + s;

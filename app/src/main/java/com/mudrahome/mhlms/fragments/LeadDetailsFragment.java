@@ -5,37 +5,33 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-
-import com.mudrahome.mhlms.activities.LeadListActivity;
-import com.mudrahome.mhlms.firebase.Firestore;
-import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
-import com.mudrahome.mhlms.managers.PermissionManager;
-import com.mudrahome.mhlms.model.TimeModel;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
 import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.mudrahome.mhlms.R;
+import com.mudrahome.mhlms.activities.LeadListActivity;
+import com.mudrahome.mhlms.firebase.Firestore;
+import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
+import com.mudrahome.mhlms.managers.PermissionManager;
 import com.mudrahome.mhlms.managers.TimeManager;
 import com.mudrahome.mhlms.model.LeadDetails;
+import com.mudrahome.mhlms.model.TimeModel;
 import com.mudrahome.mhlms.model.UserDetails;
-import com.mudrahome.mhlms.R;
 
 import java.lang.reflect.Field;
 import java.text.DateFormat;
@@ -44,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.mudrahome.mhlms.fragments.ViewAllRemarksFragment.*;
+import static com.mudrahome.mhlms.fragments.ViewAllRemarksFragment.newInstance;
 
 @SuppressLint("ValidFragment")
 public class LeadDetailsFragment extends BottomSheetDialogFragment {
@@ -134,12 +130,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
 
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.d("State", "onCreateDialog");
-
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
         dialog.setCancelable(false);
 
@@ -186,21 +179,20 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
 
         dialog.setOnKeyListener((dialogInterface, i, keyEvent) -> {
 
-            if(keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK)
-            {
-                if(isEdit){
-                    Intent intent = new Intent(getContext(),LeadListActivity.class);
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                if (isEdit) {
+                    Intent intent = new Intent(getContext(), LeadListActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-                    if(getActivity()!=null)
-                       getActivity().finish();
-                       /*dialog.dismiss();*/
+                    if (getActivity() != null)
+                        getActivity().finish();
+                    /*dialog.dismiss();*/
                     return true;
-                }else {
+                } else {
                     return false;
                 }
 
-            }else {
+            } else {
                 return false;
             }
 
@@ -296,13 +288,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         });
 
         button.setOnClickListener(view14 ->
-
         {
             ConnectivityManager cm = (ConnectivityManager) getActivity()
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
 
             if (cm.getActiveNetworkInfo() != null) {
-                if (userType.equals(getString(R.string.telecaller))) {
+                if (userType.equals(getString(R.string.telecaller))
+                        || userType.equals(getString(R.string.business_associate))
+                        || userType.equals(getString(R.string.teleassigner))) {
                     progress = new ProgressDialog(context);
                     progress.setMessage("Loading...");
                     progress.setCancelable(false);
@@ -338,10 +331,14 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private void setLayoutFields() {
-        if (userType.equals(getString(R.string.telecaller)))
+        if (userType.equals(getString(R.string.telecaller)) ||
+                userType.equals(getString(R.string.teleassigner)))
             assignerLayout.setVisibility(View.GONE);
-        else if (userType.contains(getString(R.string.salesman)))
+
+        else if (userType.equals(getString(R.string.salesman)) ||
+                userType.equals(getString(R.string.business_associate)))
             assignedToLayout.setVisibility(View.GONE);
+
         else
             button.setVisibility(View.GONE);
 
@@ -351,52 +348,47 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             employmentType.setText(leadDetails.getEmploymentType());
         }
 
-        if(leadDetails.getSalesmanReason() != null ){
-            Log.d("SalesManRemarks", "setLayoutFields: " + leadDetails.getSalesmanReason().toString());
-            if(leadDetails.getSalesmanReason().size() != 1){
+        if (leadDetails.getSalesmanReason() != null) {
+            if (leadDetails.getSalesmanReason().size() != 1) {
                 int temp = 1;
-                String remark = getLatestRemark(leadDetails.getSalesmanReason().get(leadDetails.getSalesmanReason().size()-temp));
-                while (remark == null){
+                String remark = getLatestRemark(leadDetails.getSalesmanReason().get(leadDetails.getSalesmanReason().size() - temp));
+                while (remark == null) {
                     temp++;
                     remark = getLatestRemark(leadDetails.getSalesmanReason().get(leadDetails.getSalesmanReason().size() - temp));
                 }
                 latestsalesmanRemark.setText(Html.fromHtml(remark));
-                viewallSalesmanRemark.setOnClickListener(view -> newInstance(leadDetails.getSalesmanReason(),"Salesman's").show(getChildFragmentManager(),"ShowRemarks"));
-            }
-            else
-                {
-                    if(!leadDetails.getSalesmanReason().get(0).matches("Not available")){
-                        latestsalesmanRemark.setText(Html.fromHtml(getLatestRemark(leadDetails.getSalesmanReason().get(0))));
-                        viewallSalesmanRemark.setText("");
-                    }else {
-                        latestsalesmanRemark.setVisibility(View.GONE);
-                        viewallSalesmanRemark.setText("Not available");
-                    }
-
-                     viewallSalesmanRemark.setTextColor(getResources().getColor(R.color.coloBlack));
+                viewallSalesmanRemark.setOnClickListener(view -> newInstance(leadDetails.getSalesmanReason(), "Salesman's").show(getChildFragmentManager(), "ShowRemarks"));
+            } else {
+                if (!leadDetails.getSalesmanReason().get(0).matches("Not available")) {
+                    latestsalesmanRemark.setText(Html.fromHtml(getLatestRemark(leadDetails.getSalesmanReason().get(0))));
+                    viewallSalesmanRemark.setText("");
+                } else {
+                    latestsalesmanRemark.setVisibility(View.GONE);
+                    viewallSalesmanRemark.setText("Not available");
                 }
+
+                viewallSalesmanRemark.setTextColor(getResources().getColor(R.color.coloBlack));
+            }
 
 
         }
 
-        if(leadDetails.getTelecallerRemarks() != null){
-            if(leadDetails.getTelecallerRemarks().size() !=1){
-                String remark = getLatestRemark(leadDetails.getTelecallerRemarks().get(leadDetails.getTelecallerRemarks().size() -1));
+        if (leadDetails.getTelecallerRemarks() != null) {
+            if (leadDetails.getTelecallerRemarks().size() > 1) {
+                String remark = getLatestRemark(leadDetails.getTelecallerRemarks().get(leadDetails.getTelecallerRemarks().size() - 1));
                 int temp = 1;
-                while (remark == null){
+                while (remark == null) {
                     temp++;
-                    remark = getLatestRemark(leadDetails.getTelecallerRemarks().get(leadDetails.getTelecallerRemarks().size() -temp));
+                    remark = getLatestRemark(leadDetails.getTelecallerRemarks().get(leadDetails.getTelecallerRemarks().size() - temp));
                 }
 
                 latestCallerRemark.setText(Html.fromHtml(remark));
-                viewallCallerRemark.setOnClickListener(view -> newInstance(leadDetails.getTelecallerRemarks(),"Caller's").show(getChildFragmentManager(),"ShowRemarks"));
-            }
-            else
-            {
-                if(!leadDetails.getTelecallerRemarks().get(0).matches("Not available")){
+                viewallCallerRemark.setOnClickListener(view -> newInstance(leadDetails.getTelecallerRemarks(), "Caller's").show(getChildFragmentManager(), "ShowRemarks"));
+            } else {
+                if (!leadDetails.getTelecallerRemarks().get(0).matches("Not available")) {
                     latestCallerRemark.setText(Html.fromHtml(getLatestRemark(leadDetails.getTelecallerRemarks().get(0))));
                     viewallCallerRemark.setText("");
-                }else {
+                } else {
                     viewallCallerRemark.setText("Not available");
                     latestCallerRemark.setVisibility(View.GONE);
                 }
@@ -404,8 +396,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             }
         }
 
-
-        if (leadDetails.getSalesmanRemarks() == null || leadDetails.getSalesmanRemarks().equals("Not available") ) {
+        if (leadDetails.getSalesmanRemarks() == null || leadDetails.getSalesmanRemarks().equals("Not available")) {
             customerRemarksLayout.setVisibility(View.GONE);
         } else {
             customerRemarks.setText(leadDetails.getSalesmanRemarks());
@@ -440,21 +431,20 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
     }
 
     private String getLatestRemark(String remark) {
-        String r=null;
+        String r = null;
 
-        if(remark.contains("@@")){
+        if (remark.contains("@@")) {
 
             String[] remarkWithTime = remark.split("@@");
 
             @SuppressLint("SimpleDateFormat") DateFormat sdf = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
             Date resultdate = new Date(Long.parseLong(remarkWithTime[1]));
 
-            if(!remarkWithTime[0].isEmpty())
-                r = "<font color=\"#196587\">"     +sdf.format(resultdate) +  "</font>" + "<br>" + remarkWithTime[0];
-        }else {
-            if(!remark.isEmpty())
-             r = remark;
-
+            if (!remarkWithTime[0].isEmpty())
+                r = "<font color=\"#196587\">" + sdf.format(resultdate) + "</font>" + "<br>" + remarkWithTime[0];
+        } else {
+            if (!remark.isEmpty())
+                r = remark;
         }
 
         return r;
@@ -491,10 +481,9 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                         progress.show();
 
                         firestore.updateLeadDetails(onUpdateLead(), dialogLeadDetails);
-                    }).show(getFragmentManager(), "promo");
+                    }, userType).show(getFragmentManager(), "promo");
         }
     }
-
 
 
     private void openSalesmanFragment() {
@@ -509,7 +498,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
             leadDetails.setBanks(banks);
 
             ArrayList<String> salesmanReson = leadDetails.getSalesmanReason();
-            salesmanReson.add(dialogSalesmanReason + "@@" +System.currentTimeMillis());        // Set SalesmanReason with timesteamp
+            salesmanReson.add(dialogSalesmanReason + "@@" + System.currentTimeMillis());        // Set SalesmanReason with timesteamp
 
             leadDetails.setSalesmanRemarks(dialogSalesmanRemarks);
             leadDetails.setSalesmanReason(salesmanReson);

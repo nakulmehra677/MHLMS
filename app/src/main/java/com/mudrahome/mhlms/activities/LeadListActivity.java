@@ -1,9 +1,7 @@
 package com.mudrahome.mhlms.activities;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +19,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.adapters.LeadListPagerAdapter;
 import com.mudrahome.mhlms.firebase.Authentication;
 import com.mudrahome.mhlms.firebase.Firestore;
@@ -28,11 +27,9 @@ import com.mudrahome.mhlms.fragments.ChangePasswordFragment;
 import com.mudrahome.mhlms.fragments.LeadDetailsFragment;
 import com.mudrahome.mhlms.fragments.LeadListFragment;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
-import com.mudrahome.mhlms.interfaces.OnPasswordChange;
 import com.mudrahome.mhlms.managers.ProfileManager;
 import com.mudrahome.mhlms.model.LeadDetails;
 import com.mudrahome.mhlms.model.UserDetails;
-import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference;
 
 
@@ -79,49 +76,22 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
                 if (profileManager.getCurrentUserType().contains(getString(R.string.admin)) &&
                         profileManager.getCurrentUserType().contains(getString(R.string.salesman))) {
-
-                    if(intent.hasExtra("UIDNotification")){
-
-                        String uid = intent.getStringExtra("UIDNotification");
-
-                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.admin_and_salesman)),uid);
-                    }else {
-                        openViewPager(R.string.admin_and_salesman);
-                    }
+                    checkNotification(R.string.admin_and_salesman);
 
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.telecaller))) {
-                    if(intent.hasExtra("UIDNotification")){
-
-                        String uid = intent.getStringExtra("UIDNotification");
-
-                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.telecaller)),uid);
-                    }else {
-                        openFragment(R.string.telecaller);
-                    }
+                    checkNotification(R.string.telecaller);
 
                 } else if (profileManager.getCurrentUserType().contains(getString(R.string.admin))) {
+                    checkNotification(R.string.admin);
 
-                    if(intent.hasExtra("UIDNotification")){
+                } else if (profileManager.getCurrentUserType().contains(getString(R.string.business_associate))) {
+                    checkNotification(R.string.business_associate);
 
-                        String uid = intent.getStringExtra("UIDNotification");
-
-                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.admin)),uid);
-                    }else {
-                        openFragment(R.string.admin);
-                    }
-
+                } else if (profileManager.getCurrentUserType().contains(getString(R.string.teleassigner))) {
+                    checkNotification(R.string.teleassigner);
 
                 } else {
-
-                    if(intent.hasExtra("UIDNotification")){
-
-                        String uid = intent.getStringExtra("UIDNotification");
-
-                        firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails,getString(R.string.salesman)),uid);
-                    }else {
-                        openFragment(R.string.salesman);
-                    }
-
+                    checkNotification(R.string.salesman);
 
                 }
             }
@@ -133,12 +103,22 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         }, profileManager.getuId());
 
 
-
-
-
     }
 
-    private void openLeadDetailsFragment(LeadDetails model,String currentUserType){
+    private void checkNotification(int userType) {
+        if (intent.hasExtra("UIDNotification")) {
+            String uid = intent.getStringExtra("UIDNotification");
+            firestore.getLeadDetails(leadDetails -> openLeadDetailsFragment(leadDetails, getString(userType)), uid);
+        } else {
+            if (userType == R.string.admin_and_salesman)
+                openViewPager(userType);
+            else {
+                openFragment(userType);
+            }
+        }
+    }
+
+    private void openLeadDetailsFragment(LeadDetails model, String currentUserType) {
         LeadDetailsFragment leadDetailsFragment = new LeadDetailsFragment(model, LeadListActivity.this, currentUserType);
         leadDetailsFragment.show((LeadListActivity.this).getSupportFragmentManager(), "f");
     }
@@ -146,11 +126,10 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
 
     private void openFragment(int userType) {
         try {
-
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.frame_layout, new LeadListFragment(userType));
+            ft.replace(R.id.frame_layout, new LeadListFragment(userType, profileManager.getCurrentUserDetails()));
             ft.commit();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -159,7 +138,8 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
         tabLayout.setVisibility(View.VISIBLE);
         openFragment(R.string.admin);
         final ViewPager vpPager = findViewById(R.id.pager);
-        LeadListPagerAdapter adapterViewPager = new LeadListPagerAdapter(getSupportFragmentManager(), 2);
+        LeadListPagerAdapter adapterViewPager = new LeadListPagerAdapter(
+                getSupportFragmentManager(), profileManager.getCurrentUserDetails(), 2);
         vpPager.setAdapter(adapterViewPager);
 
         vpPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -243,7 +223,7 @@ public class LeadListActivity extends BaseActivity implements NavigationView.OnN
                     //SharedPreferences.Editor editor = sharedPreferences.edit();
                     //editor.clear();
                     /*onBackPressed();*/
-                    Intent intent = new Intent(LeadListActivity.this,LoginActivity.class);
+                    Intent intent = new Intent(LeadListActivity.this, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     finish();
