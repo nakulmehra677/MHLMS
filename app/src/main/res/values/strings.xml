@@ -42,8 +42,9 @@
     <string name="salesman">Salesman</string>
     <string name="admin">Admin</string>
     <string name="admin_and_salesman">Admin and Salesman</string>
+    <string name="telecaller_and_teleassigner">Telecaller and Assigner</string>
     <string name="business_associate">Business Associate</string>
-    <string name="teleassigner">Teleassigner</string>
+    <string name="teleassigner">Assigner</string>
 
     <!-- Shared Preference -->
     <string name="SH_user_details">SHUserDetails</string>

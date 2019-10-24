@@ -25,8 +25,8 @@ public class FirestoreInterfaces {
 
     public interface OnFetchLeadList {
         void onLeadAdded(List<LeadDetails> l, DocumentSnapshot lastVisible);
-
-        void onFailer();
+        void noLeads();
+        void onFail();
     }
 
     public interface OnGetUserDetails {

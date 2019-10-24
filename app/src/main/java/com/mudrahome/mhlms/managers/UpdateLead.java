@@ -28,18 +28,15 @@ public class UpdateLead {
     }
 
     public void time() {
-        TimeModel timeModel = getTimeModel();
-
-        leadDetails.setDate(timeModel.getDate());
-        leadDetails.setTime(timeModel.getTime());
-        leadDetails.setTimeStamp(timeModel.getTimeStamp());
+        TimeManager timeManager = new TimeManager();
+        leadDetails.setTimeStamp(timeManager.getTimeStamp());
     }
 
     public void assignDate() {
-        TimeModel timeModel = getTimeModel();
+        TimeManager timeManager = new TimeManager();
 
-        leadDetails.setAssignDate(timeModel.getDate());
-        leadDetails.setAssignTime(timeModel.getTime());
+        leadDetails.setAssignDate(timeManager.getStrDate());
+        leadDetails.setAssignTime(timeManager.getStrTime());
         leadDetails.setStatus("Active");
     }
 
@@ -47,15 +44,13 @@ public class UpdateLead {
         leadDetails.setAssignedTo(assignedTo);
         leadDetails.setAssignedToUId(uid);
 
-        TimeModel timeModel = getTimeModel();
+        TimeManager timeManager = new TimeManager();
 
-        leadDetails.setAssignDate(timeModel.getDate());
-        leadDetails.setAssignTime(timeModel.getTime());
+        leadDetails.setAssignDate(timeManager.getStrDate());
+        leadDetails.setAssignTime(timeManager.getStrTime());
     }
 
-    private TimeModel getTimeModel() {
-        TimeManager timeManager = new TimeManager();
-        TimeModel timeModel = timeManager.getTime();
-        return timeModel;
+    private TimeManager getTime() {
+        return new TimeManager();
     }
 }

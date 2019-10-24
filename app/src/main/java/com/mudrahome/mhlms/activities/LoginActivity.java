@@ -55,7 +55,6 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         if (isNetworkConnected()) {
             appUpdateManager = AppUpdateManagerFactory.create(this);
             appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();

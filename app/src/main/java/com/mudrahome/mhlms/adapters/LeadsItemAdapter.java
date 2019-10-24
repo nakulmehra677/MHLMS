@@ -90,7 +90,7 @@ public class LeadsItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 vh2.loanAmount.setText(model.getLoanAmount());
                 vh2.loanType.setText(model.getLoanType());
                 vh2.location.setText(model.getLocation());
-                vh2.date.setText(model.getDate());
+//                vh2.date.setText(model.getDate());
 
                 if (currentUserType.equals(context.getString(R.string.telecaller)) ||
                         currentUserType.equals(context.getString(R.string.business_associate)))

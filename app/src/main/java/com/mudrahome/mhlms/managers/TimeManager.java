@@ -1,29 +1,48 @@
 package com.mudrahome.mhlms.managers;
 
-import android.util.Log;
-
 import com.mudrahome.mhlms.model.TimeModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeManager {
+    private String strDate;
+    private String strTime;
+    private long timeStamp;
 
     public TimeManager() {
-    }
-
-    public TimeModel getTime() {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MMM-yy");
         SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
 
-        String strDate = dateFormatter.format(new Date());
-        String strTime = timeFormatter.format(new Date());
+        strDate = dateFormatter.format(new Date());
+        strTime = timeFormatter.format(new Date());
 
         Date date = new Date();
-        long timeStamp = date.getTime();
-        Log.d("TimeStamp", String.valueOf(timeStamp));
-        TimeModel timeModel = new TimeModel(strTime, strDate, timeStamp);
+        timeStamp = date.getTime();
+    }
 
-        return timeModel;
+
+    public String getStrDate() {
+        return strDate;
+    }
+
+    public void setStrDate(String strDate) {
+        this.strDate = strDate;
+    }
+
+    public String getStrTime() {
+        return strTime;
+    }
+
+    public void setStrTime(String strTime) {
+        this.strTime = strTime;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

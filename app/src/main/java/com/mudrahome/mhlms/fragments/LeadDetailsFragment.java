@@ -207,7 +207,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 public void onSuccess(UserDetails userDetails) {
                     if (!userDetails.getContactNumber().equals("Not available")) {
                         assignerContact.setText(userDetails.getContactNumber());
-                        leadDetails.setAssignerContact(userDetails.getContactNumber());
+//                        leadDetails.setAssignerContact(userDetails.getContactNumber());
                     } else {
                         hideAssignerContact();
                     }
@@ -224,7 +224,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 if (permission.checkCallPhone()) {
 //                    if (permission.checkReadPhoneState()) {
 //                        if (permission.checkRecordAudio()) {
-                    callCustomer(leadDetails.getAssignerContact());
+//                    callCustomer(leadDetails.getAssignerContact());
 //                        } else
 //                            permission.requestRecordAudio();
 //                    } else
@@ -242,7 +242,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 public void onSuccess(UserDetails userDetails) {
                     if (!userDetails.getContactNumber().equals("Not available")) {
                         assigneeContact.setText(userDetails.getContactNumber());
-                        leadDetails.setAssigneeContact(userDetails.getContactNumber());
+//                        leadDetails.setAssigneeContact(userDetails.getContactNumber());
                     } else {
                         hideAssigneeContact();
                     }
@@ -261,7 +261,7 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
                 if (permission.checkCallPhone()) {
 //                    if (permission.checkReadPhoneState()) {
 //                        if (permission.checkRecordAudio()) {
-                    callCustomer(leadDetails.getAssigneeContact());
+//                    callCustomer(leadDetails.getAssigneeContact());
 //                        } else
 //                            permission.requestRecordAudio();
 //                    } else
@@ -416,8 +416,8 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         assignedTo.setText(leadDetails.getAssignedTo());
         assigner.setText(leadDetails.getAssigner());
         status.setText(leadDetails.getStatus());
-        workDate.setText(leadDetails.getDate());
-        workTime.setText(leadDetails.getTime());
+//        workDate.setText(leadDetails.getDate());
+//        workTime.setText(leadDetails.getTime());
         assignedOn.setText(leadDetails.getAssignDate());
         assignedAt.setText(leadDetails.getAssignTime());
 
@@ -490,11 +490,10 @@ public class LeadDetailsFragment extends BottomSheetDialogFragment {
         SalesmanEditLeadFragment.newInstance(leadDetails, (dialogSalesmanRemarks, dialogSalesmanReason, banks) -> {
 
             TimeManager timeManager = new TimeManager();
-            TimeModel timeModel = timeManager.getTime();
 
-            leadDetails.setDate(timeModel.getDate());
-            leadDetails.setTime(timeModel.getTime());
-            leadDetails.setTimeStamp(timeModel.getTimeStamp());
+//            leadDetails.setDate(timeModel.getDate());
+//            leadDetails.setTime(timeModel.getTime());
+            leadDetails.setTimeStamp(timeManager.getTimeStamp());
             leadDetails.setBanks(banks);
 
             ArrayList<String> salesmanReson = leadDetails.getSalesmanReason();

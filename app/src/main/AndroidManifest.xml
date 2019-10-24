@@ -42,9 +42,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBarLead" />
         <activity
-            android:name="com.mudrahome.mhlms.activities.FeedCustomerDetailsActivity"
+            android:name="com.mudrahome.mhlms.activities.UploadLeadActivity"
             android:label="Feed Customer Details"
-            android:parentActivityName=".activities.FeedCustomerDetailsActivity"
+            android:parentActivityName=".activities.UploadLeadActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.mudrahome.mhlms.activities.LoginActivity"

@@ -2,7 +2,6 @@ package com.mudrahome.mhlms.sharedPreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -62,9 +61,10 @@ public class UserDataSharedPreference {
             editor.putString(context.getString(R.string.SH_user_type),
                     context.getString(R.string.business_associate));
 
-        } else if (details.getUserType().contains(context.getString(R.string.teleassigner))) {
+        } else if (details.getUserType().contains(context.getString(R.string.telecaller)) &&
+                details.getUserType().contains(context.getString(R.string.teleassigner))) {
             editor.putString(context.getString(R.string.SH_user_type),
-                    context.getString(R.string.teleassigner));
+                    context.getString(R.string.telecaller_and_teleassigner));
 
         } else {
             editor.putString(context.getString(R.string.SH_user_type),
