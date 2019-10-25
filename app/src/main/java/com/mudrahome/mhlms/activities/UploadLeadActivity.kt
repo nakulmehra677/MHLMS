@@ -242,6 +242,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
             leadDetails?.assignTime = timeModel.strTime
             leadDetails?.assigner = preference.userName
             leadDetails?.assignerUId = preference.userUid
+            leadDetails?.businessAssociateUploader = false
             leadDetails!!.telecallerRemarks.clear()
             if (!binding!!.remarks.text.toString().trim().isEmpty()) {
                 leadDetails?.telecallerRemarks?.add(
@@ -253,6 +254,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
             leadDetails?.assignDate = "Not assigned yet"
             leadDetails?.assignTime = "Not assigned yet"
             leadDetails?.businessAssociateUid = preference.userUid
+            leadDetails?.businessAssociateUploader = true
         }
     }
 

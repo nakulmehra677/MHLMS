@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -208,10 +207,16 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
 
     private fun setFilter() {
         when (userType) {
-            R.string.telecaller -> leadFilter?.assigner = preferences!!.userName
+            R.string.telecaller -> {
+                leadFilter?.assigner = preferences!!.userName
+                leadFilter?.businessAssociateUploader = false
+            }
             R.string.salesman -> leadFilter?.assignee = preferences!!.userName
-            R.string.business_associate -> leadFilter?.businessAssociateUId = preferences?.userUid
-            R.string.teleassigner -> leadFilter?.location = preferences!!.location.iterator().next()
+            R.string.business_associate ->{ leadFilter?.businessAssociateUId = preferences?.userUid}
+            R.string.teleassigner -> {
+                leadFilter?.assigner = preferences!!.userName
+                leadFilter?.businessAssociateUploader = true
+            }
         }
 
     }

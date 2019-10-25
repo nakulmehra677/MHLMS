@@ -7,4 +7,5 @@ class LeadFilter {
     var status = "All"
     var loanType = "All"
     var businessAssociateUId: String? = null
+    var businessAssociateUploader: Boolean? = null
 }

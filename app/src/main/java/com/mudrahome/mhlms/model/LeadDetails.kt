@@ -1,7 +1,6 @@
 package com.mudrahome.mhlms.model
 
-import java.util.ArrayList
-import java.util.Collections
+import java.util.*
 
 
 class LeadDetails {
@@ -22,7 +21,8 @@ class LeadDetails {
     var assignerUId: String? = null
     var assignDate: String? = null
     var assignTime: String? = null
-    var businessAssociateUid: String?=null;
+    var businessAssociateUploader: Boolean? = null
+    var businessAssociateUid: String? = null
 
     var telecallerRemarks = ArrayList<String>()
     var salesmanReason = ArrayList<String>()

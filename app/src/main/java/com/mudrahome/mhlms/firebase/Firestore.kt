@@ -136,7 +136,10 @@ class Firestore {
         if (filter.status != "All")
             query = query.whereEqualTo("status", filter.status)
         if (filter.businessAssociateUId != null)
-            query = query.whereEqualTo("uploadedBy", filter.businessAssociateUId)
+            query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
+        else query = query.whereEqualTo(
+            "businessAssociateUploader", filter.businessAssociateUploader
+        )
 
         if (lastLead == null) {
             query = query.orderBy("timeStamp", Query.Direction.DESCENDING)
