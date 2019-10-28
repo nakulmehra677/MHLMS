@@ -46,7 +46,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private var extraViews: ExtraViews? = null
     private var preferences: UserDataSharedPreference? = null
 
-    protected val isNetworkConnected: Boolean
+    private val isNetworkConnected: Boolean
         get() {
             val cm = context!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             return cm.activeNetworkInfo != null
@@ -193,7 +193,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
             }
 
             override fun onFail() {
-                extraViews!!.showToast(R.string.no_internet, context)
+                extraViews!!.showToast(R.string.error_occur, context)
 
                 //if (progress.isShowing())
                 //  progress.dismiss();

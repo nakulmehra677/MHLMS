@@ -341,7 +341,6 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun getCallersListByLocation() {
@@ -422,7 +421,6 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                 "hh:mm"
             )
         ) {
-
             val c = Calendar.getInstance()
 
             c.set(Calendar.DAY_OF_MONTH, alarmDay)
