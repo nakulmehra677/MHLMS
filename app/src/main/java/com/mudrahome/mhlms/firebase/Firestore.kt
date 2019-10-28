@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.model.*
 import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference
@@ -134,7 +135,10 @@ class Firestore {
         if (filter.status != "All")
             query = query.whereEqualTo("status", filter.status)
 
-        if (!preference!!.userType.equals("Salesman") && !preference!!.userType.equals("Admin")) {
+        if (!preference!!.userType.equals("Salesman") &&
+            !preference!!.userType.equals("Admin") &&
+            !preference!!.userType.equals(context?.getString(R.string.admin_and_salesman))
+        ) {
             if (filter.businessAssociateUId != null)
                 query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
             else query = query.whereEqualTo(
@@ -158,6 +162,7 @@ class Firestore {
                 for (document in documentSnapshots) {
                     val l = document.toObject(LeadDetails::class.java)
                     leads.add(l)
+                    Log.d("uuuuu", l.name)
                 }
 
                 val lastVisible = documentSnapshots.documents[documentSnapshots.size() - 1]

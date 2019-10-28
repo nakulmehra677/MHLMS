@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,7 +37,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private var firestore: Firestore? = null
 
     private val leadDetailsList = ArrayList<Any>()
-    internal var leadFilter: LeadFilter? = null
+    private var leadFilter: LeadFilter? = null
     private var adapter: LeadsItemAdapter? = null
     private var isSrolling: Boolean = false
     private var isLastItemFetched: Boolean = false
@@ -71,6 +70,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
         linearLayoutManager = LinearLayoutManager(context)
 
         binding!!.fab.setOnClickListener(this)
+        binding!!.fabFilter.setOnClickListener(this)
 
         adapter = LeadsItemAdapter(leadDetailsList, context!!, getString(userType))
         binding!!.recyclerView!!.adapter = adapter
@@ -105,7 +105,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
             }
         })
 
-        binding!!.swiperefresh.setOnRefreshListener {
+        binding!!.swipeRefresh.setOnRefreshListener {
             leadDetailsList.clear()
             adapter!!.notifyDataSetChanged()
             isLastItemFetched = false
@@ -169,7 +169,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private fun onFetchLeadList(): FirestoreInterfaces.OnFetchLeadList {
         return object : FirestoreInterfaces.OnFetchLeadList {
             override fun noLeads() {
-                binding!!.swiperefresh.isRefreshing = false
+                binding!!.swipeRefresh.isRefreshing = false
                 binding!!.firstPageProgressBar.visibility = View.GONE
                 binding!!.progressBar.visibility = View.GONE
                 extraViews!!.showToast(R.string.no_leads, context)
@@ -185,8 +185,8 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
                 leadDetailsList.addAll(l)
                 adapter!!.notifyDataSetChanged()
 
-                if (binding!!.swiperefresh.isRefreshing)
-                    binding!!.swiperefresh.isRefreshing = false
+                if (binding!!.swipeRefresh.isRefreshing)
+                    binding!!.swipeRefresh.isRefreshing = false
 
                 binding!!.progressBar.visibility = View.GONE
                 binding!!.firstPageProgressBar.visibility = View.GONE
@@ -197,7 +197,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
 
                 //if (progress.isShowing())
                 //  progress.dismiss();
-                binding!!.swiperefresh.isRefreshing = false
+                binding!!.swipeRefresh.isRefreshing = false
                 binding!!.firstPageProgressBar.visibility = View.GONE
                 binding!!.progressBar.visibility = View.GONE
             }
@@ -207,7 +207,6 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
 
     private fun setFilter() {
 
-        Log.d("userrr", getString(userType))
         when (userType) {
             R.string.telecaller -> {
                 leadFilter?.assigner = preferences!!.userName
@@ -248,7 +247,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     override fun onClick(view: View) {
         if (isNetworkConnected) {
             when (view.id) {
-                R.id.filter1 -> {
+                R.id.fab_filter -> {
                     val intent = Intent(context, FilterActivity::class.java)
                     intent.putExtra("userType", userType)
                     startActivityForResult(intent, 201)

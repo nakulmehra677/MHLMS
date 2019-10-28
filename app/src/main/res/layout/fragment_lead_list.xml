@@ -3,21 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-<!--        <variable-->
-<!--            name="user"-->
-<!--            type="com.mudrahome.mhlms.model.Profile" />-->
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ececec"
         tools:context=".activities.LeadListActivity">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/swiperefresh"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -68,22 +61,20 @@
             android:layout_marginBottom="16dp"
             android:src="@drawable/ic_add_white_24dp"
             android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@id/filter1"
+            app:layout_constraintBottom_toTopOf="@id/fab_filter"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/filter1"
+            android:id="@+id/fab_filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="64dp"
-
             android:layout_weight="1"
             android:background="@color/colorWhite"
             android:elevation="8dp"
             android:src="@drawable/ic_filter_list_white"
-            android:text="Filter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
