@@ -61,7 +61,6 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_lead_list, container, false)
 
         extraViews = ExtraViews()
-
         preferences = UserDataSharedPreference(context!!)
         firestore = Firestore(context!!)
         leadFilter = LeadFilter()
@@ -72,7 +71,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
 
         binding!!.fab.setOnClickListener(this)
 
-        adapter = LeadsItemAdapter(leadDetailsList, context, getString(userType))
+        adapter = LeadsItemAdapter(leadDetailsList, context!!, getString(userType))
         binding!!.recyclerView!!.adapter = adapter
         setLayoutByUser()
 
@@ -212,7 +211,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
                 leadFilter?.businessAssociateUploader = false
             }
             R.string.salesman -> leadFilter?.assignee = preferences!!.userName
-            R.string.business_associate ->{ leadFilter?.businessAssociateUId = preferences?.userUid}
+            R.string.business_associate -> leadFilter?.businessAssociateUId = preferences?.userUid
             R.string.teleassigner -> {
                 leadFilter?.assigner = preferences!!.userName
                 leadFilter?.businessAssociateUploader = true
@@ -226,7 +225,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
 
         if (resultCode == 201) {
             leadFilter?.assigner = data!!.getStringExtra("assigner_filter")
-            leadFilter?.assignee = data!!.getStringExtra("assignee_filter")
+            leadFilter?.assignee = data.getStringExtra("assignee_filter")
             leadFilter?.location = data.getStringExtra("location_filter")
             leadFilter?.loanType = data.getStringExtra("loan_type_filter")
             leadFilter?.status = data.getStringExtra("status_filter")
