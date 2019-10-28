@@ -16,9 +16,7 @@ class Firestore {
     private val isAdmin = false
     private var preference: UserDataSharedPreference? = null
 
-    constructor() {
-
-    }
+    constructor()
 
     constructor(context: Context) {
         this.context = context
@@ -135,11 +133,14 @@ class Firestore {
             query = query.whereEqualTo("loanType", filter.loanType)
         if (filter.status != "All")
             query = query.whereEqualTo("status", filter.status)
-        if (filter.businessAssociateUId != null)
-            query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
-        else query = query.whereEqualTo(
-            "businessAssociateUploader", filter.businessAssociateUploader
-        )
+
+        if (!preference!!.userType.equals("Salesman")) {
+            if (filter.businessAssociateUId != null)
+                query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
+            else query = query.whereEqualTo(
+                "businessAssociateUploader", filter.businessAssociateUploader
+            )
+        }
 
         if (lastLead == null) {
             query = query.orderBy("timeStamp", Query.Direction.DESCENDING)

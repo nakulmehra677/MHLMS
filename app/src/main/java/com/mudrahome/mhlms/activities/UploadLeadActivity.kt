@@ -250,9 +250,6 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                             "@@" + System.currentTimeMillis())
             }
         } else {
-            leadDetails?.status = "Not assigned yet"
-            leadDetails?.assignDate = "Not assigned yet"
-            leadDetails?.assignTime = "Not assigned yet"
             leadDetails?.businessAssociateUid = preference.userUid
             leadDetails?.businessAssociateUploader = true
         }

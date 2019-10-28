@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -25,29 +21,26 @@
                     android:textSize="24dp"
                     android:textStyle="bold" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="4dp">
 
                     <TextView
-                        android:id="@+id/textView2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
                         android:text="Customer Details"
                         android:textColor="@color/coloBlack"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/lead_details_background"
-                        android:orientation="vertical"
-                        app:layout_constraintTop_toBottomOf="@+id/textView2">
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -219,9 +212,9 @@
 
                     </LinearLayout>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -235,15 +228,13 @@
                         android:text="Assigner's Details"
                         android:textColor="@color/coloBlack"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/lead_details_background"
-                        android:orientation="vertical"
-                        app:layout_constraintTop_toBottomOf="@+id/textView3">
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:id="@+id/assigner_layout"
@@ -267,6 +258,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/assigner_contact_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -303,24 +295,25 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Caller's remarks : " />
+
                             <TextView
+                                android:id="@+id/viewallCallerRemark"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="View All"
                                 android:layout_marginStart="10dp"
-                                android:id="@+id/viewallCallerRemark"
-                                android:textColor="@color/colorPrimary"
-                                android:layout_marginLeft="10dp" />
+                                android:layout_marginLeft="10dp"
+                                android:text="View All"
+                                android:textColor="@color/colorPrimary" />
 
                         </LinearLayout>
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_marginStart="10dp"
-                            android:textColor="@color/coloBlack"
-                            android:layout_height="wrap_content"
                             android:id="@+id/latestCallerRemark"
-                            android:layout_marginLeft="10dp" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/coloBlack" />
 
                         <!--<LinearLayout
                             android:id="@+id/caller_remarks_layout"
@@ -352,9 +345,9 @@
 
                     </LinearLayout>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -368,16 +361,14 @@
                         android:text="Assignee's Details"
                         android:textColor="@color/coloBlack"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/lead_details_background"
                         android:orientation="vertical"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView4">
+                        app:layout_constraintEnd_toEndOf="parent">
 
                         <LinearLayout
                             android:id="@+id/assigned_to_layout"
@@ -401,6 +392,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/assignee_contact_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -439,23 +431,23 @@
                                 android:text="Salesman's remarks : " />
 
                             <TextView
+                                android:id="@+id/viewallSalesmanRemark"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="View All"
-                                android:id="@+id/viewallSalesmanRemark"
-                                android:textColor="@color/colorPrimary"
                                 android:layout_marginStart="10dp"
-                                android:layout_marginLeft="10dp" />
+                                android:layout_marginLeft="10dp"
+                                android:text="View All"
+                                android:textColor="@color/colorPrimary" />
 
                         </LinearLayout>
 
                         <TextView
+                            android:id="@+id/latestsalesmanRemark"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/coloBlack"
                             android:layout_marginStart="10dp"
-                            android:id="@+id/latestsalesmanRemark"
-                            android:layout_marginLeft="10dp" />
+                            android:layout_marginLeft="10dp"
+                            android:textColor="@color/coloBlack" />
 
                         <!--<LinearLayout
                             android:id="@+id/sales_remarks_layout"
@@ -467,7 +459,7 @@
 
                     </LinearLayout>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -629,4 +621,4 @@
 
         </ScrollView>
 
-    </LinearLayout>
+</layout>
