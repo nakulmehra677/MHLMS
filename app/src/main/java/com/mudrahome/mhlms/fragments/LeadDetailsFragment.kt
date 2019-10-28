@@ -1,7 +1,6 @@
 package com.mudrahome.mhlms.fragments
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -11,11 +10,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.databinding.FragmentLeadDetailsBinding
@@ -25,7 +22,6 @@ import com.mudrahome.mhlms.managers.PermissionManager
 import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
-import java.sql.Time
 import java.util.*
 
 @SuppressLint("ValidFragment")
@@ -33,11 +29,6 @@ class LeadDetailsFragment(
     private val leadDetails: LeadDetails,
     private val userType: String
 ) : BottomSheetDialogFragment() {
-
-    private var mBehavior: BottomSheetBehavior<*>? = null
-
-
-    private var button: Button? = null
 
     private var progress: ProgressDialog? = null
     private var firestore: Firestore? = null
@@ -54,66 +45,26 @@ class LeadDetailsFragment(
     private var isEdit: Boolean? = false
     private var binding: FragmentLeadDetailsBinding? = null
 
-    override fun setupDialog(dialog: Dialog, style: Int) {
-        val bottomSheetDialog = dialog as BottomSheetDialog
-        try {
-            val behaviorField = bottomSheetDialog.javaClass.getDeclaredField("behavior")
-            behaviorField.isAccessible = true
-            val behavior = behaviorField.get(bottomSheetDialog) as BottomSheetBehavior<*>
-            behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                    }
-                }
-
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-
-
-            })
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        }
-
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
-        dialog.setCancelable(false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         binding = DataBindingUtil.inflate(
             LayoutInflater.from(context),
             R.layout.fragment_lead_details, null, false
         )
 
+        return binding!!.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         firestore = Firestore()
-
         setLayoutVisibility()
-
-//        dialog.setOnKeyListener { dialogInterface, i, keyEvent ->
-//
-//            if (keyEvent.keyCode == KeyEvent.KEYCODE_BACK) {
-//                if (isEdit!!) {
-//                    val intent = Intent(getContext(), LeadListActivity::class.java)
-//                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-//                    startActivity(intent)
-//                    if (activity != null)
-//                        activity!!.finish()
-//                    /*dialog.dismiss();*/
-//                    return@dialog.setOnKeyListener true
-//                } else {
-//                    return@dialog.setOnKeyListener false
-//                }
-//
-//            } else {
-//                return@dialog.setOnKeyListener false
-//            }
-//
-//
-//        }
+        setText()
 
         if (leadDetails.assignerUId == "Not available" || leadDetails.assignerUId == null) {
             hideAssignerContact()
@@ -182,13 +133,12 @@ class LeadDetailsFragment(
                 permission.requestCallPhone()
         }
 
-        button!!.setOnClickListener { _ ->
+        binding!!.editLeadDetails.setOnClickListener { _ ->
             val cm = activity!!
                 .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
             if (cm.activeNetworkInfo != null) {
                 if (userType == getString(R.string.telecaller)
-                    || userType == getString(R.string.business_associate)
                     || userType == getString(R.string.teleassigner)
                 ) {
                     progress = ProgressDialog(context)
@@ -202,16 +152,12 @@ class LeadDetailsFragment(
                         leadDetails.location!!,
                         getString(R.string.salesman)
                     )
-                } else {
+                } else if (userType == getString(R.string.salesman)) {
                     openSalesmanFragment()
                 }
             } else
                 Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()
         }
-
-//        dialog.setContentView(view)
-//        mBehavior = BottomSheetBehavior.from(view.parent as View)
-        return dialog
     }
 
     private fun hideAssignerContact() {
@@ -233,8 +179,8 @@ class LeadDetailsFragment(
         } else if (userType == getString(R.string.salesman)) {
             binding!!.assignedToLayout.visibility = View.GONE
             binding!!.assigneeContactLayout.visibility = View.GONE
-        } else if (userType == getString(R.string.admin)) {
-            button!!.visibility = View.GONE
+        } else if (userType == getString(R.string.admin) || userType == getString(R.string.business_associate)) {
+            binding!!.editLeadDetails.visibility = View.GONE
         }
 
         if (leadDetails.employment == "Salaried") {
@@ -320,15 +266,8 @@ class LeadDetailsFragment(
         binding!!.location.text = leadDetails.location
         binding!!.assigner!!.text = leadDetails.assigner
         binding!!.assignerContactNumber.text = null
-        binding!!.assignTo.text = leadDetails.assignedTo
-        binding!!.assigneeContactNumber.text = null
-        binding!!.status.text = leadDetails.status
         binding!!.customerRemarks.text = leadDetails.salesmanRemarks
         binding!!.date.text = Date(leadDetails.timeStamp).toString()
-        binding!!.time.text = Time(leadDetails.timeStamp).toString()
-        binding!!.assignDate.text = leadDetails.assignDate
-        binding!!.time.text = leadDetails.assignTime
-
 
 
         if (leadDetails.contactNumber == "Not available" ||
@@ -338,13 +277,30 @@ class LeadDetailsFragment(
             binding!!.contactNumber.setCompoundDrawables(null, null, null, null)
         }
 
-//        val csvBuilder = StringBuilder()
-//        for (bank in leadDetails.banks) {
-//            csvBuilder.append(bank)
-//            csvBuilder.append(", ")
-//        }
-//        val bankList = csvBuilder.toString()
-//        bankNames!!.text = bankList
+        if (leadDetails.assignedTo.isNullOrEmpty()) {
+            binding!!.assignTo.text = "Not assigned yet"
+            binding!!.status.text = "Not assigned yet"
+            binding!!.assignDate.text = "Not assigned yet"
+            binding!!.assignTime.text = "Not assigned yet"
+
+            hideAssigneeContact()
+        } else {
+            binding!!.assignTo.text = leadDetails.assignedTo
+            binding!!.status.text = leadDetails.status
+            binding!!.assignDate.text = leadDetails.assignDate
+        }
+
+        if (leadDetails.banks.isNullOrEmpty()) {
+            binding!!.bankLayout.visibility = View.GONE
+        } else {
+            val csvBuilder = StringBuilder()
+            for (bank in leadDetails.banks) {
+                csvBuilder.append(bank)
+                csvBuilder.append(", ")
+            }
+            val bankList = csvBuilder.toString()
+            binding!!.bankNames.text = bankList
+        }
     }
 
 //    private fun getLatestRemark(remark: String): String? {
@@ -367,12 +323,11 @@ class LeadDetailsFragment(
 //
 //        return r
 //    }
-
-    override fun onStart() {
-        super.onStart()
-        mBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
-    }
-
+//
+//    override fun onStart() {
+//        super.onStart()
+//        mBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
+//    }
 
     private fun onFetchSalesPersonList(): FirestoreInterfaces.OnFetchUsersList {
         return FirestoreInterfaces.OnFetchUsersList { userList ->
@@ -403,7 +358,6 @@ class LeadDetailsFragment(
             ).show(fragmentManager!!, "promo")
         }
     }
-
 
     private fun openSalesmanFragment() {
         SalesmanEditLeadFragment.newInstance(leadDetails) { dialogSalesmanRemarks, dialogSalesmanReason, banks ->

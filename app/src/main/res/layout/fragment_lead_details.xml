@@ -58,7 +58,6 @@
                                 android:id="@+id/customer_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@{lead.name}"
                                 android:textColor="@color/coloBlack" />
 
                         </LinearLayout>
@@ -276,7 +275,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="20sp"
                                 android:layout_marginRight="20sp"
-                                android:drawableEnd="@drawable/ic_call_white_24dp"
                                 android:drawableRight="@drawable/ic_call_white_24dp"
                                 android:gravity="center_vertical"
                                 android:textColor="@color/coloBlack" />
@@ -324,6 +322,7 @@
                             android:paddingVertical="4dp" />-->
 
                         <LinearLayout
+                            android:id="@+id/bank_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -533,30 +532,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Work has been done on : " />
+                                android:text="Work done on : " />
 
                             <TextView
                                 android:id="@+id/date"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/coloBlack" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="8dp"
-                            android:paddingVertical="4dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Work has been done at : " />
-
-                            <TextView
-                                android:id="@+id/time"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/coloBlack" />

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -205,6 +206,8 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
 
 
     private fun setFilter() {
+
+        Log.d("userrr", getString(userType))
         when (userType) {
             R.string.telecaller -> {
                 leadFilter?.assigner = preferences!!.userName

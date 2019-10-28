@@ -113,7 +113,7 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
     }
 
     private fun openLeadDetailsFragment(model: LeadDetails, currentUserType: String) {
-        val leadDetailsFragment = LeadDetailsFragment(model, this@LeadListActivity, currentUserType)
+        val leadDetailsFragment = LeadDetailsFragment(model, currentUserType)
         leadDetailsFragment.show(this@LeadListActivity.supportFragmentManager, "f")
     }
 
@@ -135,8 +135,8 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
         binding!!.activityLead.tabLayout.visibility = View.VISIBLE
 
         if (userType == R.string.telecaller_and_teleassigner) {
-            binding!!.activityLead.tabLayout.getTabAt(0)?.text= "Caller"
-            binding!!.activityLead.tabLayout.getTabAt(1)?.text= "Assign"
+            binding!!.activityLead.tabLayout.getTabAt(0)?.text = "Caller"
+            binding!!.activityLead.tabLayout.getTabAt(1)?.text = "Assign"
         }
 
         val adapterViewPager = LeadListPagerAdapter(

@@ -134,7 +134,7 @@ class Firestore {
         if (filter.status != "All")
             query = query.whereEqualTo("status", filter.status)
 
-        if (!preference!!.userType.equals("Salesman")) {
+        if (!preference!!.userType.equals("Salesman") && !preference!!.userType.equals("Admin")) {
             if (filter.businessAssociateUId != null)
                 query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
             else query = query.whereEqualTo(

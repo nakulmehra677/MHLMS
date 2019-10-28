@@ -121,16 +121,19 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
 
         telecallerReason.setText(remarks);
 
-        if (!userType.equals(getString(R.string.business_associate))) {
-            if (leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
-                    leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
-                reminderLayout.setVisibility(View.VISIBLE);
-            } else {
-                reminderLayout.setVisibility(View.GONE);
+        if (leadDetails.getSalesmanRemarks() == null) {
+            reminderLayout.setVisibility(View.GONE);
+            dateTextView.setText("DD/MM/YYYY");
+            timeTextView.setText("hh:mm");
+        } else if (
+                leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
+                        leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
+            reminderLayout.setVisibility(View.VISIBLE);
+        } else {
+            reminderLayout.setVisibility(View.GONE);
 
-                dateTextView.setText("DD/MM/YYYY");
-                timeTextView.setText("hh:mm");
-            }
+            dateTextView.setText("DD/MM/YYYY");
+            timeTextView.setText("hh:mm");
         }
 
         List salesPersonNameList = new ArrayList<>();
@@ -223,25 +226,27 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
 
                         Alarm alarm = new Alarm(getContext());
 
-                        if (leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
-                                leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
+                        if (leadDetails.getSalesmanRemarks() != null) {
+                            if (leadDetails.getSalesmanRemarks().equals("Customer Interested but Document Pending") ||
+                                    leadDetails.getSalesmanRemarks().equals("Customer follow Up")) {
 
-                            if (!dateTextView.getText().toString().equals("DD/MM/YYYY") &&
-                                    !timeTextView.getText().toString().equals("hh:mm")) {
+                                if (!dateTextView.getText().toString().equals("DD/MM/YYYY") &&
+                                        !timeTextView.getText().toString().equals("hh:mm")) {
 
-                                Calendar c = Calendar.getInstance();
+                                    Calendar c = Calendar.getInstance();
 
-                                c.set(Calendar.DAY_OF_MONTH, alarmDay);
-                                c.set(Calendar.MONTH, alarmMonth);
-                                c.set(Calendar.YEAR, alarmYear);
-                                c.set(Calendar.HOUR_OF_DAY, alarmHour);
-                                c.set(Calendar.MINUTE, alarmMinute);
-                                c.set(Calendar.SECOND, 0);
+                                    c.set(Calendar.DAY_OF_MONTH, alarmDay);
+                                    c.set(Calendar.MONTH, alarmMonth);
+                                    c.set(Calendar.YEAR, alarmYear);
+                                    c.set(Calendar.HOUR_OF_DAY, alarmHour);
+                                    c.set(Calendar.MINUTE, alarmMinute);
+                                    c.set(Calendar.SECOND, 0);
 
-                                alarm.startAlarm(c, leadDetails.getName());
+                                    alarm.startAlarm(c, leadDetails.getName());
+                                }
+                            } else {
+                                alarm.cancelAlarm(leadDetails.getName());
                             }
-                        } else {
-                            alarm.cancelAlarm(leadDetails.getName());
                         }
 
                         updateLead.time();
