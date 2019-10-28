@@ -8,20 +8,25 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.databinding.FragmentLeadDetailsBinding
 import com.mudrahome.mhlms.firebase.Firestore
+import com.mudrahome.mhlms.fragments.ViewAllRemarksFragment.newInstance
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.managers.PermissionManager
 import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
+import kotlinx.android.synthetic.main.fragment_lead_details.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 @SuppressLint("ValidFragment")
@@ -193,7 +198,7 @@ class LeadDetailsFragment(
     }
 
     private fun setText() {
-        /*if (leadDetails.salesmanReason != null) {
+        if (leadDetails.salesmanReason != null) {
             if (leadDetails.salesmanReason.size != 1) {
                 var temp = 1
                 var remark =
@@ -254,7 +259,6 @@ class LeadDetailsFragment(
                 viewallCallerRemark!!.setTextColor(resources.getColor(R.color.coloBlack))
             }
         }
-*/
 
         binding!!.customerName.text = leadDetails.name
         binding!!.loanAmount.text = leadDetails.loanAmount
@@ -303,27 +307,27 @@ class LeadDetailsFragment(
         }
     }
 
-//    private fun getLatestRemark(remark: String): String? {
-//        var r: String? = null
-//
-//        if (remark.contains("@@")) {
-//            val remarkWithTime =
-//                remark.split("@@".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-//
-//            @SuppressLint("SimpleDateFormat") val sdf = SimpleDateFormat("MMM dd,yyyy hh:mm a")
-//            val resultdate = Date(java.lang.Long.parseLong(remarkWithTime[1]))
-//
-//            if (!remarkWithTime[0].isEmpty())
-//                r =
-//                    "<font color=\"#196587\">" + sdf.format(resultdate) + "</font>" + "<br>" + remarkWithTime[0]
-//        } else {
-//            if (!remark.isEmpty())
-//                r = remark
-//        }
-//
-//        return r
-//    }
-//
+    private fun getLatestRemark(remark: String): String? {
+        var r: String? = null
+
+        if (remark.contains("@@")) {
+            val remarkWithTime =
+                remark.split("@@".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
+            @SuppressLint("SimpleDateFormat") val sdf = SimpleDateFormat("MMM dd,yyyy hh:mm a")
+            val resultdate = Date(java.lang.Long.parseLong(remarkWithTime[1]))
+
+            if (!remarkWithTime[0].isEmpty())
+                r =
+                    "<font color=\"#196587\">" + sdf.format(resultdate) + "</font>" + "<br>" + remarkWithTime[0]
+        } else {
+            if (!remark.isEmpty())
+                r = remark
+        }
+
+        return r
+    }
+
 //    override fun onStart() {
 //        super.onStart()
 //        mBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
