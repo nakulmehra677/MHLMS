@@ -65,8 +65,6 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
         firestore = Firestore(context!!)
         leadFilter = LeadFilter()
 
-        setFilter()
-
         linearLayoutManager = LinearLayoutManager(context)
 
         binding!!.fab.setOnClickListener(this)
@@ -163,6 +161,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     }
 
     private fun fetchLeads() {
+        setFilter()
         firestore!!.downloadLeadList(onFetchLeadList(), bottomVisibleItem, leadFilter!!)
     }
 
@@ -208,10 +207,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private fun setFilter() {
 
         when (userType) {
-            R.string.telecaller -> {
-                leadFilter?.assigner = preferences!!.userName
-                leadFilter?.businessAssociateUploader = false
-            }
+            R.string.telecaller -> leadFilter?.assigner = preferences!!.userName
             R.string.salesman -> leadFilter?.assignee = preferences!!.userName
             R.string.business_associate -> leadFilter?.businessAssociateUId = preferences?.userUid
             R.string.teleassigner -> {
@@ -232,7 +228,6 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
             leadFilter?.loanType = data.getStringExtra("loan_type_filter")
             leadFilter?.status = data.getStringExtra("status_filter")
 
-            setFilter()
 
             leadDetailsList.clear()
             adapter!!.notifyDataSetChanged()

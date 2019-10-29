@@ -57,7 +57,6 @@ public class FilterActivity extends BaseActivity {
 
         Intent intent = getIntent();
         userType = intent.getIntExtra("userType", R.string.salesman);
-        Log.d("userrr", getString(userType));
 
         locationButton = findViewById(R.id.location_button);
         assignerButton = findViewById(R.id.assigner_button);
@@ -83,10 +82,6 @@ public class FilterActivity extends BaseActivity {
         } else if (userType == R.string.salesman) {
             locationButton.setVisibility(View.GONE);
             assigneeButton.setVisibility(View.GONE);
-
-        } else if (userType == R.string.business_associate) {
-            locationButton.setVisibility(View.GONE);
-            assignerButton.setVisibility(View.GONE);
 
         } else if (userType == R.string.teleassigner) {
             locationButton.setVisibility(View.GONE);

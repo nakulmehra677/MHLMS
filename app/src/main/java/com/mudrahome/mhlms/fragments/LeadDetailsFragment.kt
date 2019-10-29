@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.databinding.FragmentLeadDetailsBinding
@@ -198,7 +197,7 @@ class LeadDetailsFragment(
     }
 
     private fun setText() {
-        if (leadDetails.salesmanReason != null) {
+        if (!leadDetails.salesmanReason.isNullOrEmpty()) {
             if (leadDetails.salesmanReason.size != 1) {
                 var temp = 1
                 var remark =
@@ -216,7 +215,10 @@ class LeadDetailsFragment(
                     )
                 }
             } else {
-                if (!leadDetails.salesmanReason[0].matches("Not available".toRegex())) {
+                if (leadDetails.salesmanReason.isNullOrEmpty()) {
+                    latestsalesmanRemark!!.visibility = View.GONE
+                    viewallSalesmanRemark!!.text = "Not available"
+                } else if (!leadDetails.salesmanReason[0].matches("Not available".toRegex())) {
                     latestsalesmanRemark!!.text =
                         Html.fromHtml(getLatestRemark(leadDetails.salesmanReason[0]))
                     viewallSalesmanRemark!!.text = ""
@@ -229,7 +231,7 @@ class LeadDetailsFragment(
             }
         }
 
-        if (leadDetails.telecallerRemarks != null) {
+        if (!leadDetails.telecallerRemarks.isNullOrEmpty()) {
             if (leadDetails.telecallerRemarks.size > 1) {
                 var remark =
                     getLatestRemark(leadDetails.telecallerRemarks[leadDetails.telecallerRemarks.size - 1])
@@ -248,7 +250,10 @@ class LeadDetailsFragment(
                     )
                 }
             } else {
-                if (!leadDetails.telecallerRemarks[0].matches("Not available".toRegex())) {
+                if (leadDetails.telecallerRemarks.isNullOrEmpty()) {
+                    viewallCallerRemark!!.text = "Not available"
+                    latestCallerRemark!!.visibility = View.GONE
+                } else if (!leadDetails.telecallerRemarks[0].equals("Not available")) {
                     latestCallerRemark!!.text =
                         Html.fromHtml(getLatestRemark(leadDetails.telecallerRemarks[0]))
                     viewallCallerRemark!!.text = ""
@@ -269,7 +274,6 @@ class LeadDetailsFragment(
         binding!!.propertyType.text = leadDetails.propertyType
         binding!!.location.text = leadDetails.location
         binding!!.assigner!!.text = leadDetails.assigner
-        binding!!.assignerContactNumber.text = null
         binding!!.customerRemarks.text = leadDetails.salesmanRemarks
         binding!!.date.text = Date(leadDetails.timeStamp).toString()
 
@@ -304,6 +308,7 @@ class LeadDetailsFragment(
             }
             val bankList = csvBuilder.toString()
             binding!!.bankNames.text = bankList
+            binding!!.bankLayout.visibility = View.VISIBLE
         }
     }
 
@@ -411,6 +416,7 @@ class LeadDetailsFragment(
                 Toast.makeText(context, R.string.lead_update, Toast.LENGTH_SHORT).show()
                 isEdit = true
                 setLayoutVisibility()
+                setText()
                 if (progress!!.isShowing)
                     progress!!.dismiss()
             }

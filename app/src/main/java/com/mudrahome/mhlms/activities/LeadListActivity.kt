@@ -40,6 +40,10 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
 
         binding = DataBindingUtil.setContentView(this, R.layout.drawer_lead_list)
 
+        binding!!.activityLead.toolbarLeadList.inflateMenu(R.menu.lead_list_menu)
+        setSupportActionBar(binding!!.activityLead.toolbarLeadList)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
         profileManager = ProfileManager()
         firestore = Firestore()
 
@@ -49,9 +53,9 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
+
         binding?.drawerLayout?.addDrawerListener(actionBarDrawerToggle!!)
         actionBarDrawerToggle!!.syncState()
-//        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         binding!!.navigationView.setNavigationItemSelectedListener(this)
 
         intnt = intent

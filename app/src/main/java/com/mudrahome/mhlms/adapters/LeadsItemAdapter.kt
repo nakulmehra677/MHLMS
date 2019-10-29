@@ -96,12 +96,17 @@ class LeadsItemAdapter(
             else -> {
                 val vh2 = holder as LeadListViewHolder
                 val model = items[i] as LeadDetails
-                vh2.status.text = model.status
 
-                if (model.status!!.matches("Closed".toRegex())) {
-                    vh2.status.setTextColor(Color.RED)
+                if (model.status != null) {
+                    vh2.status.text = model.status
+                    if (model.status!!.matches("Closed".toRegex())) {
+                        vh2.status.setTextColor(Color.RED)
+                    } else {
+                        vh2.status.setTextColor(context.resources.getColor(R.color.colorPrimary))
+                    }
                 } else {
-                    vh2.status.setTextColor(context.resources.getColor(R.color.colorPrimary))
+                    vh2.status.text = "None"
+                    vh2.status.setTextColor(context.resources.getColor(R.color.colorGray))
                 }
 
                 vh2.name.text = model.name

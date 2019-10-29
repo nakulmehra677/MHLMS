@@ -37,7 +37,6 @@ public class UpdateLead {
 
         leadDetails.setAssignDate(timeManager.getStrDate());
         leadDetails.setAssignTime(timeManager.getStrTime());
-        leadDetails.setStatus("Active");
     }
 
     public void assignedToDetails(String assignedTo, String uid) {
@@ -45,7 +44,7 @@ public class UpdateLead {
         leadDetails.setAssignedToUId(uid);
 
         TimeManager timeManager = new TimeManager();
-
+        leadDetails.setStatus("Active");
         leadDetails.setAssignDate(timeManager.getStrDate());
         leadDetails.setAssignTime(timeManager.getStrTime());
     }

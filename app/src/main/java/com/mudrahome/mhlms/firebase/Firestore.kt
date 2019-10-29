@@ -139,11 +139,15 @@ class Firestore {
             !preference!!.userType.equals("Admin") &&
             !preference!!.userType.equals(context?.getString(R.string.admin_and_salesman))
         ) {
-            if (filter.businessAssociateUId != null)
+            Log.d("sdcs", "sdcsd")
+            if (filter.businessAssociateUId != null) {
                 query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
-            else query = query.whereEqualTo(
-                "businessAssociateUploader", filter.businessAssociateUploader
-            )
+            } else {
+                query = query.whereEqualTo(
+                    "businessAssociateUploader", filter.businessAssociateUploader
+                )
+                Log.d("sdcs", filter.businessAssociateUploader.toString())
+            }
         }
 
         if (lastLead == null) {

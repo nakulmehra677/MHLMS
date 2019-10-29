@@ -104,15 +104,15 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
         reasontextview = v.findViewById(R.id.reasontextview);
 
 
-        if (userType.equals(getString(R.string.teleassigner))) {
-            nameLayout.setVisibility(View.GONE);
-            amountLayout.setVisibility(View.GONE);
-            contactLayout.setVisibility(View.GONE);
-        } else if (userType.equals(getString(R.string.business_associate))) {
-            assignToLayout.setVisibility(View.GONE);
-            reasonLayout.setVisibility(View.GONE);
-            reminderLayout.setVisibility(View.GONE);
-        }
+//        if (userType.equals(getString(R.string.teleassigner))) {
+//            nameLayout.setVisibility(View.GONE);
+//            amountLayout.setVisibility(View.GONE);
+//            contactLayout.setVisibility(View.GONE);
+//        } else if (userType.equals(getString(R.string.business_associate))) {
+//            assignToLayout.setVisibility(View.GONE);
+//            reasonLayout.setVisibility(View.GONE);
+//            reminderLayout.setVisibility(View.GONE);
+//        }
         customerName.setText(leadDetails.getName());
         loanAmount.setText(leadDetails.getLoanAmount());
         contactNumber.setText(leadDetails.getContactNumber());
@@ -250,16 +250,10 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
                         }
 
                         updateLead.time();
-                        if (userType.equals(getString(R.string.teleassigner)) &&
-                                !leadDetails.getAssignedTo().equals(strAssignedTo)) {
-                            updateLead.assignDate();
-                        }
 
-                        if (!leadDetails.getAssignedTo().equals(strAssignedTo)) {
-                            for (UserDetails userDetails : salesPersonList) {
-                                if (userDetails.getUserName().equals(strAssignedTo)) {
-                                    updateLead.assignedToDetails(strAssignedTo, userDetails.getuId());
-                                }
+                        for (UserDetails userDetails : salesPersonList) {
+                            if (userDetails.getUserName().equals(strAssignedTo)) {
+                                updateLead.assignedToDetails(strAssignedTo, userDetails.getuId());
                             }
                         }
 

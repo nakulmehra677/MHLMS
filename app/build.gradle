@@ -16,13 +16,13 @@ android {
         minSdkVersion 16
         multiDexEnabled true
         targetSdkVersion 29
-        versionCode 43
-        versionName "2.8.0"
+        versionCode 44
+        versionName "2.8.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            debuggable true
+//            debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
