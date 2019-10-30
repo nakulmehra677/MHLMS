@@ -47,6 +47,7 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
 
         profileManager = ProfileManager()
         firestore = Firestore()
+        userDataSharedPreference = UserDataSharedPreference(this)
 
         actionBarDrawerToggle = ActionBarDrawerToggle(
             this,
