@@ -70,13 +70,13 @@ public class UserDataSharedPreference {
             editor.putString(context.getString(R.string.SH_user_type),
                     context.getString(R.string.salesman));
         }
-        editor.commit();
+        editor.apply();
     }
 
     public void setContactNumber(String number) {
         editor = preferences.edit();
         editor.putString(context.getString(R.string.SH_user_number), number);
-        editor.commit();
+        editor.apply();
     }
 
     public Set<String> getLocation() {
@@ -105,5 +105,11 @@ public class UserDataSharedPreference {
     public String getUserType() {
         return preferences.getString(context.getString(R.string.SH_user_type), "");
 
+    }
+
+    public void clearSharePreference(){
+        editor = preferences.edit();
+        editor.clear();
+        editor.apply();
     }
 }

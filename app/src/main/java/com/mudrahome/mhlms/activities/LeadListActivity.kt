@@ -34,6 +34,7 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
     private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
     private var intnt: Intent? = null
     private var binding: DrawerLeadListBinding? = null
+    private var userDataSharedPreference: UserDataSharedPreference? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -229,10 +230,8 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
         build.setMessage("Are you sure you want to logout?")
             .setPositiveButton("Yes") { _, _ ->
                 profileManager!!.signOut()
+                userDataSharedPreference!!.clearSharePreference()                                      // Clear data from cache
                 showToastMessage(R.string.logged_out)
-                //SharedPreferences.Editor editor = sharedPreferences.edit();
-                //editor.clear();
-                /*onBackPressed();*/
                 val intent = Intent(this@LeadListActivity, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
