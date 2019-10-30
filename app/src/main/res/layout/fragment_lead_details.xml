@@ -214,6 +214,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/assigner_linear_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -347,6 +348,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/assignee_linear_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -461,6 +463,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/lead_status_linear_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"

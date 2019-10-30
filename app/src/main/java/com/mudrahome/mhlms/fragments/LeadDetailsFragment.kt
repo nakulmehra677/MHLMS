@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,18 +70,23 @@ class LeadDetailsFragment(
         firestore = Firestore()
         setLayoutVisibility()
         setText()
+        Log.d("assignerContact", "User assigner Uid  "+leadDetails.assignerUId  )
 
         if (leadDetails.assignerUId == "Not available" || leadDetails.assignerUId == null) {
             hideAssignerContact()
         } else {
             firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails {
                 override fun onSuccess(userDetails: UserDetails?) {
-                    if (userDetails!!.contactNumber != "Not available" ||
-                        userDetails.contactNumber != null
+
+
+                    if (userDetails!!.contactNumber!!.toString() == "Not available" ||
+                        userDetails.contactNumber == null
                     ) {
-                        binding!!.assignerContactNumber!!.text = userDetails.contactNumber
-                    } else {
+                        Log.d("assignerContact", "User Details  "+userDetails!!.contactNumber  )
                         hideAssignerContact()
+                    } else {
+                        binding!!.assignerContactNumber!!.text = userDetails.contactNumber
+
                     }
                 }
 
@@ -104,12 +110,12 @@ class LeadDetailsFragment(
         } else {
             firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails {
                 override fun onSuccess(userDetails: UserDetails?) {
-                    if (userDetails!!.contactNumber != "Not available" ||
-                        userDetails.contactNumber != null
+                    if (userDetails!!.contactNumber == "Not available" ||
+                        userDetails.contactNumber == null
                     ) {
-                        binding!!.assigneeContactNumber!!.text = userDetails.contactNumber
-                    } else {
                         hideAssigneeContact()
+                    } else {
+                        binding!!.assigneeContactNumber!!.text = userDetails.contactNumber
                     }
                 }
 
@@ -165,9 +171,10 @@ class LeadDetailsFragment(
     }
 
     private fun hideAssignerContact() {
-        binding!!.assigneeContactNumber.text = "Not available"
-        binding!!.assigneeContactNumber.isClickable = false
-        binding!!.assigneeContactNumber.setCompoundDrawables(null, null, null, null)
+        binding!!.assignerContactNumber.isClickable = false
+        binding!!.assignerContactNumber.setCompoundDrawables(null, null, null, null)
+        binding!!.assignerContactNumber.text = "Not available"
+        Log.d("assignerContact", binding!!.assignerContactNumber.text.toString())
     }
 
     private fun hideAssigneeContact() {
@@ -193,6 +200,12 @@ class LeadDetailsFragment(
 
         if (leadDetails.salesmanRemarks == null || leadDetails.salesmanRemarks == "Not available") {
             binding!!.customerRemarksLayout!!.visibility = View.GONE
+        }
+
+        if(leadDetails.assignerUId == null && leadDetails.assigner == null){
+            binding!!.assignerLinearLayout!!.visibility = View.GONE
+            binding!!.assigneeLinearLayout!!.visibility = View.GONE
+            binding!!.leadStatusLinearLayout!!.visibility = View.GONE
         }
     }
 
