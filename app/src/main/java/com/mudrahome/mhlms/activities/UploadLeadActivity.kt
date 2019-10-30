@@ -1,7 +1,6 @@
 package com.mudrahome.mhlms.activities
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
@@ -13,13 +12,8 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.databinding.ActivityUploadLeadBinding
 import com.mudrahome.mhlms.firebase.Firestore
@@ -75,10 +69,10 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         initializeLocationSpinner()
 
         if (userType.equals(getString(R.string.telecaller)) ||
-            userType.equals(getString(R.string.telecaller_and_teleassigner))) {
+            userType.equals(getString(R.string.telecaller_and_teleassigner))
+        ) {
 
-        }
-        else if (userType.equals(getString(R.string.business_associate))) {
+        } else if (userType.equals(getString(R.string.business_associate))) {
             binding!!.assignToText.text = "Send to"
             binding!!.remarks.visibility = View.GONE
             binding!!.reminderLayout.visibility = View.GONE
@@ -247,9 +241,11 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     }
 
     private fun checkforOthersLocation() {
-        if(leadDetails?.location.equals("Others")){
+        if (leadDetails?.location.equals("Others")) {
             binding!!.teleassignerOtherLocation.visibility = View.VISIBLE
             binding!!.assignToLayout.visibility = View.GONE
+            leadDetails!!.assigner = null
+            leadDetails!!.assignerUId = null
             /*initializePlaceClient()*/
         } else {
             binding!!.teleassignerOtherLocation.visibility = View.GONE
@@ -265,13 +261,14 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         leadDetails?.contactNumber = binding!!.contactNumber.text.toString().trim()
         leadDetails?.loanAmount = binding!!.loanAmount.text.toString().trim()
         leadDetails?.timeStamp = timeModel.timeStamp
-        if(binding!!.teleassignerOtherLocation.visibility==View.VISIBLE)
+        if (binding!!.teleassignerOtherLocation.visibility == View.VISIBLE)
             leadDetails?.location = binding!!.teleassignerOtherLocation.text.toString()
 
         val preference = UserDataSharedPreference(this)
 
         if (userType.equals(getString(R.string.telecaller)) ||
-            userType.equals(getString(R.string.telecaller_and_teleassigner))
+            userType.equals(getString(R.string.telecaller_and_teleassigner)) ||
+            binding!!.teleassignerOtherLocation.visibility != View.VISIBLE
         ) {
             leadDetails?.status = "Active"
             leadDetails?.assignDate = timeModel.strDate
@@ -305,13 +302,12 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
             }
         }
         if (userType.equals(getString(R.string.business_associate))) {
-            if(binding!!.teleassignerOtherLocation.visibility == View.VISIBLE){
-                if(binding!!.teleassignerOtherLocation.text.toString().isNullOrEmpty()){
+            if (binding!!.teleassignerOtherLocation.visibility == View.VISIBLE) {
+                if (binding!!.teleassignerOtherLocation.text.toString().isNullOrEmpty()) {
                     return false
                 }
-            }else{
-                if (leadDetails?.assigner == null)
-                {
+            } else {
+                if (leadDetails?.assigner == null) {
                     return false
                 }
             }
@@ -331,13 +327,13 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         when (view.id) {
             R.id.upload_details ->
                 if (isNetworkConnected) {
-                setDetails()
-                if (checkEmpty()) {
-                    uploadDetails()
+                    setDetails()
+                    if (checkEmpty()) {
+                        uploadDetails()
+                    } else
+                        showToastMessage(R.string.fill_details_correctly)
                 } else
-                    showToastMessage(R.string.fill_details_correctly)
-            } else
-                showToastMessage(R.string.no_internet)
+                    showToastMessage(R.string.no_internet)
 
             R.id.date_picker -> {
                 // Get Current Date
