@@ -1,6 +1,7 @@
 package com.mudrahome.mhlms.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.app.TimePickerDialog
@@ -12,8 +13,13 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.databinding.ActivityUploadLeadBinding
 import com.mudrahome.mhlms.firebase.Firestore
@@ -51,6 +57,10 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     private var leadDetails: LeadDetails? = null
     private var userType: String? = null
 
+    private var AUTOCOMPLETE_REQUEST_CODE = 1
+    private var country = "IN"
+
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,10 +75,10 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         initializeLocationSpinner()
 
         if (userType.equals(getString(R.string.telecaller)) ||
-            userType.equals(getString(R.string.telecaller_and_teleassigner))
-        ) {
+            userType.equals(getString(R.string.telecaller_and_teleassigner))) {
 
-        } else if (userType.equals(getString(R.string.business_associate))) {
+        }
+        else if (userType.equals(getString(R.string.business_associate))) {
             binding!!.assignToText.text = "Send to"
             binding!!.remarks.visibility = View.GONE
             binding!!.reminderLayout.visibility = View.GONE
@@ -76,6 +86,8 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         } else {
             finish()
         }
+
+
     }
 
     private fun initializeLoanTypeSpinner() {
@@ -134,6 +146,16 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         binding!!.assignTo?.isClickable = true
     }
 
+    /*private fun initializePlaceClient(){
+
+        if (!com.google.android.libraries.places.api.Places.isInitialized()) {
+            com.google.android.libraries.places.api.Places.initialize(
+                applicationContext,
+                getString(R.string.google_key_api)
+            )
+        }
+    }*/
+
     fun onRadioButtonClicked(view: View) {
         val checked = (view as RadioButton).isChecked
 
@@ -191,7 +213,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
                 if (isNetworkConnected) {
                     if (userType.equals(getString(R.string.business_associate))) {
-                        getCallersListByLocation()
+                        checkforOthersLocation()
                     } else {
                         getSalesmanListByLocation()
                     }
@@ -224,6 +246,18 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    private fun checkforOthersLocation() {
+        if(leadDetails?.location.equals("Others")){
+            binding!!.teleassignerOtherLocation.visibility = View.VISIBLE
+            binding!!.assignToLayout.visibility = View.GONE
+            /*initializePlaceClient()*/
+        } else {
+            binding!!.teleassignerOtherLocation.visibility = View.GONE
+            binding!!.assignToLayout.visibility = View.VISIBLE
+            getCallersListByLocation()
+        }
+    }
+
     private fun setDetails() {
         val timeModel = TimeManager()
 
@@ -231,6 +265,8 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         leadDetails?.contactNumber = binding!!.contactNumber.text.toString().trim()
         leadDetails?.loanAmount = binding!!.loanAmount.text.toString().trim()
         leadDetails?.timeStamp = timeModel.timeStamp
+        if(binding!!.teleassignerOtherLocation.visibility==View.VISIBLE)
+            leadDetails?.location = binding!!.teleassignerOtherLocation.text.toString()
 
         val preference = UserDataSharedPreference(this)
 
@@ -269,8 +305,15 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
             }
         }
         if (userType.equals(getString(R.string.business_associate))) {
-            if (leadDetails?.assigner == null) {
-                return false
+            if(binding!!.teleassignerOtherLocation.visibility == View.VISIBLE){
+                if(binding!!.teleassignerOtherLocation.text.toString().isNullOrEmpty()){
+                    return false
+                }
+            }else{
+                if (leadDetails?.assigner == null)
+                {
+                    return false
+                }
             }
         } else {
             if (leadDetails?.assignedTo == null ||
@@ -286,7 +329,8 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     fun onButtonClicked(view: View) {
         val c = Calendar.getInstance()
         when (view.id) {
-            R.id.upload_details -> if (isNetworkConnected) {
+            R.id.upload_details ->
+                if (isNetworkConnected) {
                 setDetails()
                 if (checkEmpty()) {
                     uploadDetails()
@@ -471,4 +515,27 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         )
         startActivity(intent)
     }
+
+    /*fun getLocation() {
+        val fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
+
+        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
+            .setCountry(country)
+            .build(this@UploadLeadActivity)
+
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
+    }*/
+
+    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    val place = Autocomplete.getPlaceFromIntent(data)
+                    Toast.makeText(this,place.name,Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }*/
 }

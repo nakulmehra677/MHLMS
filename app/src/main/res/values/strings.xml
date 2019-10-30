@@ -79,6 +79,8 @@
 
     <string name="emoji">Made with &#128153; by Nakul</string>
 
+    <string name="google_key_api">AIzaSyC8VOTVKYz6JgqIuYOxb6boKRb_l9-wL10</string>
+
     <string-array name="property_type">
         <item>Self Occupied Residential Property</item>
         <item>Self Occupied Commercial Property</item>
@@ -108,6 +110,8 @@
         <item>Jaipur</item>
         <item>Gwalior</item>
         <item>Ahemdabad</item>
+        <item>Surat</item>
+        <item>Others</item>
     </string-array>
 
     <string-array name="status">
@@ -164,4 +168,7 @@
         <item>Loan Type</item>
         <item>Status</item>
     </string-array>
+
+
+
 </resources>
