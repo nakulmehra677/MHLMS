@@ -167,7 +167,7 @@ class LeadDetailsFragment(
                             getString(R.string.salesman)
                         )
                     }else{
-                        progress!!.dismiss()
+
                         getVinodDetails()
                     }
 
@@ -378,6 +378,8 @@ class LeadDetailsFragment(
     private fun getVinodDetails(){
         firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails{
             override fun onSuccess(userDetails: UserDetails?) {
+                if(progress!!.isShowing)
+                     progress!!.dismiss()
                val list= ArrayList<UserDetails>()
                 list.add(userDetails!!)
                 openTelecallerFragment(list)
