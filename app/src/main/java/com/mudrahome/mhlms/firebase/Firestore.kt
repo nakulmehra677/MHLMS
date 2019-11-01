@@ -16,12 +16,14 @@ class Firestore {
     private val nodes: Long = 0
     private val isAdmin = false
     private var preference: UserDataSharedPreference? = null
+    private var userDetails: UserDetails? = null
 
     constructor()
 
     constructor(context: Context) {
         this.context = context
         preference = UserDataSharedPreference(context)
+        userDetails = UserDetails()
     }
 
     fun uploadCustomerDetails(
@@ -116,6 +118,7 @@ class Firestore {
         }
     }
 
+/*
     fun downloadLeadList(
         listener: FirestoreInterfaces.OnFetchLeadList,
         lastLead: DocumentSnapshot?, filter: LeadFilter
@@ -124,8 +127,9 @@ class Firestore {
         val db = FirebaseFirestore.getInstance()
         var query: Query = db.collection("leadList")
 
-        if (filter.location != "All")
-            query = query.whereEqualTo("location", filter.location)
+
+
+
         if (filter.assigner != "All")
             query = query.whereEqualTo("assigner", filter.assigner)
         if (filter.assignee != "All")
@@ -134,21 +138,32 @@ class Firestore {
             query = query.whereEqualTo("loanType", filter.loanType)
         if (filter.status != "All")
             query = query.whereEqualTo("status", filter.status)
+        if(userDetails!!.getuId().equals("hwn8jj23f8VGmnesvAkhDZsORl52"))
+        {
+            Log.d("Dipa","runhuihh")
+            query = query.whereEqualTo("businessAssociateUid","rRhDdY8Vi5QlcUMZU5lnids68Ey2")
 
-        if (!preference!!.userType.equals("Salesman") &&
-            !preference!!.userType.equals("Admin") &&
-            !preference!!.userType.equals(context?.getString(R.string.admin_and_salesman))
-        ) {
-            Log.d("sdcs", "sdcsd")
-            if (filter.businessAssociateUId != null) {
-                query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
-            } else {
-                query = query.whereEqualTo(
-                    "businessAssociateUploader", filter.businessAssociateUploader
-                )
-                Log.d("sdcs", filter.businessAssociateUploader.toString())
+        }else{
+
+            if (filter.location != "All")
+                query = query.whereEqualTo("location", filter.location)
+
+            if (!preference!!.userType.equals("Salesman") &&
+                !preference!!.userType.equals("Admin") &&
+                !preference!!.userType.equals(context?.getString(R.string.admin_and_salesman))
+            ) {
+                Log.d("sdcs", "sdcsd")
+                if (filter.businessAssociateUId != null) {
+                    query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
+                } else {
+                    query = query.whereEqualTo(
+                        "businessAssociateUploader", filter.businessAssociateUploader
+                    )
+                    Log.d("sdcs", filter.businessAssociateUploader.toString())
+                }
             }
         }
+
 
         if (lastLead == null) {
             query = query.orderBy("timeStamp", Query.Direction.DESCENDING)
@@ -179,6 +194,7 @@ class Firestore {
             listener.onFail()
         }
     }
+*/
 
     fun getUsers(onGetUserDetails: FirestoreInterfaces.OnGetUserDetails, uId: String) {
 
@@ -271,6 +287,73 @@ class Firestore {
 
             val leadDetails = documentSnapshot.toObject(LeadDetails::class.java)
             onLeadDetails.onSucces(leadDetails)
+        }
+    }
+
+    fun downloadLeadList(
+        listener: FirestoreInterfaces.OnFetchLeadList,
+        lastLead: DocumentSnapshot?, filter: LeadFilter
+    ) {
+
+        val db = FirebaseFirestore.getInstance()
+        var query: Query = db.collection("leadList")
+
+        Log.d("Filter","g + \n${filter.businessAssociateUploader}\n${filter.assigner}\n${filter.assignee}\n${filter.location}")
+
+        if (filter.location != "All")
+            query = query.whereEqualTo("location", filter.location)
+        if (filter.assigner != "All")
+            query = query.whereEqualTo("assigner", filter.assigner)
+        if (filter.assignee != "All")
+            query = query.whereEqualTo("assignedTo", filter.assignee)
+        if (filter.loanType != "All")
+            query = query.whereEqualTo("loanType", filter.loanType)
+        if (filter.status != "All")
+            query = query.whereEqualTo("status", filter.status)
+
+
+        if (!preference!!.userType.equals("Salesman") &&
+            !preference!!.userType.equals("Admin") &&
+            !preference!!.userType.equals(context?.getString(R.string.admin_and_salesman))
+        ) {
+            Log.d("sdcs", "sdcsd")
+            if (filter.businessAssociateUId != null) {
+                query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
+            } else {
+                query = query.whereEqualTo(
+                    "businessAssociateUploader", filter.businessAssociateUploader
+                )
+                Log.d("sdcs", filter.businessAssociateUploader.toString())
+            }
+        }
+
+        if (lastLead == null) {
+            query = query.orderBy("timeStamp", Query.Direction.DESCENDING)
+                .limit(20)
+        } else {
+            query = query.orderBy("timeStamp", Query.Direction.DESCENDING)
+                .startAfter(lastLead)
+                .limit(20)
+        }
+
+        query.get().addOnSuccessListener { documentSnapshots ->
+
+            val leads = ArrayList<LeadDetails>()
+            if (documentSnapshots.size() > 0) {
+                for (document in documentSnapshots) {
+                    val l = document.toObject(LeadDetails::class.java)
+                    leads.add(l)
+                    Log.d("uuuuu", l.name)
+                }
+
+                val lastVisible = documentSnapshots.documents[documentSnapshots.size() - 1]
+
+                listener.onLeadAdded(leads, lastVisible)
+            } else {
+                listener.noLeads()
+            }
+        }.addOnFailureListener { exception ->
+            listener.onFail()
         }
     }
 }

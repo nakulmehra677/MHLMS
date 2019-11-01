@@ -25,9 +25,11 @@ import com.mudrahome.mhlms.managers.PermissionManager
 import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
+import com.mudrahome.mhlms.model.UserList
 import kotlinx.android.synthetic.main.fragment_lead_details.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 @SuppressLint("ValidFragment")
 class LeadDetailsFragment(
@@ -157,11 +159,18 @@ class LeadDetailsFragment(
                     progress!!.setCanceledOnTouchOutside(false)
                     progress!!.show()
 
-                    firestore!!.fetchUsersByUserType(
-                        onFetchSalesPersonList(),
-                        leadDetails.location!!,
-                        getString(R.string.salesman)
-                    )
+                    val l = leadDetails.location!!.trim()
+                    if(l == "Delhi" || l =="Indore" || l == "Jaipur" || l == "Gwalior" || l =="Ahemdabad" || l == "Surat"){
+                        firestore!!.fetchUsersByUserType(
+                            onFetchSalesPersonList(),
+                            leadDetails.location!!,
+                            getString(R.string.salesman)
+                        )
+                    }else{
+                        progress!!.dismiss()
+                        getVinodDetails()
+                    }
+
                 } else if (userType == getString(R.string.salesman)) {
                     openSalesmanFragment()
                 }
@@ -362,7 +371,36 @@ class LeadDetailsFragment(
                             leadDetails.location + ".", Toast.LENGTH_SHORT
                 ).show()
             }
+
         }
+    }
+
+    private fun getVinodDetails(){
+        firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails{
+            override fun onSuccess(userDetails: UserDetails?) {
+               val list= ArrayList<UserDetails>()
+                list.add(userDetails!!)
+                openTelecallerFragment(list)
+            }
+
+            override fun fail() {
+
+            }
+        },"BSmVc33iDsaWoooUmeDD29L1GuJ2")
+    }
+
+    private fun getJaisDetails(){
+        firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails{
+            override fun onSuccess(userDetails: UserDetails?) {
+                val list= ArrayList<UserDetails>()
+                list.add(userDetails!!)
+                openTelecallerFragment(list)
+            }
+
+            override fun fail() {
+
+            }
+        },"si1Rd3v5J2cNQgCOAQcbPs5hJ9y2")
     }
 
     private fun openTelecallerFragment(userList: List<UserDetails>) {

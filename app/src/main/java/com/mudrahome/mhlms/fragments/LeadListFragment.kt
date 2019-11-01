@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -161,8 +162,10 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     }
 
     private fun fetchLeads() {
+
         setFilter()
         firestore!!.downloadLeadList(onFetchLeadList(), bottomVisibleItem, leadFilter!!)
+
     }
 
     private fun onFetchLeadList(): FirestoreInterfaces.OnFetchLeadList {
@@ -171,6 +174,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
                 binding!!.swipeRefresh.isRefreshing = false
                 binding!!.firstPageProgressBar.visibility = View.GONE
                 binding!!.progressBar.visibility = View.GONE
+                if (context!=null)
                 extraViews!!.showToast(R.string.no_leads, context)
 
             }
@@ -211,6 +215,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
             R.string.salesman -> leadFilter?.assignee = preferences!!.userName
             R.string.business_associate -> leadFilter?.businessAssociateUId = preferences?.userUid
             R.string.teleassigner -> {
+                Log.d("hjh",preferences!!.userName)
                 leadFilter?.assigner = preferences!!.userName
                 leadFilter?.businessAssociateUploader = true
             }

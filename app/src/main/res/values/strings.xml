@@ -45,6 +45,7 @@
     <string name="telecaller_and_teleassigner">Telecaller and Assigner</string>
     <string name="business_associate">Business Associate</string>
     <string name="teleassigner">Assigner</string>
+    <string name="specialcase">Special</string>
 
     <!-- Shared Preference -->
     <string name="SH_user_details">SHUserDetails</string>
@@ -81,6 +82,8 @@
 
     <string name="google_key_api">AIzaSyC8VOTVKYz6JgqIuYOxb6boKRb_l9-wL10</string>
 
+    <string name="othersLocation">Others</string>
+
     <string-array name="property_type">
         <item>Self Occupied Residential Property</item>
         <item>Self Occupied Commercial Property</item>
@@ -104,7 +107,7 @@
         <item>Over Draft</item>
     </string-array>
 
-    <string-array name="location">
+    <string-array name="locationOthers">
         <item>Delhi</item>
         <item>Indore</item>
         <item>Jaipur</item>
@@ -112,6 +115,15 @@
         <item>Ahemdabad</item>
         <item>Surat</item>
         <item>Others</item>
+    </string-array>
+
+    <string-array name="location">
+        <item>Delhi</item>
+        <item>Indore</item>
+        <item>Jaipur</item>
+        <item>Gwalior</item>
+        <item>Ahemdabad</item>
+        <item>Surat</item>
     </string-array>
 
     <string-array name="status">

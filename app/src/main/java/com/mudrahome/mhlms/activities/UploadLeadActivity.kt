@@ -72,10 +72,12 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
             userType.equals(getString(R.string.telecaller_and_teleassigner))
         ) {
 
+
         } else if (userType.equals(getString(R.string.business_associate))) {
             binding!!.assignToText.text = "Send to"
             binding!!.remarks.visibility = View.GONE
             binding!!.reminderLayout.visibility = View.GONE
+
 
         } else {
             finish()
@@ -97,10 +99,20 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
     private fun initializeLocationSpinner() {
         // Location Spinner
-        locationAdapter = ArrayAdapter.createFromResource(
-            this,
-            R.array.location, android.R.layout.simple_spinner_item
-        )
+        if(userType.equals(getString(R.string.business_associate))){
+
+            locationAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.locationOthers, android.R.layout.simple_spinner_item
+            )
+        }else{
+            locationAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.location, android.R.layout.simple_spinner_item
+            )
+        }
+
+
         locationAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding!!.location?.adapter = locationAdapter
         binding!!.location?.onItemSelectedListener = this
@@ -267,8 +279,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         val preference = UserDataSharedPreference(this)
 
         if (userType.equals(getString(R.string.telecaller)) ||
-            userType.equals(getString(R.string.telecaller_and_teleassigner)) ||
-            binding!!.teleassignerOtherLocation.visibility != View.VISIBLE
+            userType.equals(getString(R.string.telecaller_and_teleassigner))
         ) {
             leadDetails?.status = "Active"
             leadDetails?.assignDate = timeModel.strDate
@@ -285,6 +296,8 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         } else {
             leadDetails?.businessAssociateUid = preference.userUid
             leadDetails?.businessAssociateUploader = true
+            leadDetails?.assigner = "Dipa Meena"
+            leadDetails?.assignerUId = "hwn8jj23f8VGmnesvAkhDZsORl52"
         }
     }
 

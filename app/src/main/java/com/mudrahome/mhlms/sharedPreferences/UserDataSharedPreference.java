@@ -63,10 +63,15 @@ public class UserDataSharedPreference {
 
         } else if (details.getUserType().contains(context.getString(R.string.telecaller)) &&
                 details.getUserType().contains(context.getString(R.string.teleassigner))) {
-            editor.putString(context.getString(R.string.SH_user_type),
+
+            /*if(details.getuId().matches("k6Jb5RE1cGWrDZEdxw43gJs6dWA3"))
+                editor.putString(context.getString(R.string.SH_user_type),context.getString(R.string.specialcase));
+            else */editor.putString(context.getString(R.string.SH_user_type),
                     context.getString(R.string.telecaller_and_teleassigner));
 
-        } else {
+        }
+
+        else {
             editor.putString(context.getString(R.string.SH_user_type),
                     context.getString(R.string.salesman));
         }
