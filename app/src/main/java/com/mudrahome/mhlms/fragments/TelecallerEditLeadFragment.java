@@ -121,6 +121,9 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
 
         telecallerReason.setText(remarks);
 
+        if (salesPersonList == null) {
+            assignToLayout.setVisibility(View.GONE);
+        }
         if (leadDetails.getSalesmanRemarks() == null) {
             reminderLayout.setVisibility(View.GONE);
             dateTextView.setText("DD/MM/YYYY");

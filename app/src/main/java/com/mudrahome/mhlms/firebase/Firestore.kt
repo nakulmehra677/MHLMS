@@ -59,6 +59,8 @@ class Firestore {
             }
             val userList = UserList(salesPersonList)
             listener.onListFetched(userList)
+        }.addOnFailureListener {
+            listener.onFail()
         }
     }
 

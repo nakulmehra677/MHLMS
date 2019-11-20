@@ -37,7 +37,7 @@ public class FirestoreInterfaces {
 
     public interface OnFetchUsersList {
         void onListFetched(UserList userList);
-
+        void onFail();
     }
 
     public interface OnRemoveAd {

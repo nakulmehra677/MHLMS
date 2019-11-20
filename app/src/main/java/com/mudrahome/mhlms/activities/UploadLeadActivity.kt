@@ -22,6 +22,7 @@ import com.mudrahome.mhlms.managers.Alarm
 import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
+import com.mudrahome.mhlms.model.UserList
 import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference
 import java.util.*
 
@@ -385,20 +386,28 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
     private fun getCallersListByLocation() {
         firestore!!.fetchUsersByUserType(
-            FirestoreInterfaces.OnFetchUsersList { userList ->
-                personList = userList.userList
-
-                if (userList.userList.size > 0) {
-                    val callerNameList = ArrayList<String>()
-                    for (user in userList.userList) {
-                        callerNameList.add(user.userName)
-                    }
-                    initializeAssignToSpinner(callerNameList)
-                } else {
-                    binding!!.assignTo.isEnabled = false
-                    leadDetails?.assigner = null
-                    leadDetails?.assignerUId = null
+            object : FirestoreInterfaces.OnFetchUsersList {
+                override fun onFail() {
+                    showToastMessage(R.string.error_occur)
                 }
+
+                override fun onListFetched(userList: UserList?) {
+                    personList = userList?.userList
+
+                    if (userList?.userList?.size!! > 0) {
+                        val callerNameList = ArrayList<String>()
+                        for (user in userList.userList) {
+                            callerNameList.add(user.userName)
+                        }
+                        initializeAssignToSpinner(callerNameList)
+                    } else {
+                        binding!!.assignTo.isEnabled = false
+                        leadDetails?.assigner = null
+                        leadDetails?.assignerUId = null
+                    }
+                }
+
+
             }, leadDetails?.location!!, getString(R.string.teleassigner)
         )
     }
@@ -411,20 +420,26 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         progress.show();*/
 
         firestore?.fetchUsersByUserType(
-            FirestoreInterfaces.OnFetchUsersList { userList ->
-                personList = userList.userList
+            object : FirestoreInterfaces.OnFetchUsersList {
+                override fun onFail() {
+                    showToastMessage(R.string.error_occur)
+                }
 
-                if (userList.userList.size > 0) {
-                    val salesNameList = ArrayList<String>()
-                    for (user in userList.userList) {
-                        salesNameList.add(user.userName)
+                override fun onListFetched(userList: UserList?) {
+                    personList = userList?.userList
+
+                    if (userList?.userList?.size!! > 0) {
+                        val salesNameList = ArrayList<String>()
+                        for (user in userList.userList) {
+                            salesNameList.add(user.userName)
+                        }
+                        initializeAssignToSpinner(salesNameList)
+
+                    } else {
+                        binding!!.assignTo.isEnabled = false
+                        leadDetails?.assignedToUId = null
+                        leadDetails?.assignedTo = null
                     }
-                    initializeAssignToSpinner(salesNameList)
-
-                } else {
-                    binding!!.assignTo.isEnabled = false
-                    leadDetails?.assignedToUId = null
-                    leadDetails?.assignedTo = null
                 }
             }, leadDetails?.location!!, getString(R.string.salesman)
         )

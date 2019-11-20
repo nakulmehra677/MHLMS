@@ -20,11 +20,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.Timestamp;
 import com.mudrahome.mhlms.ExtraViews;
+import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.model.OfferDetails;
 import com.mudrahome.mhlms.model.UserDetails;
 import com.mudrahome.mhlms.model.UserList;
-import com.mudrahome.mhlms.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,6 +160,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                                 for (UserDetails details : userList.getUserList()) {
                                     allCallers.add((details.getUserName()));
                                 }
+                                extraViews.dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onFail() {
                                 extraViews.dismissProgressDialog();
                             }
                         }, "All", getString(R.string.telecaller));
@@ -638,6 +643,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     extraViews.dismissProgressDialog();
                     delhiTelecallerScrollView.setVisibility(View.VISIBLE);
                 }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
+                }
             }, getString(R.string.delhi), getString(R.string.telecaller));
 
         } else
@@ -663,6 +673,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     }
                     extraViews.dismissProgressDialog();
                     indoreTelecallerScrollView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
                 }
             }, getString(R.string.indore), getString(R.string.telecaller));
 
@@ -690,6 +705,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     extraViews.dismissProgressDialog();
                     jaipurTelecallerScrollView.setVisibility(View.VISIBLE);
                 }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
+                }
             }, getString(R.string.jaipur), getString(R.string.telecaller));
 
         } else
@@ -715,6 +735,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     }
                     extraViews.dismissProgressDialog();
                     gwaliorTelecallerScrollView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
                 }
             }, getString(R.string.gwalior), getString(R.string.telecaller));
 
@@ -742,6 +767,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     extraViews.dismissProgressDialog();
                     ahmedabadTelecallerScrollView.setVisibility(View.VISIBLE);
                 }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
+                }
             }, getString(R.string.ahmedabad), getString(R.string.telecaller));
 
         } else
@@ -767,6 +797,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     }
                     extraViews.dismissProgressDialog();
                     delhiSalesmanScrollView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
                 }
             }, getString(R.string.delhi), getString(R.string.salesman));
 
@@ -794,6 +829,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     extraViews.dismissProgressDialog();
                     indoreSalesmanScrollView.setVisibility(View.VISIBLE);
                 }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
+                }
             }, getString(R.string.indore), getString(R.string.salesman));
 
         } else
@@ -819,6 +859,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     }
                     extraViews.dismissProgressDialog();
                     jaipurSalesmanScrollView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
                 }
             }, getString(R.string.jaipur), getString(R.string.salesman));
 
@@ -846,6 +891,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     extraViews.dismissProgressDialog();
                     gwaliorSalesmanScrollView.setVisibility(View.VISIBLE);
                 }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
+                }
             }, getString(R.string.gwalior), getString(R.string.salesman));
 
         } else
@@ -871,6 +921,11 @@ public class SelectUserForOfferFragment extends Fragment implements View.OnClick
                     }
                     extraViews.dismissProgressDialog();
                     ahmedabadSalesmanScrollView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFail() {
+                    extraViews.dismissProgressDialog();
                 }
             }, getString(R.string.ahmedabad), getString(R.string.salesman));
 

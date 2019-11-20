@@ -25,6 +25,7 @@ import com.mudrahome.mhlms.managers.PermissionManager
 import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
+import com.mudrahome.mhlms.model.UserList
 import kotlinx.android.synthetic.main.fragment_lead_details.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -70,7 +71,6 @@ class LeadDetailsFragment(
         firestore = Firestore()
         setLayoutVisibility()
         setText()
-        Log.d("assignerContact", "User assigner Uid  "+leadDetails.assignerUId  )
 
         if (leadDetails.assignerUId == "Not available" || leadDetails.assignerUId == null) {
             hideAssignerContact()
@@ -82,7 +82,7 @@ class LeadDetailsFragment(
                     if (userDetails!!.contactNumber!!.toString() == "Not available" ||
                         userDetails.contactNumber == null
                     ) {
-                        Log.d("assignerContact", "User Details  "+userDetails!!.contactNumber  )
+                        Log.d("assignerContact", "User Details  " + userDetails!!.contactNumber)
                         hideAssignerContact()
                     } else {
                         binding!!.assignerContactNumber!!.text = userDetails.contactNumber
@@ -202,7 +202,7 @@ class LeadDetailsFragment(
             binding!!.customerRemarksLayout!!.visibility = View.GONE
         }
 
-        if(leadDetails.assignerUId == null && leadDetails.assigner == null){
+        if (leadDetails.assignerUId == null && leadDetails.assigner == null) {
             binding!!.assignerLinearLayout!!.visibility = View.GONE
             binding!!.assigneeLinearLayout!!.visibility = View.GONE
             binding!!.leadStatusLinearLayout!!.visibility = View.GONE
@@ -352,33 +352,33 @@ class LeadDetailsFragment(
 //    }
 
     private fun onFetchSalesPersonList(): FirestoreInterfaces.OnFetchUsersList {
-        return FirestoreInterfaces.OnFetchUsersList { userList ->
-            progress!!.dismiss()
-            if (userList!!.userList.size > 0)
-                openTelecallerFragment(userList.userList)
-            else {
-                Toast.makeText(
-                    context, "No Salesmen are present for " +
-                            leadDetails.location + ".", Toast.LENGTH_SHORT
-                ).show()
+        return object : FirestoreInterfaces.OnFetchUsersList {
+            override fun onFail() {
+                progress?.dismiss()
+                val userList = ArrayList<UserDetails>()
+                openTelecallerFragment(userList)
             }
+
+            override fun onListFetched(userList: UserList?) {
+                progress?.dismiss()
+                openTelecallerFragment(userList!!.userList)
+            }
+
         }
     }
 
     private fun openTelecallerFragment(userList: List<UserDetails>) {
-        if (userList.size != 0) {
-            TelecallerEditLeadFragment.newInstance(
-                leadDetails, userList, { dialogLeadDetails ->
-                    progress = ProgressDialog(context)
-                    progress!!.setMessage("Loading..")
-                    progress!!.setCancelable(false)
-                    progress!!.setCanceledOnTouchOutside(false)
-                    progress!!.show()
+        TelecallerEditLeadFragment.newInstance(
+            leadDetails, userList, { dialogLeadDetails ->
+                progress = ProgressDialog(context)
+                progress!!.setMessage("Loading..")
+                progress!!.setCancelable(false)
+                progress!!.setCanceledOnTouchOutside(false)
+                progress!!.show()
 
-                    firestore!!.updateLeadDetails(onUpdateLead(), dialogLeadDetails)
-                }, userType
-            ).show(fragmentManager!!, "promo")
-        }
+                firestore!!.updateLeadDetails(onUpdateLead(), dialogLeadDetails)
+            }, userType
+        ).show(fragmentManager!!, "promo")
     }
 
     private fun openSalesmanFragment() {
