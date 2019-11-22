@@ -17,7 +17,7 @@ android {
         multiDexEnabled true
         targetSdkVersion 29
         versionCode 45
-        versionName "2.8.2"
+        versionName "2.8.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

@@ -2,13 +2,16 @@ package com.mudrahome.mhlms.activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 
 import com.google.android.play.core.appupdate.AppUpdateInfo;
@@ -134,6 +137,7 @@ public class LoginActivity extends BaseActivity {
                 String strDeviceToken = FirebaseInstanceId.getInstance().getToken();
 
                 userDetails.setDeviceToken(strDeviceToken);
+                if(strDeviceToken !=null )
                 firestore.setCurrentDeviceToken(strDeviceToken, profileManager.getuId());
 
                 currentUserDetails = userDetails;
@@ -171,12 +175,13 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        /*if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             isUpdating();
         } else {
-            /*checkPermission();*/
+            *//*checkPermission();*//*
             checkLogin();
-        }
+        }*/
+        checkUpdate();
     }
 
    /* @Override
@@ -210,20 +215,22 @@ public class LoginActivity extends BaseActivity {
 
 
     private void checkUpdate() {
+        Log.d("UpdateAvailable","CheckUpdate");
+       VersionChecker checker = new VersionChecker();
+       try{
+           String latestVersion = checker.execute().get();
+           if(!BuildConfig.VERSION_NAME.matches(latestVersion)){
+               showUpdateDialog();
+               Toast.makeText(this, "UpdateAvailable", Toast.LENGTH_LONG).show();
+           }else{
+               Log.d("UpdateAvailable","else Block "+latestVersion);
+               checkLogin();
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+       }
 
-//       VersionChecker checker = new VersionChecker();
-//       try{
-//           String latestVersion = checker.execute().get();
-//           if(BuildConfig.VERSION_NAME.matches(latestVersion)){
-//
-//           }else{
-//
-//           }
-//       }catch (Exception e){
-//           e.printStackTrace();
-//       }
-
-        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+      /*  appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
                 try {
@@ -236,7 +243,7 @@ public class LoginActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        });
+        });*/
     }
 
     private void isUpdating() {
@@ -284,5 +291,21 @@ public class LoginActivity extends BaseActivity {
             Log.e("TAG", "doInBackground: " + newVersion);
             return newVersion;
         }
+    }
+
+    public void showUpdateDialog(){
+        new AlertDialog.Builder(LoginActivity.this, R.style.AppCompatAlertDialogStyle)
+                .setTitle("Update Available")
+                .setMessage("It looks like you are missing out some new features, kindly Update app to get a better experience")
+                .setPositiveButton("Update now", (dialog, which) -> {
+                    final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 }

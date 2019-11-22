@@ -156,17 +156,27 @@ class LeadDetailsFragment(
                     progress!!.setCanceledOnTouchOutside(false)
                     progress!!.show()
 
-                    firestore!!.fetchUsersByUserType(
-                        onFetchSalesPersonList(),
-                        leadDetails.location!!,
-                        getString(R.string.salesman)
-                    )
+                    val l = leadDetails.location!!.trim()
+                    if(l == "Delhi" || l =="Indore" || l == "Jaipur" || l == "Gwalior" || l =="Ahemdabad" || l == "Surat"){
+                        firestore!!.fetchUsersByUserType(
+                            onFetchSalesPersonList(),
+                            leadDetails.location!!,
+                            getString(R.string.salesman)
+                        )
+                    }else{
+
+                        getVinodDetails()
+                    }
                 } else if (userType == getString(R.string.salesman)) {
                     openSalesmanFragment()
                 }
             } else
                 Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun getVinodDetails(){
+
     }
 
     private fun hideAssignerContact() {

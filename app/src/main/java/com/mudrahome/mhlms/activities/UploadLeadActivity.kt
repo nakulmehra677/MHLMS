@@ -440,7 +440,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
                 override fun onListFetched(userList: UserList?) {
                     personList = userList?.userList
-
+                    Log.d("UserList",personList.toString())
                     if (userList?.userList?.size!! > 0) {
                         val salesNameList = ArrayList<String>()
                         for (user in userList.userList) {
