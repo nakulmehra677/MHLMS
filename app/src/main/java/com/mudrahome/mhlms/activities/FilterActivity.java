@@ -239,6 +239,11 @@ public class FilterActivity extends BaseActivity {
                     showAssignerList();
                     dismissProgressDialog();
                 }
+
+                @Override
+                public void onFail() {
+                    dismissProgressDialog();
+                }
             }, strLocation, getString(R.string.telecaller));
         } else
             showAssignerList();
@@ -269,6 +274,11 @@ public class FilterActivity extends BaseActivity {
 
                     showAssigneeList();
                     assigneeLocationChanged = false;
+                    dismissProgressDialog();
+                }
+
+                @Override
+                public void onFail() {
                     dismissProgressDialog();
                 }
             }, strLocation, getString(R.string.salesman));

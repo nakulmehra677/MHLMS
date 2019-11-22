@@ -2,16 +2,24 @@ package com.mudrahome.mhlms.activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.mudrahome.mhlms.BuildConfig;
+import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.firebase.Authentication;
 import com.mudrahome.mhlms.firebase.Firestore;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
@@ -19,15 +27,11 @@ import com.mudrahome.mhlms.interfaces.OnUserLogin;
 import com.mudrahome.mhlms.managers.PermissionManager;
 import com.mudrahome.mhlms.managers.ProfileManager;
 import com.mudrahome.mhlms.model.UserDetails;
-import com.mudrahome.mhlms.R;
-import com.google.android.play.core.appupdate.AppUpdateInfo;
-import com.google.android.play.core.appupdate.AppUpdateManager;
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
-import com.google.android.play.core.install.model.UpdateAvailability;
-import com.google.android.play.core.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference;
 
+import org.jsoup.Jsoup;
+
+import java.io.IOException;
 
 import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
 
@@ -111,7 +115,6 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-
     private void checkLogin() {
 
 
@@ -121,7 +124,6 @@ public class LoginActivity extends BaseActivity {
             cardView.setVisibility(View.VISIBLE);
         }
     }
-
 
 
     private FirestoreInterfaces.OnGetUserDetails onGetUserDetails() {
@@ -159,7 +161,7 @@ public class LoginActivity extends BaseActivity {
     private void startLeadsPage() {
         /*startActivityForResult(new Intent(
                 LoginActivity.this, LeadListActivity.class), 101);*/
-        Intent intent = new Intent(LoginActivity.this,LeadListActivity.class);
+        Intent intent = new Intent(LoginActivity.this, LeadListActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
@@ -207,8 +209,20 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-
     private void checkUpdate() {
+
+//       VersionChecker checker = new VersionChecker();
+//       try{
+//           String latestVersion = checker.execute().get();
+//           if(BuildConfig.VERSION_NAME.matches(latestVersion)){
+//
+//           }else{
+//
+//           }
+//       }catch (Exception e){
+//           e.printStackTrace();
+//       }
+
         appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
@@ -247,83 +261,28 @@ public class LoginActivity extends BaseActivity {
                 });
     }
 
-//    private void sendVerificationCode() {
-//        showProgressDialog("Waiting for otp, wait for a while. Don't close the app.", this);
-//        hideKeyboard(this);
-//        startCountdown(60);
-//
-//        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-//                contactNumber,
-//                60,
-//                TimeUnit.SECONDS,
-//                this,
-//                mCallbacks);
-//
-//    }showToastMessage
-//
-//    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
-//            mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-//
-//        @Override
-//        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-//            super.onCodeSent(s, forceResendingToken);
-//            Log.d("timer", "sent : " + s);
-//        }
-//
-//        @Override
-//        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-//            String code = phoneAuthCredential.getSmsCode();
-//            Log.d("Timer", "verificationCompleted");
-//            flag = true;
-//
-//            currentUserDetails.setContactNumber(contactNumber);
-//            firestore.updateUserDetails(new FirestoreInterfaces.OnUpdateUser() {
-//                @Override
-//                public void onSuccess() {
-//                    startLeadsPage();
-//                }
-//
-//                @Override
-//                public void onFail() {
-//                    openMobileFragment();
-//                }
-//            }, currentUserDetails);
-//        }
-//
-//        @Override
-//        public void onVerificationFailed(FirebaseException e) {
-//            Log.d("timer", "fail");
-//            flag = true;
-//            openMobileFragment();
-//        }
-//    };
-//
-//    protected void startCountdown(final int i) {
-//        flag = false;
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                for (int j = i; j > 0; j--) {
-//                    if (!flag) {
-//                        try {
-//                            Thread.sleep(1000);
-//                            Log.d("Timer", " " + j);
-//                        } catch (InterruptedException e) {
-//                            System.out.println("got interrupted!");
-//                        }
-//                    } else
-//                        break;
-//                }
-//
-//                dismissProgressDialog();
-//                if (!flag) {
-//                    profileManager.signOut();
-//                    scrollView.setVisibility(View.VISIBLE);
-//                    showToastMessage(R.string.otp_verification_failed);
-//                }
-//            }
-//        }).start();
-//    }
+    public class VersionChecker extends AsyncTask<String, String, String> {
+
+        private String newVersion;
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            try {
+                newVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=com.development.mhleadmanagementsystemdev&hl=en_IN")
+                        .timeout(30000)
+                        .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                        .referrer("http://www.google.com")
+                        .get()
+                        .select(".IxB2fe .hAyfc:nth-child(4) .htlgb span")
+                        .get(0)
+                        .ownText();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.e("TAG", "doInBackground: " + newVersion);
+            return newVersion;
+        }
+    }
 }

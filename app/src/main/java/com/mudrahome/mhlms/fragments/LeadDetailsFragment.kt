@@ -29,7 +29,6 @@ import com.mudrahome.mhlms.model.UserList
 import kotlinx.android.synthetic.main.fragment_lead_details.*
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 @SuppressLint("ValidFragment")
 class LeadDetailsFragment(
@@ -39,7 +38,6 @@ class LeadDetailsFragment(
 
     private var progress: ProgressDialog? = null
     private var firestore: Firestore? = null
-    private val br: BroadcastReceiver? = null
 
     private val customerNotInterested = "Customer Not Interested"
     private val documentPicked = "Document Picked"
@@ -72,7 +70,6 @@ class LeadDetailsFragment(
         firestore = Firestore()
         setLayoutVisibility()
         setText()
-        Log.d("assignerContact", "User assigner Uid  "+leadDetails.assignerUId  )
 
         if (leadDetails.assignerUId == "Not available" || leadDetails.assignerUId == null) {
             hideAssignerContact()
@@ -84,7 +81,7 @@ class LeadDetailsFragment(
                     if (userDetails!!.contactNumber!!.toString() == "Not available" ||
                         userDetails.contactNumber == null
                     ) {
-                        Log.d("assignerContact", "User Details  "+userDetails!!.contactNumber  )
+                        Log.d("assignerContact", "User Details  " + userDetails.contactNumber)
                         hideAssignerContact()
                     } else {
                         binding!!.assignerContactNumber!!.text = userDetails.contactNumber
@@ -98,7 +95,7 @@ class LeadDetailsFragment(
 
             }, leadDetails.assignerUId!!)
 
-            binding!!.assignerContactNumber.setOnClickListener { _ ->
+            binding!!.assignerContactNumber.setOnClickListener {
                 val permission = PermissionManager(context)
                 if (permission.checkCallPhone()) {
                     callCustomer(binding!!.assignerContactNumber.text.toString())
@@ -127,7 +124,7 @@ class LeadDetailsFragment(
 
             }, leadDetails.assignedToUId!!)
 
-            binding!!.assigneeContactNumber.setOnClickListener { _ ->
+            binding!!.assigneeContactNumber.setOnClickListener {
                 val permission = PermissionManager(context)
                 if (permission.checkCallPhone()) {
                     callCustomer(binding!!.assigneeContactNumber.text.toString())
@@ -136,7 +133,7 @@ class LeadDetailsFragment(
             }
         }
 
-        binding!!.contactNumber.setOnClickListener { _ ->
+        binding!!.contactNumber.setOnClickListener {
             val permission = PermissionManager(context)
 
             if (permission.checkCallPhone()) {
@@ -145,7 +142,7 @@ class LeadDetailsFragment(
                 permission.requestCallPhone()
         }
 
-        binding!!.editLeadDetails.setOnClickListener { _ ->
+        binding!!.editLeadDetails.setOnClickListener {
             val cm = activity!!
                 .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -159,18 +156,11 @@ class LeadDetailsFragment(
                     progress!!.setCanceledOnTouchOutside(false)
                     progress!!.show()
 
-                    val l = leadDetails.location!!.trim()
-                    if(l == "Delhi" || l =="Indore" || l == "Jaipur" || l == "Gwalior" || l =="Ahemdabad" || l == "Surat"){
-                        firestore!!.fetchUsersByUserType(
-                            onFetchSalesPersonList(),
-                            leadDetails.location!!,
-                            getString(R.string.salesman)
-                        )
-                    }else{
-
-                        getVinodDetails()
-                    }
-
+                    firestore!!.fetchUsersByUserType(
+                        onFetchSalesPersonList(),
+                        leadDetails.location!!,
+                        getString(R.string.salesman)
+                    )
                 } else if (userType == getString(R.string.salesman)) {
                     openSalesmanFragment()
                 }
@@ -211,7 +201,7 @@ class LeadDetailsFragment(
             binding!!.customerRemarksLayout!!.visibility = View.GONE
         }
 
-        if(leadDetails.assignerUId == null && leadDetails.assigner == null){
+        if (leadDetails.assignerUId == null && leadDetails.assigner == null) {
             binding!!.assignerLinearLayout!!.visibility = View.GONE
             binding!!.assigneeLinearLayout!!.visibility = View.GONE
             binding!!.leadStatusLinearLayout!!.visibility = View.GONE
@@ -344,11 +334,11 @@ class LeadDetailsFragment(
             @SuppressLint("SimpleDateFormat") val sdf = SimpleDateFormat("MMM dd,yyyy hh:mm a")
             val resultdate = Date(java.lang.Long.parseLong(remarkWithTime[1]))
 
-            if (!remarkWithTime[0].isEmpty())
+            if (remarkWithTime[0].isNotEmpty())
                 r =
                     "<font color=\"#196587\">" + sdf.format(resultdate) + "</font>" + "<br>" + remarkWithTime[0]
         } else {
-            if (!remark.isEmpty())
+            if (remark.isNotEmpty())
                 r = remark
         }
 
@@ -361,64 +351,33 @@ class LeadDetailsFragment(
 //    }
 
     private fun onFetchSalesPersonList(): FirestoreInterfaces.OnFetchUsersList {
-        return FirestoreInterfaces.OnFetchUsersList { userList ->
-            progress!!.dismiss()
-            if (userList!!.userList.size > 0)
-                openTelecallerFragment(userList.userList)
-            else {
-                Toast.makeText(
-                    context, "No Salesmen are present for " +
-                            leadDetails.location + ".", Toast.LENGTH_SHORT
-                ).show()
+        return object : FirestoreInterfaces.OnFetchUsersList {
+            override fun onFail() {
+                progress?.dismiss()
+                val userList = ArrayList<UserDetails>()
+                openTelecallerFragment(userList)
+            }
+
+            override fun onListFetched(userList: UserList?) {
+                progress?.dismiss()
+                openTelecallerFragment(userList!!.userList)
             }
 
         }
-    }
-
-    private fun getVinodDetails(){
-        firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails{
-            override fun onSuccess(userDetails: UserDetails?) {
-                if(progress!!.isShowing)
-                     progress!!.dismiss()
-               val list= ArrayList<UserDetails>()
-                list.add(userDetails!!)
-                openTelecallerFragment(list)
-            }
-
-            override fun fail() {
-
-            }
-        },"BSmVc33iDsaWoooUmeDD29L1GuJ2")
-    }
-
-    private fun getJaisDetails(){
-        firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails{
-            override fun onSuccess(userDetails: UserDetails?) {
-                val list= ArrayList<UserDetails>()
-                list.add(userDetails!!)
-                openTelecallerFragment(list)
-            }
-
-            override fun fail() {
-
-            }
-        },"si1Rd3v5J2cNQgCOAQcbPs5hJ9y2")
     }
 
     private fun openTelecallerFragment(userList: List<UserDetails>) {
-        if (userList.size != 0) {
-            TelecallerEditLeadFragment.newInstance(
-                leadDetails, userList, { dialogLeadDetails ->
-                    progress = ProgressDialog(context)
-                    progress!!.setMessage("Loading..")
-                    progress!!.setCancelable(false)
-                    progress!!.setCanceledOnTouchOutside(false)
-                    progress!!.show()
+        TelecallerEditLeadFragment.newInstance(
+            leadDetails, userList, { dialogLeadDetails ->
+                progress = ProgressDialog(context)
+                progress!!.setMessage("Loading..")
+                progress!!.setCancelable(false)
+                progress!!.setCanceledOnTouchOutside(false)
+                progress!!.show()
 
-                    firestore!!.updateLeadDetails(onUpdateLead(), dialogLeadDetails)
-                }, userType
-            ).show(fragmentManager!!, "promo")
-        }
+                firestore!!.updateLeadDetails(onUpdateLead(), dialogLeadDetails)
+            }, userType
+        ).show(fragmentManager!!, "promo")
     }
 
     private fun openSalesmanFragment() {
