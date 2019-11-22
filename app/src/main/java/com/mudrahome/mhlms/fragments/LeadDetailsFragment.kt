@@ -38,7 +38,6 @@ class LeadDetailsFragment(
 
     private var progress: ProgressDialog? = null
     private var firestore: Firestore? = null
-    private val br: BroadcastReceiver? = null
 
     private val customerNotInterested = "Customer Not Interested"
     private val documentPicked = "Document Picked"
@@ -82,7 +81,7 @@ class LeadDetailsFragment(
                     if (userDetails!!.contactNumber!!.toString() == "Not available" ||
                         userDetails.contactNumber == null
                     ) {
-                        Log.d("assignerContact", "User Details  " + userDetails!!.contactNumber)
+                        Log.d("assignerContact", "User Details  " + userDetails.contactNumber)
                         hideAssignerContact()
                     } else {
                         binding!!.assignerContactNumber!!.text = userDetails.contactNumber
@@ -96,7 +95,7 @@ class LeadDetailsFragment(
 
             }, leadDetails.assignerUId!!)
 
-            binding!!.assignerContactNumber.setOnClickListener { _ ->
+            binding!!.assignerContactNumber.setOnClickListener {
                 val permission = PermissionManager(context)
                 if (permission.checkCallPhone()) {
                     callCustomer(binding!!.assignerContactNumber.text.toString())
@@ -125,7 +124,7 @@ class LeadDetailsFragment(
 
             }, leadDetails.assignedToUId!!)
 
-            binding!!.assigneeContactNumber.setOnClickListener { _ ->
+            binding!!.assigneeContactNumber.setOnClickListener {
                 val permission = PermissionManager(context)
                 if (permission.checkCallPhone()) {
                     callCustomer(binding!!.assigneeContactNumber.text.toString())
@@ -134,7 +133,7 @@ class LeadDetailsFragment(
             }
         }
 
-        binding!!.contactNumber.setOnClickListener { _ ->
+        binding!!.contactNumber.setOnClickListener {
             val permission = PermissionManager(context)
 
             if (permission.checkCallPhone()) {
@@ -143,7 +142,7 @@ class LeadDetailsFragment(
                 permission.requestCallPhone()
         }
 
-        binding!!.editLeadDetails.setOnClickListener { _ ->
+        binding!!.editLeadDetails.setOnClickListener {
             val cm = activity!!
                 .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -335,11 +334,11 @@ class LeadDetailsFragment(
             @SuppressLint("SimpleDateFormat") val sdf = SimpleDateFormat("MMM dd,yyyy hh:mm a")
             val resultdate = Date(java.lang.Long.parseLong(remarkWithTime[1]))
 
-            if (!remarkWithTime[0].isEmpty())
+            if (remarkWithTime[0].isNotEmpty())
                 r =
                     "<font color=\"#196587\">" + sdf.format(resultdate) + "</font>" + "<br>" + remarkWithTime[0]
         } else {
-            if (!remark.isEmpty())
+            if (remark.isNotEmpty())
                 r = remark
         }
 
