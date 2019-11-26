@@ -1,10 +1,10 @@
 package com.mudrahome.mhlms.managers;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.mudrahome.mhlms.activities.BaseActivity;
 import com.mudrahome.mhlms.firebase.Firestore;
 import com.mudrahome.mhlms.model.UserDetails;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -16,10 +16,13 @@ public class ProfileManager extends BaseActivity {
     private UserDetails currentUserDetails;
     private String uId;
 
+    public static String TOKEN;
+
     public ProfileManager() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         uId = mAuth.getUid();
+        firestore = new Firestore();
     }
 
     public UserDetails getCurrentUserDetails() {
@@ -42,10 +45,6 @@ public class ProfileManager extends BaseActivity {
         return currentUser;
     }
 
-    /*public List<String> getCurrentUserType() {
-        return currentUserDetails.getUserType();
-    }*/
-
     public List<String> getCurrentUserType() {
         return currentUserDetails.getUserType();
     }
@@ -56,5 +55,12 @@ public class ProfileManager extends BaseActivity {
 
     public void signOut() {
         mAuth.signOut();
+    }
+
+    public void updateDeviceToken(String s) {
+        if (currentUser != null) {
+            firestore.updateDeviceToken(mAuth.getUid(), s);
+        }
+        TOKEN = s;
     }
 }

@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,6 @@ import com.mudrahome.mhlms.firebase.Firestore
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.LeadFilter
-import com.mudrahome.mhlms.model.OfferDetails
 import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference
 import java.util.*
 
@@ -111,7 +109,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
             bottomVisibleItem = null
             binding!!.firstPageProgressBar.visibility = View.VISIBLE
 
-            getOffer()
+            fetchLeads()
         }
 
         binding!!.recyclerView.layoutManager = linearLayoutManager
@@ -137,32 +135,10 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
             R.string.business_associate -> binding!!.fab.visibility = View.VISIBLE
         }
         leadDetailsList.clear()
-        getOffer()
-    }
-
-    private fun getOffer() {
-        firestore!!.getOffers(
-            object : FirestoreInterfaces.FetchOffer {
-                override fun onSuccess(details: List<OfferDetails>) {
-                    if (details.isNotEmpty()) {
-                        leadDetailsList.addAll(details)
-                        adapter!!.notifyDataSetChanged()
-                    }
-                    fetchLeads()
-                }
-
-                override fun onFail() {
-                    fetchLeads()
-                }
-            },
-            preferences!!.userName,
-            getString(userType),
-            true
-        )
+        fetchLeads()
     }
 
     private fun fetchLeads() {
-
         setFilter()
         firestore!!.downloadLeadList(onFetchLeadList(), bottomVisibleItem, leadFilter!!)
 
@@ -174,8 +150,8 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
                 binding!!.swipeRefresh.isRefreshing = false
                 binding!!.firstPageProgressBar.visibility = View.GONE
                 binding!!.progressBar.visibility = View.GONE
-                if (context!=null)
-                extraViews!!.showToast(R.string.no_leads, context)
+                if (context != null)
+                    extraViews!!.showToast(R.string.no_leads, context)
 
             }
 
@@ -214,11 +190,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
             R.string.telecaller -> leadFilter?.assigner = preferences!!.userName
             R.string.salesman -> leadFilter?.assignee = preferences!!.userName
             R.string.business_associate -> leadFilter?.businessAssociateUId = preferences?.userUid
-            R.string.teleassigner -> {
-                Log.d("hjh",preferences!!.userName)
-                leadFilter?.assigner = preferences!!.userName
-                leadFilter?.businessAssociateUploader = true
-            }
+            R.string.teleassigner -> leadFilter?.forwarder = preferences!!.userName
         }
 
     }

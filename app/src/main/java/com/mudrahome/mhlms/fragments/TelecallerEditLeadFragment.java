@@ -256,7 +256,7 @@ public class TelecallerEditLeadFragment extends AppCompatDialogFragment {
 
                         for (UserDetails userDetails : salesPersonList) {
                             if (userDetails.getUserName().equals(strAssignedTo)) {
-                                updateLead.assignedToDetails(strAssignedTo, userDetails.getuId());
+                                updateLead.assignedToDetails(strAssignedTo, userDetails.getUId());
                             }
                         }
 

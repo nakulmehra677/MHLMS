@@ -30,7 +30,7 @@ public class UserDataSharedPreference {
 
         editor.putString(context.getString(R.string.SH_user_name), details.getUserName());
         editor.putString(context.getString(R.string.SH_user_key), details.getKey());
-        editor.putString(context.getString(R.string.SH_user_uid), details.getuId());
+        editor.putString(context.getString(R.string.SH_user_uid), details.getUId());
         editor.putString(context.getString(R.string.SH_user_number), details.getContactNumber());
         editor.putString(context.getString(R.string.SH_user_email), details.getMail());
 

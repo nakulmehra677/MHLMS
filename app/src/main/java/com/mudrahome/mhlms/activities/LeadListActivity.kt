@@ -2,6 +2,7 @@ package com.mudrahome.mhlms.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -119,6 +120,7 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
     }
 
     private fun openLeadDetailsFragment(model: LeadDetails, currentUserType: String) {
+
         val leadDetailsFragment = LeadDetailsFragment(model, currentUserType)
         leadDetailsFragment.show(this@LeadListActivity.supportFragmentManager, "f")
     }

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,10 +16,8 @@ import androidx.cardview.widget.CardView;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
-import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.mudrahome.mhlms.BuildConfig;
 import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.firebase.Authentication;
@@ -37,6 +34,7 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 
 import static com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE;
+import static com.mudrahome.mhlms.managers.ProfileManager.TOKEN;
 
 public class LoginActivity extends BaseActivity {
 
@@ -99,6 +97,7 @@ public class LoginActivity extends BaseActivity {
                     @Override
                     public void onSuccess(String uId) {
                         profileManager = new ProfileManager();
+                        profileManager.updateDeviceToken(TOKEN);
                         firestore.getUsers(onGetUserDetails(), uId);
                     }
 
@@ -119,8 +118,6 @@ public class LoginActivity extends BaseActivity {
 
 
     private void checkLogin() {
-
-
         if (profileManager.checkUserExist()) {
             firestore.getUsers(onGetUserDetails(), profileManager.getuId());
         } else {
@@ -134,11 +131,6 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onSuccess(UserDetails userDetails) {
                 cardView.setVisibility(View.GONE);
-                String strDeviceToken = FirebaseInstanceId.getInstance().getToken();
-
-                userDetails.setDeviceToken(strDeviceToken);
-                if(strDeviceToken !=null )
-                firestore.setCurrentDeviceToken(strDeviceToken, profileManager.getuId());
 
                 currentUserDetails = userDetails;
 
@@ -215,20 +207,20 @@ public class LoginActivity extends BaseActivity {
 
 
     private void checkUpdate() {
-        Log.d("UpdateAvailable","CheckUpdate");
-       VersionChecker checker = new VersionChecker();
-       try{
-           String latestVersion = checker.execute().get();
-           if(!BuildConfig.VERSION_NAME.matches(latestVersion)){
-               showUpdateDialog();
-               Toast.makeText(this, "UpdateAvailable", Toast.LENGTH_LONG).show();
-           }else{
-               Log.d("UpdateAvailable","else Block "+latestVersion);
-               checkLogin();
-           }
-       }catch (Exception e){
-           e.printStackTrace();
-       }
+        Log.d("UpdateAvailable", "CheckUpdate");
+        VersionChecker checker = new VersionChecker();
+        try {
+            String latestVersion = checker.execute().get();
+            if (!BuildConfig.VERSION_NAME.matches(latestVersion)) {
+                showUpdateDialog();
+                Toast.makeText(this, "UpdateAvailable", Toast.LENGTH_LONG).show();
+            } else {
+                Log.d("UpdateAvailable", "else Block " + latestVersion);
+                checkLogin();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
       /*  appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
@@ -293,7 +285,7 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    public void showUpdateDialog(){
+    public void showUpdateDialog() {
         new AlertDialog.Builder(LoginActivity.this, R.style.AppCompatAlertDialogStyle)
                 .setTitle("Update Available")
                 .setMessage("It looks like you are missing out some new features, kindly Update app to get a better experience")

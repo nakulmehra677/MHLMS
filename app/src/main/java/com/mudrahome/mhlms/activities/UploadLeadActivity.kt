@@ -33,6 +33,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     private var loanTypeAdapter: ArrayAdapter<CharSequence>? = null
     private var locationAdapter: ArrayAdapter<CharSequence>? = null
     private var assignedToAdapter: ArrayAdapter<CharSequence>? = null
+    private var forwardToAdapter: ArrayAdapter<CharSequence>? = null
 
     private var assigneeContact: String? = null
     private var personList: List<UserDetails>? = null
@@ -52,10 +53,6 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     private var leadDetails: LeadDetails? = null
     private var userType: String? = null
 
-    private var AUTOCOMPLETE_REQUEST_CODE = 1
-    private var country = "IN"
-
-
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,22 +66,17 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         initializeLoanTypeSpinner()
         initializeLocationSpinner()
 
-        if (userType.equals(getString(R.string.telecaller)) ||
-            userType.equals(getString(R.string.telecaller_and_teleassigner))
-        ) {
+        if (userType.equals(getString(R.string.telecaller))) {
+            binding!!.assignToLayout.visibility = View.GONE
+            binding!!.forwardToLayout.visibility = View.VISIBLE
 
-
-        } else if (userType.equals(getString(R.string.business_associate))) {
-            binding!!.assignToText.text = "Send to"
-            binding!!.remarks.visibility = View.GONE
-            binding!!.reminderLayout.visibility = View.GONE
-
+        } else if (userType.equals(getString(R.string.telecaller_and_teleassigner))) {
+            binding!!.assignToLayout.visibility = View.VISIBLE
+            binding!!.forwardToLayout.visibility = View.GONE
 
         } else {
             finish()
         }
-
-
     }
 
     private fun initializeLoanTypeSpinner() {
@@ -100,19 +92,11 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
     private fun initializeLocationSpinner() {
         // Location Spinner
-        if(userType.equals(getString(R.string.business_associate))){
 
-            locationAdapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.locationOthers, android.R.layout.simple_spinner_item
-            )
-        }else{
-            locationAdapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.location, android.R.layout.simple_spinner_item
-            )
-        }
-
+        locationAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.location, android.R.layout.simple_spinner_item
+        )
 
         locationAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding!!.location?.adapter = locationAdapter
@@ -153,15 +137,20 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         binding!!.assignTo?.isClickable = true
     }
 
-    /*private fun initializePlaceClient(){
+    private fun initializeForwardToSpinner(userName: List<String>) {
+        // ForwardTo Spinner
+        forwardToAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item, userName
+        )
 
-        if (!com.google.android.libraries.places.api.Places.isInitialized()) {
-            com.google.android.libraries.places.api.Places.initialize(
-                applicationContext,
-                getString(R.string.google_key_api)
-            )
-        }
-    }*/
+        forwardToAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding!!.forwardTo?.adapter = forwardToAdapter
+        binding!!.forwardTo?.onItemSelectedListener = this@UploadLeadActivity
+
+        binding!!.forwardTo?.isEnabled = true
+        binding!!.forwardTo?.isClickable = true
+    }
 
     fun onRadioButtonClicked(view: View) {
         val checked = (view as RadioButton).isChecked
@@ -218,9 +207,14 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
             R.id.location -> {
                 leadDetails?.location = parent.getItemAtPosition(position).toString()
 
+                leadDetails!!.forwarderName = null
+                leadDetails!!.forwarderUId = null
+                leadDetails!!.assignedToUId = null
+                leadDetails!!.assignedTo = null
+
                 if (isNetworkConnected) {
-                    if (userType.equals(getString(R.string.business_associate))) {
-                        checkforOthersLocation()
+                    if (userType.equals(getString(R.string.telecaller))) {
+                        getAssignerListByLocation()
                     } else {
                         getSalesmanListByLocation()
                     }
@@ -232,38 +226,26 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
             R.id.assign_to -> {
                 val name = parent.getItemAtPosition(position).toString()
-                Log.d("sdv", name)
                 for (user in this.personList!!) {
                     if (user.userName == name) {
-                        if (userType.equals(getString(R.string.telecaller_and_teleassigner)) ||
-                            userType.equals(getString(R.string.telecaller))
-                        ) {
-                            leadDetails?.assignedToUId = user.getuId()
-                            assigneeContact = user.contactNumber
-                            leadDetails?.assignedTo = name
-                        } else {
-                            leadDetails?.assignerUId = user.getuId()
-                            leadDetails?.assigner = name
-                        }
+                        leadDetails?.assignedToUId = user.uId
+                        assigneeContact = user.contactNumber
+                        leadDetails?.assignedTo = name
+                    }
+                }
+            }
+
+            R.id.forward_to -> {
+                val name = parent.getItemAtPosition(position).toString()
+                for (user in this.personList!!) {
+                    if (user.userName == name) {
+                        leadDetails?.forwarderUId = user.uId
+                        leadDetails?.forwarderName = name
                     }
                 }
             }
             else -> {
             }
-        }
-    }
-
-    private fun checkforOthersLocation() {
-        if (leadDetails?.location.equals("Others")) {
-            binding!!.teleassignerOtherLocation.visibility = View.VISIBLE
-            binding!!.assignToLayout.visibility = View.GONE
-            leadDetails!!.assigner = null
-            leadDetails!!.assignerUId = null
-            /*initializePlaceClient()*/
-        } else {
-            binding!!.teleassignerOtherLocation.visibility = View.GONE
-            binding!!.assignToLayout.visibility = View.VISIBLE
-            getCallersListByLocation()
         }
     }
 
@@ -274,20 +256,16 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         leadDetails?.contactNumber = binding!!.contactNumber.text.toString().trim()
         leadDetails?.loanAmount = binding!!.loanAmount.text.toString().trim()
         leadDetails?.timeStamp = timeModel.timeStamp
-        if (binding!!.teleassignerOtherLocation.visibility == View.VISIBLE)
-            leadDetails?.location = binding!!.teleassignerOtherLocation.text.toString()
 
         val preference = UserDataSharedPreference(this)
 
-        if (userType.equals(getString(R.string.telecaller)) ||
-            userType.equals(getString(R.string.telecaller_and_teleassigner))
+        if (userType.equals(getString(R.string.telecaller_and_teleassigner))
         ) {
             leadDetails?.status = "Active"
             leadDetails?.assignDate = timeModel.strDate
             leadDetails?.assignTime = timeModel.strTime
             leadDetails?.assigner = preference.userName
             leadDetails?.assignerUId = preference.userUid
-            leadDetails?.businessAssociateUploader = false
             leadDetails!!.telecallerRemarks.clear()
             if (!binding!!.remarks.text.toString().trim().isEmpty()) {
                 leadDetails?.telecallerRemarks?.add(
@@ -295,10 +273,15 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                             "@@" + System.currentTimeMillis())
             }
         } else {
-            leadDetails?.businessAssociateUid = preference.userUid
-            leadDetails?.businessAssociateUploader = true
-            leadDetails?.assigner = "Dipa Meena"
-            leadDetails?.assignerUId = "hwn8jj23f8VGmnesvAkhDZsORl52"
+            leadDetails?.status = "Decision "
+            leadDetails?.assigner = preference.userName
+            leadDetails?.assignerUId = preference.userUid
+            leadDetails!!.telecallerRemarks.clear()
+            if (!binding!!.remarks.text.toString().trim().isEmpty()) {
+                leadDetails?.telecallerRemarks?.add(
+                    binding!!.remarks.text.toString().trim { it <= ' ' } +
+                            "@@" + System.currentTimeMillis())
+            }
         }
     }
 
@@ -315,18 +298,14 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                 return false
             }
         }
-        if (userType.equals(getString(R.string.business_associate))) {
-            if (binding!!.teleassignerOtherLocation.visibility == View.VISIBLE) {
-                if (binding!!.teleassignerOtherLocation.text.toString().isNullOrEmpty()) {
-                    return false
-                }
-            } else {
-                if (leadDetails?.assigner == null) {
-                    return false
-                }
+        if (userType.equals(getString(R.string.telecaller))) {
+            if (leadDetails?.forwarderUId == null ||
+                leadDetails!!.telecallerRemarks.size == 0
+            ) {
+                return false
             }
         } else {
-            if (leadDetails?.assignedTo == null ||
+            if (leadDetails?.assignedToUId == null ||
                 leadDetails!!.telecallerRemarks.size == 0
             ) {
                 return false
@@ -397,40 +376,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     override fun onNothingSelected(p0: AdapterView<*>?) {
     }
 
-    private fun getCallersListByLocation() {
-        firestore!!.fetchUsersByUserType(
-            object : FirestoreInterfaces.OnFetchUsersList {
-                override fun onFail() {
-                    showToastMessage(R.string.error_occur)
-                }
-
-                override fun onListFetched(userList: UserList?) {
-                    personList = userList?.userList
-
-                    if (userList?.userList?.size!! > 0) {
-                        val callerNameList = ArrayList<String>()
-                        for (user in userList.userList) {
-                            callerNameList.add(user.userName)
-                        }
-                        initializeAssignToSpinner(callerNameList)
-                    } else {
-                        binding!!.assignTo.isEnabled = false
-                        leadDetails?.assigner = null
-                        leadDetails?.assignerUId = null
-                    }
-                }
-
-
-            }, leadDetails?.location!!, getString(R.string.teleassigner)
-        )
-    }
-
     private fun getSalesmanListByLocation() {
-        /*progress = new ProgressDialog(t.khis);
-        progress.setMessage("Loading..");
-        progress.setCancelable(false);
-        progress.setCanceledOnTouchOutside(false);
-        progress.show();*/
 
         firestore?.fetchUsersByUserType(
             object : FirestoreInterfaces.OnFetchUsersList {
@@ -440,11 +386,11 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
                 override fun onListFetched(userList: UserList?) {
                     personList = userList?.userList
-                    Log.d("UserList",personList.toString())
+                    Log.d("UserList", personList.toString())
                     if (userList?.userList?.size!! > 0) {
                         val salesNameList = ArrayList<String>()
                         for (user in userList.userList) {
-                            salesNameList.add(user.userName)
+                            salesNameList.add(user.userName!!)
                         }
                         initializeAssignToSpinner(salesNameList)
 
@@ -455,6 +401,33 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                     }
                 }
             }, leadDetails?.location!!, getString(R.string.salesman)
+        )
+    }
+
+    private fun getAssignerListByLocation() {
+        firestore?.fetchUsersByUserType(
+            object : FirestoreInterfaces.OnFetchUsersList {
+                override fun onFail() {
+                    showToastMessage(R.string.error_occur)
+                }
+
+                override fun onListFetched(userList: UserList?) {
+                    personList = userList?.userList
+                    Log.d("UserList", personList.toString())
+                    if (userList?.userList?.size!! > 0) {
+                        val forwarderNameList = ArrayList<String>()
+                        for (user in userList.userList) {
+                            forwarderNameList.add(user.userName!!)
+                        }
+                        initializeForwardToSpinner(forwarderNameList)
+
+                    } else {
+                        binding!!.forwardTo.isEnabled = false
+                        leadDetails?.assignedToUId = null
+                        leadDetails?.assignedTo = null
+                    }
+                }
+            }, leadDetails?.location!!, getString(R.string.teleassigner)
         )
     }
 
@@ -539,27 +512,4 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         )
         startActivity(intent)
     }
-
-    /*fun getLocation() {
-        val fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
-
-        val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-            .setCountry(country)
-            .build(this@UploadLeadActivity)
-
-        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE)
-    }*/
-
-    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                if (data != null) {
-                    val place = Autocomplete.getPlaceFromIntent(data)
-                    Toast.makeText(this,place.name,Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }*/
 }

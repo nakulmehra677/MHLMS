@@ -3,6 +3,7 @@ package com.mudrahome.mhlms.firebase
 import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.mudrahome.mhlms.R
@@ -16,14 +17,12 @@ class Firestore {
     private val nodes: Long = 0
     private val isAdmin = false
     private var preference: UserDataSharedPreference? = null
-    private var userDetails: UserDetails? = null
 
     constructor()
 
     constructor(context: Context) {
         this.context = context
         preference = UserDataSharedPreference(context)
-        userDetails = UserDetails()
     }
 
     fun uploadCustomerDetails(
@@ -300,7 +299,10 @@ class Firestore {
         val db = FirebaseFirestore.getInstance()
         var query: Query = db.collection("leadList")
 
-        Log.d("Filter","g + \n${filter.businessAssociateUploader}\n${filter.assigner}\n${filter.assignee}\n${filter.location}")
+        Log.d(
+            "Filter",
+            "g + \n${filter.businessAssociateUploader}\n${filter.assigner}\n${filter.assignee}\n${filter.location}"
+        )
 
         if (filter.location != "All")
             query = query.whereEqualTo("location", filter.location)
@@ -312,22 +314,23 @@ class Firestore {
             query = query.whereEqualTo("loanType", filter.loanType)
         if (filter.status != "All")
             query = query.whereEqualTo("status", filter.status)
+        if (filter.forwarder != "All")
+            query = query.whereEqualTo("forwarderName", filter.status)
 
 
-        if (!preference!!.userType.equals("Salesman") &&
-            !preference!!.userType.equals("Admin") &&
-            !preference!!.userType.equals(context?.getString(R.string.admin_and_salesman))
-        ) {
-            Log.d("sdcs", "sdcsd")
-            if (filter.businessAssociateUId != null) {
-                query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
-            } else {
-                query = query.whereEqualTo(
-                    "businessAssociateUploader", filter.businessAssociateUploader
-                )
-                Log.d("sdcs", filter.businessAssociateUploader.toString())
-            }
-        }
+//        if (!preference!!.userType.equals("Salesman") &&
+//            !preference!!.userType.equals("Admin") &&
+//            !preference!!.userType.equals(context?.getString(R.string.admin_and_salesman))
+//        ) {
+//            if (filter.businessAssociateUId != null) {
+//                query = query.whereEqualTo("businessAssociateUid", filter.businessAssociateUId)
+//            } else {
+//                query = query.whereEqualTo(
+//                    "businessAssociateUploader", filter.businessAssociateUploader
+//                )
+//                Log.d("sdcs", filter.businessAssociateUploader.toString())
+//            }
+//        }
 
         if (lastLead == null) {
             query = query.orderBy("timeStamp", Query.Direction.DESCENDING)
@@ -357,5 +360,12 @@ class Firestore {
         }.addOnFailureListener { exception ->
             listener.onFail()
         }
+    }
+
+    fun updateDeviceToken(uId: String, token: String) {
+        val db = FirebaseFirestore.getInstance()
+        val dRef = db.collection("userList").document(uId)
+
+        dRef.update("deviceToken", FieldValue.arrayUnion(token))
     }
 }

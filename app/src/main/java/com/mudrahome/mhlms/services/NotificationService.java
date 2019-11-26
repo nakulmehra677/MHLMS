@@ -18,6 +18,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.activities.LeadListActivity;
+import com.mudrahome.mhlms.managers.ProfileManager;
 
 import java.util.Calendar;
 
@@ -37,7 +38,6 @@ public class NotificationService extends FirebaseMessagingService {
         showNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
 
     }
-
 
     public void showNotification(String title, String message) {
 
@@ -96,6 +96,14 @@ public class NotificationService extends FirebaseMessagingService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onNewToken(@NonNull String s) {
+        Log.d("Token updated ", s);
+        ProfileManager manager = new ProfileManager();
+        manager.updateDeviceToken(s);
+        super.onNewToken(s);
     }
 
     private void startTimer() {

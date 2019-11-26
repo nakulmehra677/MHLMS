@@ -18,6 +18,8 @@ class LeadDetails {
     var key: String? = null
     var assigner: String? = null
     var assignedToUId: String? = null
+    var forwarderUId: String? = null
+    var forwarderName: String? = null
     var assignerUId: String? = null
     var assignDate: String? = null
     var assignTime: String? = null
