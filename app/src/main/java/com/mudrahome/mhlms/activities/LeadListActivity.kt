@@ -237,6 +237,7 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
             showProgressDialog("Please wait...", this@LeadListActivity)
             val authentication = Authentication(this@LeadListActivity)
             authentication.UpdatePassword(
+
                 oldPassword,
                 newPassword,
                 userDataSharedPreference.userEmail
@@ -250,13 +251,13 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
         }.show(supportFragmentManager, "changepassword")
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+  /*  override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.lead_list_menu, menu)
         return true
-    }
+    }*/
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         when (item.itemId) {
             R.id.notification -> if (isNetworkConnected) {
@@ -268,5 +269,5 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
             android.R.id.home -> binding!!.drawerLayout.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
-    }
+    }*/
 }
