@@ -25,7 +25,7 @@ import com.mudrahome.mhlms.firebase.Firestore
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.LeadFilter
-import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference
+import com.mudrahome.mhlms.sharedPreferences.ProfileSP
 import java.util.*
 
 class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickListener {
@@ -43,7 +43,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private var bottomVisibleItem: DocumentSnapshot? = null
 
     private var extraViews: ExtraViews? = null
-    private var preferences: UserDataSharedPreference? = null
+    private var preferences: ProfileSP? = null
 
     private val isNetworkConnected: Boolean
         get() {
@@ -60,7 +60,7 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_lead_list, container, false)
 
         extraViews = ExtraViews()
-        preferences = UserDataSharedPreference(context!!)
+        preferences = ProfileSP(context!!)
         firestore = Firestore(context!!)
         leadFilter = LeadFilter()
 
@@ -72,8 +72,6 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
         adapter = LeadsItemAdapter(leadDetailsList, context!!, getString(userType))
         binding!!.recyclerView!!.adapter = adapter
         setLayoutByUser()
-
-//        Handler().postDelayed({ firstPageProgressBar!!.visibility = View.GONE }, 5000)
 
         binding!!.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {

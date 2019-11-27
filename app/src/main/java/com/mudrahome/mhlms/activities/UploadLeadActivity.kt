@@ -23,7 +23,7 @@ import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
 import com.mudrahome.mhlms.model.UserList
-import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference
+import com.mudrahome.mhlms.sharedPreferences.ProfileSP
 import java.util.*
 
 
@@ -59,12 +59,14 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_upload_lead)
 
         firestore = Firestore(this)
-        val preference = UserDataSharedPreference(this)
+        val preference = ProfileSP(this)
 
         userType = preference.userType
         leadDetails = LeadDetails()
         initializeLoanTypeSpinner()
         initializeLocationSpinner()
+
+        Log.d("dfvb", userType!!)
 
         if (userType.equals(getString(R.string.telecaller))) {
             binding!!.assignToLayout.visibility = View.GONE
@@ -257,7 +259,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         leadDetails?.loanAmount = binding!!.loanAmount.text.toString().trim()
         leadDetails?.timeStamp = timeModel.timeStamp
 
-        val preference = UserDataSharedPreference(this)
+        val preference = ProfileSP(this)
 
         if (userType.equals(getString(R.string.telecaller_and_teleassigner))
         ) {
@@ -273,7 +275,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                             "@@" + System.currentTimeMillis())
             }
         } else {
-            leadDetails?.status = "Decision "
+            leadDetails?.status = "Decision Pending"
             leadDetails?.assigner = preference.userName
             leadDetails?.assignerUId = preference.userUid
             leadDetails!!.telecallerRemarks.clear()
@@ -493,7 +495,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     }
 
     private fun startSMSIntent() {
-        val preference = UserDataSharedPreference(this)
+        val preference = ProfileSP(this)
         val currentUserNumber = preference.contactNumber
 
         val currentUserFirstName =

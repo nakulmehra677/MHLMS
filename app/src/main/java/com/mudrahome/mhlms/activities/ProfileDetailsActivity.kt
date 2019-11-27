@@ -9,11 +9,11 @@ import com.mudrahome.mhlms.fragments.EditPhoneFragment
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.managers.ProfileManager
 import com.mudrahome.mhlms.model.Profile
-import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference
+import com.mudrahome.mhlms.sharedPreferences.ProfileSP
 
 class ProfileDetailsActivity : BaseActivity() {
 
-    private var preference: UserDataSharedPreference? = null
+    private var preference: ProfileSP? = null
     private var userDesignation = ""
     private var userlocation = ""
     private var strContact: String? = null
@@ -23,7 +23,7 @@ class ProfileDetailsActivity : BaseActivity() {
         val binding: ActivityProfileDetailsBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_profile_details)
 
-        preference = UserDataSharedPreference(this)
+        preference = ProfileSP(this)
         val userType: String
         userType = preference!!.userType
 

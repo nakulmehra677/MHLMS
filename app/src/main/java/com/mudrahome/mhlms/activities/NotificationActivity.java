@@ -11,14 +11,12 @@ import com.mudrahome.mhlms.ExtraViews;
 import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.model.OfferDetails;
-import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference;
+import com.mudrahome.mhlms.sharedPreferences.ProfileSP;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class NotificationActivity extends BaseActivity {
 
@@ -31,7 +29,7 @@ public class NotificationActivity extends BaseActivity {
     private ExtraViews extraViews;
     private ListView listView;
     private List<OfferDetails> offerDetails;
-    private UserDataSharedPreference preference;
+    private ProfileSP preference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +41,7 @@ public class NotificationActivity extends BaseActivity {
         firestore = new com.mudrahome.mhlms.firebase.Firestore();
         extraViews = new ExtraViews();
 
-        preference = new UserDataSharedPreference(this);
+        preference = new ProfileSP(this);
 
         currentUserName = preference.getUserName();
         currentUserType = preference.getUserType();

@@ -13,7 +13,7 @@ import com.mudrahome.mhlms.R;
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces;
 import com.mudrahome.mhlms.model.UserDetails;
 import com.mudrahome.mhlms.model.UserList;
-import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference;
+import com.mudrahome.mhlms.sharedPreferences.ProfileSP;
 
 
 public class FilterActivity extends BaseActivity {
@@ -25,7 +25,7 @@ public class FilterActivity extends BaseActivity {
     private String strLoanType;
 
     private com.mudrahome.mhlms.firebase.Firestore firestore;
-    private UserDataSharedPreference preference;
+    private ProfileSP preference;
 
     private RadioGroup locationRadioGroup;
     private RadioGroup assignerRadioGroup;

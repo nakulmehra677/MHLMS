@@ -8,8 +8,8 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -20,36 +20,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name="com.mudrahome.mhlms.activities.ProfileDetailsActivity"
-            android:label="Profile Details"
-            android:parentActivityName="com.mudrahome.mhlms.activities.ProfileDetailsActivity" />
-        <activity
-            android:name="com.mudrahome.mhlms.activities.NotificationActivity"
-            android:label="Notifications"
-            android:parentActivityName=".activities.NotificationActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
-        <activity
-            android:name="com.mudrahome.mhlms.activities.StartOfferActivity"
-            android:label="Start Ad"
-            android:parentActivityName=".activities.StartOfferActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.mudrahome.mhlms.activities.FilterActivity"
-            android:label="Filter Leads"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.mudrahome.mhlms.activities.LeadListActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBarLead" />
-        <activity
-            android:name="com.mudrahome.mhlms.activities.UploadLeadActivity"
-            android:label="Feed Customer Details"
-            android:parentActivityName=".activities.UploadLeadActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.mudrahome.mhlms.activities.LoginActivity"
+            android:name=".activities.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
 
@@ -58,6 +29,42 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activities.ProfileDetailsActivity"
+            android:label="Profile Details"
+            android:parentActivityName=".activities.ProfileDetailsActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activities.NotificationActivity"
+            android:label="Notifications"
+            android:parentActivityName=".activities.NotificationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.StartOfferActivity"
+            android:label="Start Ad"
+            android:parentActivityName=".activities.StartOfferActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.FilterActivity"
+            android:label="Filter Leads"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.LeadListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBarLead" />
+        <activity
+            android:name=".activities.UploadLeadActivity"
+            android:label="Feed Customer Details"
+            android:parentActivityName=".activities.UploadLeadActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+
         </activity>
 
         <meta-data
@@ -69,7 +76,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_key_api" />
@@ -91,12 +97,11 @@
                 android:priority="999">
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
-
         </service>
     </application>
-
 
 </manifest>

@@ -11,14 +11,14 @@ import com.mudrahome.mhlms.model.UserDetails;
 import java.util.HashSet;
 import java.util.Set;
 
-public class UserDataSharedPreference {
+public class ProfileSP {
     private SharedPreferences preferences;
     private Context context;
     private String userdetails;
     private String email;
     private SharedPreferences.Editor editor;
 
-    public UserDataSharedPreference(Context context) {
+    public ProfileSP(Context context) {
         this.context = context;
         preferences = context.getSharedPreferences(
                 context.getString(R.string.SH_user_details),
@@ -53,6 +53,11 @@ public class UserDataSharedPreference {
             editor.putString(context.getString(R.string.SH_user_type),
                     context.getString(R.string.admin_and_salesman));
 
+        } else if (details.getUserType().contains(context.getString(R.string.telecaller)) &&
+                details.getUserType().contains(context.getString(R.string.teleassigner))) {
+            editor.putString(context.getString(R.string.SH_user_type),
+                    context.getString(R.string.telecaller_and_teleassigner));
+
         } else if (details.getUserType().contains(context.getString(R.string.telecaller))) {
             editor.putString(context.getString(R.string.SH_user_type),
                     context.getString(R.string.telecaller));
@@ -61,17 +66,7 @@ public class UserDataSharedPreference {
             editor.putString(context.getString(R.string.SH_user_type),
                     context.getString(R.string.business_associate));
 
-        } else if (details.getUserType().contains(context.getString(R.string.telecaller)) &&
-                details.getUserType().contains(context.getString(R.string.teleassigner))) {
-
-            /*if(details.getuId().matches("k6Jb5RE1cGWrDZEdxw43gJs6dWA3"))
-                editor.putString(context.getString(R.string.SH_user_type),context.getString(R.string.specialcase));
-            else */editor.putString(context.getString(R.string.SH_user_type),
-                    context.getString(R.string.telecaller_and_teleassigner));
-
-        }
-
-        else {
+        } else {
             editor.putString(context.getString(R.string.SH_user_type),
                     context.getString(R.string.salesman));
         }
@@ -112,7 +107,7 @@ public class UserDataSharedPreference {
 
     }
 
-    public void clearSharePreference(){
+    public void clearSharePreference() {
         editor = preferences.edit();
         editor.clear();
         editor.apply();

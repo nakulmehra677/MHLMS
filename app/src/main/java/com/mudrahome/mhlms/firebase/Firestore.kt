@@ -6,23 +6,22 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.model.*
-import com.mudrahome.mhlms.sharedPreferences.UserDataSharedPreference
+import com.mudrahome.mhlms.sharedPreferences.ProfileSP
 import java.util.*
 
 class Firestore {
     internal var context: Context? = null
     private val nodes: Long = 0
     private val isAdmin = false
-    private var preference: UserDataSharedPreference? = null
+    private var preference: ProfileSP? = null
 
     constructor()
 
     constructor(context: Context) {
         this.context = context
-        preference = UserDataSharedPreference(context)
+        preference = ProfileSP(context)
     }
 
     fun uploadCustomerDetails(
@@ -301,7 +300,7 @@ class Firestore {
 
         Log.d(
             "Filter",
-            "g + \n${filter.businessAssociateUploader}\n${filter.assigner}\n${filter.assignee}\n${filter.location}"
+            "g + \n${filter.businessAssociateUploader}\n${filter.assigner}\n${filter.assignee}\n${filter.location}\n${filter.forwarder}"
         )
 
         if (filter.location != "All")
@@ -315,7 +314,7 @@ class Firestore {
         if (filter.status != "All")
             query = query.whereEqualTo("status", filter.status)
         if (filter.forwarder != "All")
-            query = query.whereEqualTo("forwarderName", filter.status)
+            query = query.whereEqualTo("forwarderName", filter.forwarder)
 
 
 //        if (!preference!!.userType.equals("Salesman") &&
