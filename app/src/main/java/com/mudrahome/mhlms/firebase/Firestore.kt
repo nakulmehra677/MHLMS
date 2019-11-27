@@ -306,15 +306,15 @@ class Firestore {
         if (filter.location != "All")
             query = query.whereEqualTo("location", filter.location)
         if (filter.assigner != "All")
-            query = query.whereEqualTo("assigner", filter.assigner)
+            query = query.whereEqualTo("assignerUId", filter.assigner)
         if (filter.assignee != "All")
-            query = query.whereEqualTo("assignedTo", filter.assignee)
+            query = query.whereEqualTo("assignedToUId", filter.assignee)
         if (filter.loanType != "All")
             query = query.whereEqualTo("loanType", filter.loanType)
         if (filter.status != "All")
             query = query.whereEqualTo("status", filter.status)
         if (filter.forwarder != "All")
-            query = query.whereEqualTo("forwarderName", filter.forwarder)
+            query = query.whereEqualTo("forwarderUId", filter.forwarder)
 
 
 //        if (!preference!!.userType.equals("Salesman") &&

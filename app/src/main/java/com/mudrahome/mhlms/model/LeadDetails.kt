@@ -28,6 +28,7 @@ class LeadDetails {
 
     var telecallerRemarks = ArrayList<String>()
     var salesmanReason = ArrayList<String>()
+    var forwarderRemarks = ArrayList<String>()
     var timeStamp: Long = 0
 
     var banks: List<String> = ArrayList()

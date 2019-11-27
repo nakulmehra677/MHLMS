@@ -2,27 +2,23 @@ package com.mudrahome.mhlms.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.tabs.TabLayout
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.adapters.LeadListPagerAdapter
 import com.mudrahome.mhlms.databinding.ActivityLeadListBinding
 import com.mudrahome.mhlms.firebase.Authentication
 import com.mudrahome.mhlms.firebase.Firestore
 import com.mudrahome.mhlms.fragments.ChangePasswordFragment
-import com.mudrahome.mhlms.fragments.LeadDetailsFragment
 import com.mudrahome.mhlms.fragments.LeadListFragment
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.managers.ProfileManager
-import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
 import com.mudrahome.mhlms.sharedPreferences.ProfileSP
 
@@ -31,7 +27,7 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
     private var profileManager: ProfileManager? = null
     private var firestore: Firestore? = null
     private var toggle: ActionBarDrawerToggle? = null
-    //    private var intnt: Intent? = null
+    private var userType: Int? = null
     private var binding: ActivityLeadListBinding? = null
     private var profileSP: ProfileSP? = null
 
@@ -58,7 +54,6 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
         binding!!.navView.setNavigationItemSelectedListener(this)
 
         showProgressDialog("Loading..", this)
-//        intnt = intent
 
         firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails {
             override fun onSuccess(userDetails: UserDetails) {
@@ -68,27 +63,30 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
                 if (userDetails.userType!!.contains(getString(R.string.admin)) &&
                     userDetails.userType!!.contains(getString(R.string.salesman))
                 ) {
-                    checkNotification(R.string.admin_and_salesman)
+                    userType = R.string.admin_and_salesman
+                    openViewPager(userType!!)
 
                 } else if (userDetails.userType!!.contains(getString(R.string.telecaller)) &&
                     userDetails.userType!!.contains(getString(R.string.teleassigner))
                 ) {
-                    checkNotification(R.string.telecaller_and_teleassigner)
+                    userType = R.string.telecaller_and_teleassigner
+                    openViewPager(userType!!)
 
                 } else if (userDetails.userType!!.contains(getString(R.string.telecaller))) {
-                    checkNotification(R.string.telecaller)
+                    userType = R.string.telecaller
+                    openFragment(userType!!)
 
                 } else if (userDetails.userType!!.contains(getString(R.string.admin))) {
-                    checkNotification(R.string.admin)
-
-                } else if (userDetails.userType!!.contains(getString(R.string.business_associate))) {
-                    checkNotification(R.string.business_associate)
+                    userType = R.string.admin
+                    openFragment(userType!!)
 
                 } else if (userDetails.userType!!.contains(getString(R.string.teleassigner))) {
-                    checkNotification(R.string.teleassigner)
+                    userType = R.string.teleassigner
+                    openFragment(userType!!)
 
                 } else {
-                    checkNotification(R.string.salesman)
+                    userType = R.string.salesman
+                    openFragment(userType!!)
                 }
             }
 
@@ -98,43 +96,12 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
         }, profileManager!!.getuId())
     }
 
-    private fun checkNotification(userType: Int) {
-//        if (intnt!!.hasExtra("UIDNotification")) {
-//            val uid = intnt!!.getStringExtra("UIDNotification")
-//
-//            firestore!!.getLeadDetails(FirestoreInterfaces.OnLeadDetails { leadDetails ->
-//                openLeadDetailsFragment(
-//                    leadDetails!!,
-//                    getString(userType)
-//                )
-//            }, uid!!)
-//        } else {
-        if (userType == R.string.admin_and_salesman || userType == R.string.telecaller_and_teleassigner)
-            openViewPager(userType)
-        else {
-            openFragment(userType)
-        }
-//        }
-    }
-
-    private fun openLeadDetailsFragment(model: LeadDetails, currentUserType: String) {
-
-        val leadDetailsFragment = LeadDetailsFragment(model, currentUserType)
-        leadDetailsFragment.show(this@LeadListActivity.supportFragmentManager, "f")
-    }
-
     private fun openFragment(userType: Int) {
-        try {
-            val ft = supportFragmentManager.beginTransaction()
-            ft.replace(
-                R.id.frame_layout,
-                LeadListFragment(userType)
-            )
-            ft.commit()
-        } catch (e: Exception) {
+        Log.d("dsfvdfv", userType.toString())
 
-        }
-
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame_layout, LeadListFragment(userType))
+        transaction.commit()
     }
 
     private fun openViewPager(userType: Int) {
@@ -165,22 +132,6 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
 
         binding!!.pager.adapter = pagerAdapter
         binding!!.tabLayout.setupWithViewPager(binding!!.pager)
-    }
-
-    override fun onBackPressed() {
-        /*super.onBackPressed();*/
-
-        /*Intent intent = new Intent();
-        intent.putExtra("loggedIn", profileManager.checkUserExist());
-        Log.d("profileManager", "onBackPressed: " + profileManager.checkUserExist());
-        setResult(101,intent);
-        finish();*/
-
-        val startMain = Intent(Intent.ACTION_MAIN)
-        startMain.addCategory(Intent.CATEGORY_HOME)
-        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(startMain)
-        finish()
     }
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
@@ -250,24 +201,4 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
             }
         }.show(supportFragmentManager, "changepassword")
     }
-
-  /*  override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.lead_list_menu, menu)
-        return true
-    }*/
-
-    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection
-        when (item.itemId) {
-            R.id.notification -> if (isNetworkConnected) {
-                val intent = Intent(this@LeadListActivity, NotificationActivity::class.java)
-                startActivity(intent)
-            } else
-                showToastMessage(R.string.no_internet)
-
-            android.R.id.home -> binding!!.drawerLayout.openDrawer(GravityCompat.START)
-        }
-        return super.onOptionsItemSelected(item)
-    }*/
 }

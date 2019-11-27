@@ -55,7 +55,6 @@ class LeadDetailsFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         binding = DataBindingUtil.inflate(
             LayoutInflater.from(context),
             R.layout.fragment_lead_details, null, false
@@ -68,50 +67,32 @@ class LeadDetailsFragment(
         super.onViewCreated(view, savedInstanceState)
 
         firestore = Firestore()
-        setLayoutVisibility()
+
         setText()
 
-        if (leadDetails.assignerUId == "Not available" || leadDetails.assignerUId == null) {
-            hideAssignerContact()
-        } else {
+        if (leadDetails.assignerUId != null) {
             firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails {
                 override fun onSuccess(userDetails: UserDetails?) {
 
-
-                    if (userDetails!!.contactNumber!!.toString() == "Not available" ||
-                        userDetails.contactNumber == null
-                    ) {
-                        Log.d("assignerContact", "User Details  " + userDetails.contactNumber)
-                        hideAssignerContact()
+                    if (userDetails?.contactNumber == null) {
+                        hideCallerContact()
                     } else {
-                        binding!!.assignerContactNumber!!.text = userDetails.contactNumber
-
+                        binding!!.callerContactNumber!!.text = userDetails.contactNumber
                     }
                 }
 
                 override fun fail() {
-                    hideAssignerContact()
+                    hideCallerContact()
                 }
 
             }, leadDetails.assignerUId!!)
-
-            binding!!.assignerContactNumber.setOnClickListener {
-                val permission = PermissionManager(context)
-                if (permission.checkCallPhone()) {
-                    callCustomer(binding!!.assignerContactNumber.text.toString())
-                } else
-                    permission.requestCallPhone()
-            }
         }
 
-        if (leadDetails.assignedToUId == "Not available" || leadDetails.assignedToUId == null) {
-            hideAssigneeContact()
-        } else {
+        if (leadDetails.assignedToUId != null) {
             firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails {
                 override fun onSuccess(userDetails: UserDetails?) {
-                    if (userDetails!!.contactNumber == "Not available" ||
-                        userDetails.contactNumber == null
-                    ) {
+
+                    if (userDetails?.contactNumber == null) {
                         hideAssigneeContact()
                     } else {
                         binding!!.assigneeContactNumber!!.text = userDetails.contactNumber
@@ -123,67 +104,55 @@ class LeadDetailsFragment(
                 }
 
             }, leadDetails.assignedToUId!!)
-
-            binding!!.assigneeContactNumber.setOnClickListener {
-                val permission = PermissionManager(context)
-                if (permission.checkCallPhone()) {
-                    callCustomer(binding!!.assigneeContactNumber.text.toString())
-                } else
-                    permission.requestCallPhone()
-            }
         }
 
-        binding!!.contactNumber.setOnClickListener {
-            val permission = PermissionManager(context)
+        if (leadDetails.forwarderUId != null) {
+            firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails {
+                override fun onSuccess(userDetails: UserDetails?) {
 
+                    if (userDetails?.contactNumber == null) {
+                        hideAssignerContact()
+                    } else {
+                        binding!!.assignerContactNumber!!.text = userDetails.contactNumber
+                    }
+                }
+
+                override fun fail() {
+                    hideAssignerContact()
+                }
+
+            }, leadDetails.forwarderUId!!)
+        }
+
+        binding!!.callerContactNumber.setOnClickListener {
+            val permission = PermissionManager(context)
             if (permission.checkCallPhone()) {
-                callCustomer(leadDetails.contactNumber)
+                callCustomer(binding!!.assignerContactNumber.text.toString())
             } else
                 permission.requestCallPhone()
         }
 
-        binding!!.editLeadDetails.setOnClickListener {
-            val cm = activity!!
-                .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-            if (cm.activeNetworkInfo != null) {
-                if (userType == getString(R.string.telecaller)
-                    || userType == getString(R.string.teleassigner)
-                ) {
-                    progress = ProgressDialog(context)
-                    progress!!.setMessage("Loading...")
-                    progress!!.setCancelable(false)
-                    progress!!.setCanceledOnTouchOutside(false)
-                    progress!!.show()
-
-                    val l = leadDetails.location!!.trim()
-                    if(l == "Delhi" || l =="Indore" || l == "Jaipur" || l == "Gwalior" || l =="Ahemdabad" || l == "Surat"){
-                        firestore!!.fetchUsersByUserType(
-                            onFetchSalesPersonList(),
-                            leadDetails.location!!,
-                            getString(R.string.salesman)
-                        )
-                    }else{
-
-                        getVinodDetails()
-                    }
-                } else if (userType == getString(R.string.salesman)) {
-                    openSalesmanFragment()
-                }
+        binding!!.assignerContactNumber.setOnClickListener {
+            val permission = PermissionManager(context)
+            if (permission.checkCallPhone()) {
+                callCustomer(binding!!.assignerContactNumber.text.toString())
             } else
-                Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()
+                permission.requestCallPhone()
         }
-    }
 
-    private fun getVinodDetails(){
-
+        binding!!.assigneeContactNumber.setOnClickListener {
+            val permission = PermissionManager(context)
+            if (permission.checkCallPhone()) {
+                callCustomer(binding!!.assigneeContactNumber.text.toString())
+            } else
+                permission.requestCallPhone()
+        }
     }
 
     private fun hideAssignerContact() {
         binding!!.assignerContactNumber.isClickable = false
         binding!!.assignerContactNumber.setCompoundDrawables(null, null, null, null)
         binding!!.assignerContactNumber.text = "Not available"
-        Log.d("assignerContact", binding!!.assignerContactNumber.text.toString())
     }
 
     private fun hideAssigneeContact() {
@@ -192,101 +161,13 @@ class LeadDetailsFragment(
         binding!!.assigneeContactNumber.text = "Not available"
     }
 
-    private fun setLayoutVisibility() {
-        if (userType == getString(R.string.telecaller) || userType == getString(R.string.teleassigner)) {
-            binding!!.assignerLayout.visibility = View.GONE
-            binding!!.assignerContactLayout.visibility = View.GONE
-        } else if (userType == getString(R.string.salesman)) {
-            binding!!.assignedToLayout.visibility = View.GONE
-            binding!!.assigneeContactLayout.visibility = View.GONE
-        } else if (userType == getString(R.string.admin) || userType == getString(R.string.business_associate)) {
-            binding!!.editLeadDetails.visibility = View.GONE
-        }
-
-        if (leadDetails.employment == "Salaried") {
-            binding!!.employmentTypeLayout.visibility = View.GONE
-        }
-
-        if (leadDetails.salesmanRemarks == null || leadDetails.salesmanRemarks == "Not available") {
-            binding!!.customerRemarksLayout!!.visibility = View.GONE
-        }
-
-        if (leadDetails.assignerUId == null && leadDetails.assigner == null) {
-            binding!!.assignerLinearLayout!!.visibility = View.GONE
-            binding!!.assigneeLinearLayout!!.visibility = View.GONE
-            binding!!.leadStatusLinearLayout!!.visibility = View.GONE
-        }
+    private fun hideCallerContact() {
+        binding!!.callerContactNumber.isClickable = false
+        binding!!.callerContactNumber.setCompoundDrawables(null, null, null, null)
+        binding!!.callerContactNumber.text = "Not available"
     }
 
     private fun setText() {
-        if (!leadDetails.salesmanReason.isNullOrEmpty()) {
-            if (leadDetails.salesmanReason.size != 1) {
-                var temp = 1
-                var remark =
-                    getLatestRemark(leadDetails.salesmanReason[leadDetails.salesmanReason.size - temp])
-                while (remark == null) {
-                    temp++
-                    remark =
-                        getLatestRemark(leadDetails.salesmanReason[leadDetails.salesmanReason.size - temp])
-                }
-                binding!!.latestsalesmanRemark.text = Html.fromHtml(remark)
-                binding!!.viewallSalesmanRemark.setOnClickListener { view ->
-                    newInstance(leadDetails.salesmanReason, "Salesman's").show(
-                        childFragmentManager,
-                        "ShowRemarks"
-                    )
-                }
-            } else {
-                if (leadDetails.salesmanReason.isNullOrEmpty()) {
-                    latestsalesmanRemark!!.visibility = View.GONE
-                    viewallSalesmanRemark!!.text = "Not available"
-                } else if (!leadDetails.salesmanReason[0].matches("Not available".toRegex())) {
-                    latestsalesmanRemark!!.text =
-                        Html.fromHtml(getLatestRemark(leadDetails.salesmanReason[0]))
-                    viewallSalesmanRemark!!.text = ""
-                } else {
-                    latestsalesmanRemark!!.visibility = View.GONE
-                    viewallSalesmanRemark!!.text = "Not available"
-                }
-
-                viewallSalesmanRemark!!.setTextColor(resources.getColor(R.color.coloBlack))
-            }
-        }
-
-        if (!leadDetails.telecallerRemarks.isNullOrEmpty()) {
-            if (leadDetails.telecallerRemarks.size > 1) {
-                var remark =
-                    getLatestRemark(leadDetails.telecallerRemarks[leadDetails.telecallerRemarks.size - 1])
-                var temp = 1
-                while (remark == null) {
-                    temp++
-                    remark =
-                        getLatestRemark(leadDetails.telecallerRemarks[leadDetails.telecallerRemarks.size - temp])
-                }
-
-                latestCallerRemark!!.text = Html.fromHtml(remark)
-                viewallCallerRemark!!.setOnClickListener { view ->
-                    newInstance(leadDetails.telecallerRemarks, "Caller's").show(
-                        childFragmentManager,
-                        "ShowRemarks"
-                    )
-                }
-            } else {
-                if (leadDetails.telecallerRemarks.isNullOrEmpty()) {
-                    viewallCallerRemark!!.text = "Not available"
-                    latestCallerRemark!!.visibility = View.GONE
-                } else if (!leadDetails.telecallerRemarks[0].equals("Not available")) {
-                    latestCallerRemark!!.text =
-                        Html.fromHtml(getLatestRemark(leadDetails.telecallerRemarks[0]))
-                    viewallCallerRemark!!.text = ""
-                } else {
-                    viewallCallerRemark!!.text = "Not available"
-                    latestCallerRemark!!.visibility = View.GONE
-                }
-                viewallCallerRemark!!.setTextColor(resources.getColor(R.color.coloBlack))
-            }
-        }
-
         binding!!.customerName.text = leadDetails.name
         binding!!.loanAmount.text = leadDetails.loanAmount
         binding!!.contactNumber.text = leadDetails.contactNumber
@@ -295,21 +176,20 @@ class LeadDetailsFragment(
         binding!!.loanType.text = leadDetails.loanType
         binding!!.propertyType.text = leadDetails.propertyType
         binding!!.location.text = leadDetails.location
-        binding!!.assigner!!.text = leadDetails.assigner
+        binding!!.caller!!.text = leadDetails.assigner
+        binding!!.assigner!!.text = leadDetails.forwarderName
         binding!!.customerRemarks.text = leadDetails.salesmanRemarks
         binding!!.date.text = Date(leadDetails.timeStamp).toString()
+        binding!!.status.text = leadDetails.status
 
 
-        if (leadDetails.contactNumber == "Not available" ||
-            leadDetails.contactNumber == null
-        ) {
+        if (leadDetails.contactNumber == null) {
             binding!!.contactNumber.isClickable = false
             binding!!.contactNumber.setCompoundDrawables(null, null, null, null)
         }
 
         if (leadDetails.assignedTo.isNullOrEmpty()) {
             binding!!.assignTo.text = "Not assigned yet"
-            binding!!.status.text = "Not assigned yet"
             binding!!.assignDate.text = "Not assigned yet"
             binding!!.assignTime.text = "Not assigned yet"
 
@@ -332,28 +212,36 @@ class LeadDetailsFragment(
             binding!!.bankNames.text = bankList
             binding!!.bankLayout.visibility = View.VISIBLE
         }
-    }
 
-    private fun getLatestRemark(remark: String): String? {
-        var r: String? = null
-
-        if (remark.contains("@@")) {
-            val remarkWithTime =
-                remark.split("@@".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-            @SuppressLint("SimpleDateFormat") val sdf = SimpleDateFormat("MMM dd,yyyy hh:mm a")
-            val resultdate = Date(java.lang.Long.parseLong(remarkWithTime[1]))
-
-            if (remarkWithTime[0].isNotEmpty())
-                r =
-                    "<font color=\"#196587\">" + sdf.format(resultdate) + "</font>" + "<br>" + remarkWithTime[0]
-        } else {
-            if (remark.isNotEmpty())
-                r = remark
+        if (!leadDetails.salesmanReason.isNullOrEmpty()) {
+            binding!!.assigneeRemarks.setOnClickListener { view ->
+                newInstance(leadDetails.salesmanReason, "Salesman's").show(
+                    childFragmentManager,
+                    "ShowRemarks"
+                )
+            }
         }
 
-        return r
+        if (!leadDetails.telecallerRemarks.isNullOrEmpty()) {
+            binding!!.callerRemarks!!.setOnClickListener { view ->
+                newInstance(leadDetails.telecallerRemarks, "Caller's").show(
+                    childFragmentManager,
+                    "ShowRemarks"
+                )
+            }
+        }
+
+        if (!leadDetails.forwarderRemarks.isNullOrEmpty()) {
+            binding!!.assignerRemarks!!.setOnClickListener { view ->
+                newInstance(leadDetails.forwarderRemarks, "Caller's").show(
+                    childFragmentManager,
+                    "ShowRemarks"
+                )
+            }
+        }
+
     }
+
 
 //    override fun onStart() {
 //        super.onStart()
@@ -437,7 +325,6 @@ class LeadDetailsFragment(
             override fun onLeadUpdated() {
                 Toast.makeText(context, R.string.lead_update, Toast.LENGTH_SHORT).show()
                 isEdit = true
-                setLayoutVisibility()
                 setText()
                 if (progress!!.isShowing)
                     progress!!.dismiss()

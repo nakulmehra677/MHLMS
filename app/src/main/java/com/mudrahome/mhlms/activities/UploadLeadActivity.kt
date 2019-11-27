@@ -19,6 +19,7 @@ import com.mudrahome.mhlms.databinding.ActivityUploadLeadBinding
 import com.mudrahome.mhlms.firebase.Firestore
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.managers.Alarm
+import com.mudrahome.mhlms.managers.ProfileManager
 import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
@@ -51,33 +52,51 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
     private var binding: ActivityUploadLeadBinding? = null
     private var firestore: Firestore? = null
     private var leadDetails: LeadDetails? = null
-    private var userType: String? = null
+    private var userType: Int? = null
+    private var manager: ProfileManager? = null
+    private var user: UserDetails? = null
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_upload_lead)
 
-        firestore = Firestore(this)
-        val preference = ProfileSP(this)
+        showProgressDialog("Loading..", this)
 
-        userType = preference.userType
+        manager = ProfileManager()
+        firestore = Firestore(this)
+
+        firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails {
+            override fun onSuccess(userDetails: UserDetails) {
+                user = userDetails
+                if (progress.isShowing) dismissProgressDialog()
+                initLayout()
+            }
+
+            override fun fail() {
+                if (progress.isShowing) dismissProgressDialog()
+                finish()
+            }
+        }, manager!!.getuId())
+    }
+
+    private fun initLayout() {
+
         leadDetails = LeadDetails()
         initializeLoanTypeSpinner()
         initializeLocationSpinner()
 
-        Log.d("dfvb", userType!!)
-
-        if (userType.equals(getString(R.string.telecaller))) {
-            binding!!.assignToLayout.visibility = View.GONE
-            binding!!.forwardToLayout.visibility = View.VISIBLE
-
-        } else if (userType.equals(getString(R.string.telecaller_and_teleassigner))) {
+        if (user?.userType!!.contains(getString(R.string.telecaller)) &&
+            user?.userType!!.contains(getString(R.string.teleassigner))
+        ) {
+            userType = R.string.telecaller_and_teleassigner
             binding!!.assignToLayout.visibility = View.VISIBLE
             binding!!.forwardToLayout.visibility = View.GONE
 
         } else {
-            finish()
+            userType = R.string.telecaller
+            binding!!.assignToLayout.visibility = View.GONE
+            binding!!.forwardToLayout.visibility = View.VISIBLE
         }
     }
 
@@ -107,13 +126,13 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
     private fun initializePropertyTypeSpinner() {
         // Property type Spinner
-        if (leadDetails?.loanType == "Home Loan") {
-            propertyTypeAdapter = ArrayAdapter.createFromResource(
+        propertyTypeAdapter = if (leadDetails?.loanType == "Home Loan") {
+            ArrayAdapter.createFromResource(
                 this,
                 R.array.property, android.R.layout.simple_spinner_item
             )
         } else {
-            propertyTypeAdapter = ArrayAdapter.createFromResource(
+            ArrayAdapter.createFromResource(
                 this,
                 R.array.property_type, android.R.layout.simple_spinner_item
             )
@@ -188,7 +207,12 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onItemSelected(
+        parent: AdapterView<*>,
+        view: View,
+        position: Int,
+        id: Long
+    ) {
         when (parent.id) {
             R.id.loan_type -> {
                 leadDetails?.loanType = parent.getItemAtPosition(position).toString()
@@ -215,7 +239,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                 leadDetails!!.assignedTo = null
 
                 if (isNetworkConnected) {
-                    if (userType.equals(getString(R.string.telecaller))) {
+                    if (userType == R.string.telecaller) {
                         getAssignerListByLocation()
                     } else {
                         getSalesmanListByLocation()
@@ -259,15 +283,12 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
         leadDetails?.loanAmount = binding!!.loanAmount.text.toString().trim()
         leadDetails?.timeStamp = timeModel.timeStamp
 
-        val preference = ProfileSP(this)
-
-        if (userType.equals(getString(R.string.telecaller_and_teleassigner))
-        ) {
+        if (userType == R.string.telecaller_and_teleassigner) {
             leadDetails?.status = "Active"
             leadDetails?.assignDate = timeModel.strDate
             leadDetails?.assignTime = timeModel.strTime
-            leadDetails?.assigner = preference.userName
-            leadDetails?.assignerUId = preference.userUid
+            leadDetails?.assigner = user?.userName
+            leadDetails?.assignerUId = user?.uId
             leadDetails!!.telecallerRemarks.clear()
             if (!binding!!.remarks.text.toString().trim().isEmpty()) {
                 leadDetails?.telecallerRemarks?.add(
@@ -276,8 +297,8 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
             }
         } else {
             leadDetails?.status = "Decision Pending"
-            leadDetails?.assigner = preference.userName
-            leadDetails?.assignerUId = preference.userUid
+            leadDetails?.assigner = user?.userName
+            leadDetails?.assignerUId = user?.uId
             leadDetails!!.telecallerRemarks.clear()
             if (!binding!!.remarks.text.toString().trim().isEmpty()) {
                 leadDetails?.telecallerRemarks?.add(
@@ -300,7 +321,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                 return false
             }
         }
-        if (userType.equals(getString(R.string.telecaller))) {
+        if (userType == R.string.telecaller) {
             if (leadDetails?.forwarderUId == null ||
                 leadDetails!!.telecallerRemarks.size == 0
             ) {
@@ -440,12 +461,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
                 setAlarm()
 
-                progress = ProgressDialog(this@UploadLeadActivity)
-                progress.setMessage("Uploading..")
-                progress.setCancelable(false)
-                progress.setCanceledOnTouchOutside(false)
-                progress.show()
-
+                showProgressDialog("Uploading...", this)
                 firestore!!.uploadCustomerDetails(onUploadCustomerDetails(), leadDetails!!)
             }
 
@@ -483,7 +499,7 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
                 progress.dismiss()
                 finish()
                 showToastMessage(R.string.data_uploaded)
-                if (userType.equals(getString(R.string.telecaller_and_teleassigner)))
+                if (userType == R.string.telecaller_and_teleassigner)
                     startSMSIntent()
             }
 

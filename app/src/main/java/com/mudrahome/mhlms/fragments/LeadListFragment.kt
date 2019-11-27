@@ -23,6 +23,7 @@ import com.mudrahome.mhlms.adapters.LeadsItemAdapter
 import com.mudrahome.mhlms.databinding.FragmentLeadListBinding
 import com.mudrahome.mhlms.firebase.Firestore
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
+import com.mudrahome.mhlms.managers.ProfileManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.LeadFilter
 import com.mudrahome.mhlms.sharedPreferences.ProfileSP
@@ -34,6 +35,8 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private var linearLayoutManager: LinearLayoutManager? = null
 
     private var firestore: Firestore? = null
+    private var manager: ProfileManager? = null
+
 
     private val leadDetailsList = ArrayList<Any>()
     private var leadFilter: LeadFilter? = null
@@ -43,7 +46,6 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private var bottomVisibleItem: DocumentSnapshot? = null
 
     private var extraViews: ExtraViews? = null
-    private var preferences: ProfileSP? = null
 
     private val isNetworkConnected: Boolean
         get() {
@@ -56,12 +58,12 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_lead_list, container, false)
 
         extraViews = ExtraViews()
-        preferences = ProfileSP(context!!)
         firestore = Firestore(context!!)
+        manager = ProfileManager()
+
         leadFilter = LeadFilter()
 
         linearLayoutManager = LinearLayoutManager(context)
@@ -185,10 +187,10 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private fun setFilter() {
 
         when (userType) {
-            R.string.telecaller -> leadFilter?.assigner = preferences!!.userName
-            R.string.salesman -> leadFilter?.assignee = preferences!!.userName
-            R.string.business_associate -> leadFilter?.businessAssociateUId = preferences?.userUid
-            R.string.teleassigner -> leadFilter?.forwarder = preferences!!.userName
+            R.string.telecaller -> leadFilter?.assigner = manager!!.getuId()
+            R.string.salesman -> leadFilter?.assignee = manager!!.getuId()
+            R.string.business_associate -> leadFilter?.businessAssociateUId = manager!!.getuId()
+            R.string.teleassigner -> leadFilter?.forwarder = manager!!.getuId()
         }
 
     }
@@ -225,8 +227,9 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
                 R.id.fab -> {
                     if (userType == R.string.admin)
                         startActivity(Intent(context, StartOfferActivity::class.java))
-                    else
+                    else {
                         startActivity(Intent(context, UploadLeadActivity::class.java))
+                    }
                 }
             }
         } else {
