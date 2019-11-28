@@ -29,7 +29,6 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
     private var toggle: ActionBarDrawerToggle? = null
     private var userType: Int? = null
     private var binding: ActivityLeadListBinding? = null
-    private var profileSP: ProfileSP? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +36,8 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
 
         setSupportActionBar(binding!!.toolbar)
 
-        profileManager = ProfileManager()
+        profileManager = ProfileManager(this)
         firestore = Firestore()
-        profileSP = ProfileSP(this)
 
         toggle = ActionBarDrawerToggle(
             this,
@@ -58,6 +56,7 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
         firestore!!.getUsers(object : FirestoreInterfaces.OnGetUserDetails {
             override fun onSuccess(userDetails: UserDetails) {
 
+                profileManager!!.setPreferences(userDetails)
                 if (progress.isShowing) dismissProgressDialog()
 
                 if (userDetails.userType!!.contains(getString(R.string.admin)) &&
@@ -70,6 +69,7 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
                     userDetails.userType!!.contains(getString(R.string.teleassigner))
                 ) {
                     userType = R.string.telecaller_and_teleassigner
+                    profileManager!!.setPreferences(userDetails)
                     openViewPager(userType!!)
 
                 } else if (userDetails.userType!!.contains(getString(R.string.telecaller))) {
@@ -97,7 +97,6 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
     }
 
     private fun openFragment(userType: Int) {
-        Log.d("dsfvdfv", userType.toString())
 
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.frame_layout, LeadListFragment(userType))
@@ -166,7 +165,6 @@ class LeadListActivity : BaseActivity(), NavigationView.OnNavigationItemSelected
         build.setMessage("Are you sure you want to logout?")
             .setPositiveButton("Yes") { _, _ ->
                 profileManager!!.signOut()
-                profileSP!!.clearSharePreference()                                      // Clear data from cache
                 showToastMessage(R.string.logged_out)
                 val intent = Intent(this@LeadListActivity, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP

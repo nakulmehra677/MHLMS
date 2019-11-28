@@ -2,13 +2,9 @@ package com.mudrahome.mhlms.fragments
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
-import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,13 +17,13 @@ import com.mudrahome.mhlms.databinding.FragmentLeadDetailsBinding
 import com.mudrahome.mhlms.firebase.Firestore
 import com.mudrahome.mhlms.fragments.ViewAllRemarksFragment.newInstance
 import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
+import com.mudrahome.mhlms.interfaces.OnSubmitClickListener
 import com.mudrahome.mhlms.managers.PermissionManager
+import com.mudrahome.mhlms.managers.ProfileManager
 import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
 import com.mudrahome.mhlms.model.UserList
-import kotlinx.android.synthetic.main.fragment_lead_details.*
-import java.text.SimpleDateFormat
 import java.util.*
 
 @SuppressLint("ValidFragment")
@@ -38,6 +34,7 @@ class LeadDetailsFragment(
 
     private var progress: ProgressDialog? = null
     private var firestore: Firestore? = null
+    private var manager: ProfileManager? = null
 
     private val customerNotInterested = "Customer Not Interested"
     private val documentPicked = "Document Picked"
@@ -60,13 +57,18 @@ class LeadDetailsFragment(
             R.layout.fragment_lead_details, null, false
         )
 
+        manager = ProfileManager(context)
+        firestore = Firestore()
+
         return binding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        firestore = Firestore()
+        binding!!.editLeadButton.setOnClickListener {
+            setButtonAction()
+        }
 
         setText()
 
@@ -242,31 +244,46 @@ class LeadDetailsFragment(
 
     }
 
-
-//    override fun onStart() {
-//        super.onStart()
-//        mBehavior!!.state = BottomSheetBehavior.STATE_EXPANDED
-//    }
+    private fun setButtonAction() {
+        if (manager!!.spUserType == context!!.getString(R.string.telecaller)) {
+            openCallerFragment()
+        } else if (manager!!.spUserType == context!!.getString(R.string.telecaller_and_teleassigner)) {
+            firestore!!.fetchUsersByUserType(
+                onFetchSalesPersonList(),
+                leadDetails.location!!,
+                userType
+            )
+        } else if (userType == context!!.getString(R.string.salesman)) {
+            openSalesmanFragment()
+        }
+    }
 
     private fun onFetchSalesPersonList(): FirestoreInterfaces.OnFetchUsersList {
         return object : FirestoreInterfaces.OnFetchUsersList {
             override fun onFail() {
                 progress?.dismiss()
-                val userList = ArrayList<UserDetails>()
-                openTelecallerFragment(userList)
             }
 
             override fun onListFetched(userList: UserList?) {
                 progress?.dismiss()
-                openTelecallerFragment(userList!!.userList)
+                Log.d("dfvsfv", userList!!.userList.size.toString())
+                if (userList.userList.size > 0) {
+                    openAssignerFragment(userList.userList)
+                } else {
+                    Toast.makeText(
+                        context,
+                        "No salesman present for this location.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
         }
     }
 
-    private fun openTelecallerFragment(userList: List<UserDetails>) {
-        TelecallerEditLeadFragment.newInstance(
-            leadDetails, userList, { dialogLeadDetails ->
+    private fun openCallerFragment() {
+        CallerEditLeadFragment(
+            leadDetails, OnSubmitClickListener { dialogLeadDetails ->
                 progress = ProgressDialog(context)
                 progress!!.setMessage("Loading..")
                 progress!!.setCancelable(false)
@@ -274,7 +291,21 @@ class LeadDetailsFragment(
                 progress!!.show()
 
                 firestore!!.updateLeadDetails(onUpdateLead(), dialogLeadDetails)
-            }, userType
+            }
+        ).show(fragmentManager!!, "promo")
+    }
+
+    private fun openAssignerFragment(userList: List<UserDetails>) {
+        AssignerEditLeadFragment(
+            leadDetails, userList, OnSubmitClickListener { dialogLeadDetails ->
+                progress = ProgressDialog(context)
+                progress!!.setMessage("Loading..")
+                progress!!.setCancelable(false)
+                progress!!.setCanceledOnTouchOutside(false)
+                progress!!.show()
+
+                firestore!!.updateLeadDetails(onUpdateLead(), dialogLeadDetails)
+            }
         ).show(fragmentManager!!, "promo")
     }
 

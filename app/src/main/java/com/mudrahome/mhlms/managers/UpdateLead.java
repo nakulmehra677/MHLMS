@@ -20,11 +20,18 @@ public class UpdateLead {
         this.leadDetails = leadDetails;
     }
 
-    public void taleCaller(String customerName, String loanAmount, String contactNumber, ArrayList<String> telecallerReason) {
+    public void updateByCaller(String customerName, String loanAmount, String contactNumber, ArrayList<String> callerRemarks) {
         leadDetails.setName(customerName);
         leadDetails.setLoanAmount(loanAmount);
         leadDetails.setContactNumber(contactNumber);
-        leadDetails.setTelecallerRemarks(telecallerReason);
+        leadDetails.setTelecallerRemarks(callerRemarks);
+    }
+
+    public void updateByAssigner(String customerName, String loanAmount, String contactNumber, ArrayList<String> forwarderRemarks) {
+        leadDetails.setName(customerName);
+        leadDetails.setLoanAmount(loanAmount);
+        leadDetails.setContactNumber(contactNumber);
+        leadDetails.setForwarderRemarks(forwarderRemarks);
     }
 
     public void time() {
