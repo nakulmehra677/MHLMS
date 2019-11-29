@@ -200,6 +200,8 @@ class LeadDetailsFragment(
             binding!!.assignTo.text = leadDetails.assignedTo
             binding!!.status.text = leadDetails.status
             binding!!.assignDate.text = leadDetails.assignDate
+            binding!!.assignTime.text = leadDetails.assignTime
+
         }
 
         if (leadDetails.banks.isNullOrEmpty()) {
@@ -241,7 +243,6 @@ class LeadDetailsFragment(
                 )
             }
         }
-
     }
 
     private fun setButtonAction() {
@@ -251,10 +252,12 @@ class LeadDetailsFragment(
             firestore!!.fetchUsersByUserType(
                 onFetchSalesPersonList(),
                 leadDetails.location!!,
-                userType
+                context!!.getString(R.string.salesman)
             )
         } else if (userType == context!!.getString(R.string.salesman)) {
             openSalesmanFragment()
+        } else {
+            binding!!.editLeadButton.visibility = View.GONE
         }
     }
 
@@ -266,8 +269,8 @@ class LeadDetailsFragment(
 
             override fun onListFetched(userList: UserList?) {
                 progress?.dismiss()
-                Log.d("dfvsfv", userList!!.userList.size.toString())
-                if (userList.userList.size > 0) {
+
+                if (userList!!.userList.size > 0) {
                     openAssignerFragment(userList.userList)
                 } else {
                     Toast.makeText(
@@ -297,7 +300,7 @@ class LeadDetailsFragment(
 
     private fun openAssignerFragment(userList: List<UserDetails>) {
         AssignerEditLeadFragment(
-            leadDetails, userList, OnSubmitClickListener { dialogLeadDetails ->
+            leadDetails, userList, userType, OnSubmitClickListener { dialogLeadDetails ->
                 progress = ProgressDialog(context)
                 progress!!.setMessage("Loading..")
                 progress!!.setCancelable(false)

@@ -7,7 +7,7 @@ class UserDetails {
     var location: Map<String, Boolean>? = null
     var userType: List<String>? = null
     var key: String? = null
-    var deviceToken: List<String>? = null
-    var workingLocation: String? = null
+    var deviceToken: String? = null
+    //    var workingLocation: String? = null
     var contactNumber: String? = null
 }

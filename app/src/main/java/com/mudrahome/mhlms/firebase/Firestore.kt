@@ -79,6 +79,7 @@ class Firestore {
             "assignTime", updateLead.assignTime,
             "telecallerRemarks", updateLead.telecallerRemarks,
             "salesmanRemarks", updateLead.salesmanRemarks,
+            "forwarderRemarks", updateLead.forwarderRemarks,
             "salesmanReason", updateLead.salesmanReason,
             "status", updateLead.status,
             "timeStamp", updateLead.timeStamp,

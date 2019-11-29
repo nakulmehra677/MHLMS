@@ -154,7 +154,6 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
                     android:hint="Remarks"
-                    android:inputType="number"
                     android:padding="12dp" />
 
             </com.google.android.material.textfield.TextInputLayout>

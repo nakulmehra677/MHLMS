@@ -8,18 +8,20 @@ import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
+import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.databinding.FragmentAssignerEditLeadDetailsBinding
 import com.mudrahome.mhlms.interfaces.OnSubmitClickListener
 import com.mudrahome.mhlms.managers.Alarm
-import com.mudrahome.mhlms.managers.UpdateLead
+import com.mudrahome.mhlms.managers.TimeManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.UserDetails
 import java.util.*
@@ -28,6 +30,7 @@ import kotlin.collections.ArrayList
 class AssignerEditLeadFragment(
     private val leadDetails: LeadDetails,
     private val salesPersonList: List<UserDetails>?,
+    private val userType: String,
     private val listener: OnSubmitClickListener
 ) : AppCompatDialogFragment() {
 
@@ -76,9 +79,8 @@ class AssignerEditLeadFragment(
         }
 
         val salesPersonNameList = ArrayList<CharSequence>()
-        Log.d("usserrr", salesPersonList!!.size.toString())
 
-        for (user in salesPersonList) {
+        for (user in salesPersonList!!) {
             salesPersonNameList.add(user.userName!!)
         }
 
@@ -89,13 +91,23 @@ class AssignerEditLeadFragment(
         )
         assignedToAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.assignTo.adapter = assignedToAdapter
-        binding.assignTo.setSelection(salesPersonNameList.indexOf(leadDetails.assignedTo!!))
+
+        if (leadDetails.assignedToUId != null)
+            binding.assignTo.setSelection(salesPersonNameList.indexOf(leadDetails.assignedTo!!))
+
         binding.assignTo.onItemSelectedListener = object : OnItemSelectedListener {
+
             override fun onItemSelected(
                 parent: AdapterView<*>, view: View,
                 position: Int, id: Long
             ) {
                 strAssignedTo = parent.getItemAtPosition(position).toString()
+                for (user in salesPersonList) {
+                    if (user.userName == strAssignedTo) {
+                        leadDetails.assignedToUId = user.uId
+                        leadDetails.assignedTo = strAssignedTo
+                    }
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -114,6 +126,19 @@ class AssignerEditLeadFragment(
                 position: Int, id: Long
             ) {
                 strCustomerRemarks = parent.getItemAtPosition(position).toString()
+                leadDetails.salesmanRemarks = strCustomerRemarks
+
+                if (strCustomerRemarks == "Customer Interested but Document Pending" || strCustomerRemarks == "Customer follow Up") {
+                    binding.reminderLayout.setVisibility(View.VISIBLE)
+                } else if (strCustomerRemarks == "Document Picked and File Logged in") {
+                    binding.reminderLayout.setVisibility(View.GONE)
+                    binding.date.setText("DD/MM/YYYY")
+                    binding.time.setText("hh:mm")
+                } else {
+                    binding.reminderLayout.setVisibility(View.GONE)
+                    binding.date.setText("DD/MM/YYYY")
+                    binding.time.setText("hh:mm")
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -163,21 +188,32 @@ class AssignerEditLeadFragment(
                 val strName = binding.customerName.text.toString()
                 val strLoanAmount = binding.loanAmount.text.toString()
                 val strNumber = binding.contactNumber.text.toString()
-                val strReason = leadDetails.forwarderRemarks
-                strReason.add(binding.assignerRemarks.text.toString() + "@@" + System.currentTimeMillis())
+
+                val strRemarks: ArrayList<String>
+                if (userType == context!!.getString(R.string.telecaller)) {
+                    strRemarks = leadDetails.telecallerRemarks
+                    strRemarks.add(binding.assignerRemarks.text.toString() + "@@" + System.currentTimeMillis())
+                    leadDetails.telecallerRemarks = strRemarks
+                } else {
+                    strRemarks = leadDetails.forwarderRemarks
+                    strRemarks.add(binding.assignerRemarks.text.toString() + "@@" + System.currentTimeMillis())
+                    leadDetails.forwarderRemarks = strRemarks
+                }
 
                 if (strName.isNotEmpty() &&
                     strLoanAmount.isNotEmpty() &&
                     strNumber.isNotEmpty()
                 ) {
-                    val updateLead = UpdateLead(leadDetails)
-                    updateLead.updateByAssigner(strName, strLoanAmount, strNumber, strReason)
-                    val alarm = Alarm(context)
-                    if (leadDetails.salesmanRemarks != null) {
-                        if (leadDetails.salesmanRemarks == "Customer Interested but Document Pending" || leadDetails.salesmanRemarks == "Customer follow Up") {
+                    leadDetails.name = strName
+                    leadDetails.loanAmount = strLoanAmount
+                    leadDetails.contactNumber = strNumber
 
+                    if (leadDetails.salesmanRemarks != null) {
+                        val alarm = Alarm(context)
+
+                        if (strCustomerRemarks == "Customer Interested but Document Pending" || strCustomerRemarks == "Customer follow Up") {
                             binding.reminderLayout.visibility = View.VISIBLE
-//                            binding.bankLayout.setVisibility(View.GONE)
+
                             if (binding.date.text.toString() != "DD/MM/YYYY" &&
                                 binding.time.text.toString() != "hh:mm"
                             ) {
@@ -192,12 +228,13 @@ class AssignerEditLeadFragment(
                             }
                         } else {
                             binding.reminderLayout.visibility = View.GONE
-//                            binding.bankLayout.setVisibility(View.VISIBLE)
                             alarm.cancelAlarm(leadDetails.name)
                         }
                     }
-                    updateLead.time()
-                    listener.onSubmitClicked(updateLead.leadDetails)
+                    val timeManager = TimeManager()
+                    leadDetails.timeStamp = timeManager.timeStamp
+
+                    listener.onSubmitClicked(leadDetails)
                 }
             }
             .setNegativeButton(

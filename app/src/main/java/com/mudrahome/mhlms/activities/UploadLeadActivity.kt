@@ -322,10 +322,19 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
             }
         }
         if (userType == R.string.telecaller) {
-            if (leadDetails?.forwarderUId == null ||
-                leadDetails!!.telecallerRemarks.size == 0
-            ) {
-                return false
+            if (binding!!.forwardToLayout.visibility == View.VISIBLE) {
+
+                if (leadDetails?.forwarderUId == null ||
+                    leadDetails!!.telecallerRemarks.size == 0
+                ) {
+                    return false
+                }
+            } else {
+                if (leadDetails?.assignedToUId == null ||
+                    leadDetails!!.telecallerRemarks.size == 0
+                ) {
+                    return false
+                }
             }
         } else {
             if (leadDetails?.assignedToUId == null ||
@@ -409,7 +418,6 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
                 override fun onListFetched(userList: UserList?) {
                     personList = userList?.userList
-                    Log.d("UserList", personList.toString())
                     if (userList?.userList?.size!! > 0) {
                         val salesNameList = ArrayList<String>()
                         for (user in userList.userList) {
@@ -436,8 +444,14 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
                 override fun onListFetched(userList: UserList?) {
                     personList = userList?.userList
-                    Log.d("UserList", personList.toString())
                     if (userList?.userList?.size!! > 0) {
+
+                        binding!!.forwardToLayout.visibility = View.VISIBLE
+                        binding!!.forwardTo.isEnabled = false
+                        binding!!.assignToLayout.visibility = View.GONE
+                        leadDetails?.assignedTo = null
+                        leadDetails?.assignedToUId = null
+
                         val forwarderNameList = ArrayList<String>()
                         for (user in userList.userList) {
                             forwarderNameList.add(user.userName!!)
@@ -446,8 +460,12 @@ class UploadLeadActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
                     } else {
                         binding!!.forwardTo.isEnabled = false
-                        leadDetails?.assignedToUId = null
-                        leadDetails?.assignedTo = null
+                        binding!!.forwardToLayout.visibility = View.GONE
+                        leadDetails?.forwarderName = null
+                        leadDetails?.forwarderUId = null
+
+                        binding!!.assignToLayout.visibility = View.VISIBLE
+                        getSalesmanListByLocation()
                     }
                 }
             }, leadDetails?.location!!, getString(R.string.teleassigner)
