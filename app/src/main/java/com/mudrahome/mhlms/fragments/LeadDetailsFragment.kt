@@ -10,7 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.databinding.FragmentLeadDetailsBinding
@@ -66,6 +68,10 @@ class LeadDetailsFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (userType.equals(context!!.getString(R.string.admin))) {
+            binding!!.editLeadButton.visibility = View.GONE
+        }
+
         binding!!.editLeadButton.setOnClickListener {
             setButtonAction()
         }
@@ -80,6 +86,7 @@ class LeadDetailsFragment(
                         hideCallerContact()
                     } else {
                         binding!!.callerContactNumber!!.text = userDetails.contactNumber
+                        binding!!.callerContactNumber.isClickable = true
                     }
                 }
 
@@ -98,6 +105,7 @@ class LeadDetailsFragment(
                         hideAssigneeContact()
                     } else {
                         binding!!.assigneeContactNumber!!.text = userDetails.contactNumber
+                        binding!!.assigneeContactNumber.isClickable = true
                     }
                 }
 
@@ -116,6 +124,8 @@ class LeadDetailsFragment(
                         hideAssignerContact()
                     } else {
                         binding!!.assignerContactNumber!!.text = userDetails.contactNumber
+                        binding!!.assignerContactNumber.isClickable = true
+
                     }
                 }
 
@@ -129,7 +139,7 @@ class LeadDetailsFragment(
         binding!!.callerContactNumber.setOnClickListener {
             val permission = PermissionManager(context)
             if (permission.checkCallPhone()) {
-                callCustomer(binding!!.assignerContactNumber.text.toString())
+                callCustomer(binding!!.callerContactNumber.text.toString())
             } else
                 permission.requestCallPhone()
         }
@@ -188,6 +198,14 @@ class LeadDetailsFragment(
         if (leadDetails.contactNumber == null) {
             binding!!.contactNumber.isClickable = false
             binding!!.contactNumber.setCompoundDrawables(null, null, null, null)
+        } else {
+            binding!!.contactNumber.setOnClickListener {
+                val permission = PermissionManager(context)
+                if (permission.checkCallPhone()) {
+                    callCustomer(binding!!.contactNumber.text.toString())
+                } else
+                    permission.requestCallPhone()
+            }
         }
 
         if (leadDetails.assignedTo.isNullOrEmpty()) {
@@ -246,18 +264,42 @@ class LeadDetailsFragment(
     }
 
     private fun setButtonAction() {
-        if (manager!!.spUserType == context!!.getString(R.string.telecaller)) {
-            openCallerFragment()
-        } else if (manager!!.spUserType == context!!.getString(R.string.telecaller_and_teleassigner)) {
-            firestore!!.fetchUsersByUserType(
-                onFetchSalesPersonList(),
-                leadDetails.location!!,
-                context!!.getString(R.string.salesman)
-            )
-        } else if (userType == context!!.getString(R.string.salesman)) {
-            openSalesmanFragment()
-        } else {
-            binding!!.editLeadButton.visibility = View.GONE
+        when {
+            leadDetails.status == "Incomplete Lead" -> {
+                val transaction =
+                    (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                val fragment: Fragment = UploadLeadFragment()
+
+                val bundle = Bundle()
+                bundle.putSerializable("leadDetails", leadDetails)
+                fragment.arguments = bundle
+
+                transaction.addToBackStack(null)
+                transaction.replace(R.id.content_frame, fragment)
+                transaction.addToBackStack(null)
+                transaction.commit()
+            }
+
+            manager!!.spUserType == context!!.getString(R.string.telecaller) && leadDetails.forwarderUId != null -> {
+                openCallerFragment()
+            }
+
+            manager!!.spUserType == context!!.getString(R.string.telecaller_and_teleassigner) ||
+                    manager!!.spUserType == context!!.getString(R.string.telecaller) -> {
+                firestore!!.fetchUsersByUserType(
+                    onFetchSalesPersonList(),
+                    leadDetails.location!!,
+                    context!!.getString(R.string.salesman)
+                )
+            }
+
+            userType == context!!.getString(R.string.salesman) -> {
+                openSalesmanFragment()
+            }
+
+            else -> {
+                binding!!.editLeadButton.visibility = View.GONE
+            }
         }
     }
 
@@ -307,6 +349,8 @@ class LeadDetailsFragment(
                 progress!!.setCanceledOnTouchOutside(false)
                 progress!!.show()
 
+                leadDetails.status = setStatus(leadDetails.salesmanRemarks!!)
+
                 firestore!!.updateLeadDetails(onUpdateLead(), dialogLeadDetails)
             }
         ).show(fragmentManager!!, "promo")
@@ -327,23 +371,7 @@ class LeadDetailsFragment(
 
             leadDetails.salesmanRemarks = dialogSalesmanRemarks
             leadDetails.salesmanReason = salesmanReson
-
-            if (dialogSalesmanRemarks == customerNotInterested)
-                leadDetails.status = getString(R.string.inactive)
-            else if (dialogSalesmanRemarks == documentPicked)
-                leadDetails.status = getString(R.string.work_in_progress)
-            else if (dialogSalesmanRemarks == documentPickedFileLoggedIn)
-                leadDetails.status = getString(R.string.closed)
-            else if (dialogSalesmanRemarks == customerFollowUp)
-                leadDetails.status = getString(R.string.follow_up)
-            else if (dialogSalesmanRemarks == customerNotContactable)
-                leadDetails.status = getString(R.string.inactive)
-            else if (dialogSalesmanRemarks == customerInterestedButDocumentPending)
-                leadDetails.status = getString(R.string.work_in_progress)
-            else if (dialogSalesmanRemarks == notDoable)
-                leadDetails.status = getString(R.string.not_doable)
-            else
-                leadDetails.status = getString(R.string.active)
+            leadDetails.status = setStatus(dialogSalesmanRemarks)
 
             progress = ProgressDialog(context)
             progress!!.setMessage("Loading..")
@@ -352,6 +380,25 @@ class LeadDetailsFragment(
             progress!!.show()
             firestore!!.updateLeadDetails(onUpdateLead(), leadDetails)
         }.show(fragmentManager!!, "promo")
+    }
+
+    private fun setStatus(remarks: String): String {
+        if (remarks == customerNotInterested)
+            return getString(R.string.inactive)
+        else if (remarks == documentPicked)
+            return getString(R.string.work_in_progress)
+        else if (remarks == documentPickedFileLoggedIn)
+            return getString(R.string.closed)
+        else if (remarks == customerFollowUp)
+            return getString(R.string.follow_up)
+        else if (remarks == customerNotContactable)
+            return getString(R.string.inactive)
+        else if (remarks == customerInterestedButDocumentPending)
+            return getString(R.string.work_in_progress)
+        else if (remarks == notDoable)
+            return getString(R.string.not_doable)
+        else
+            return getString(R.string.active)
     }
 
     private fun onUpdateLead(): FirestoreInterfaces.OnUpdateLead {

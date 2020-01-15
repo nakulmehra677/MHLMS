@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +20,6 @@ import com.mudrahome.mhlms.ExtraViews
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.activities.FilterActivity
 import com.mudrahome.mhlms.activities.StartOfferActivity
-import com.mudrahome.mhlms.activities.UploadLeadActivity
 import com.mudrahome.mhlms.adapters.LeadsItemAdapter
 import com.mudrahome.mhlms.databinding.FragmentLeadListBinding
 import com.mudrahome.mhlms.firebase.Firestore
@@ -26,7 +27,6 @@ import com.mudrahome.mhlms.interfaces.FirestoreInterfaces
 import com.mudrahome.mhlms.managers.ProfileManager
 import com.mudrahome.mhlms.model.LeadDetails
 import com.mudrahome.mhlms.model.LeadFilter
-import com.mudrahome.mhlms.sharedPreferences.ProfileSP
 import java.util.*
 
 class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickListener {
@@ -141,7 +141,6 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
     private fun fetchLeads() {
         setFilter()
         firestore!!.downloadLeadList(onFetchLeadList(), bottomVisibleItem, leadFilter!!)
-
     }
 
     private fun onFetchLeadList(): FirestoreInterfaces.OnFetchLeadList {
@@ -185,7 +184,6 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
 
 
     private fun setFilter() {
-
         when (userType) {
             R.string.telecaller -> leadFilter?.assigner = manager!!.getuId()
             R.string.salesman -> leadFilter?.assignee = manager!!.getuId()
@@ -228,7 +226,18 @@ class LeadListFragment(private val userType: Int) : Fragment(), View.OnClickList
                     if (userType == R.string.admin)
                         startActivity(Intent(context, StartOfferActivity::class.java))
                     else {
-                        startActivity(Intent(context, UploadLeadActivity::class.java))
+                        val transaction =
+                            (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                        val fragment: Fragment = UploadLeadFragment()
+
+                        val bundle = Bundle()
+                        bundle.putInt("userType", userType)
+                        fragment.arguments = bundle
+
+                        transaction.addToBackStack(null)
+                        transaction.replace(R.id.frame_layout, fragment)
+                        transaction.addToBackStack(null)
+                        transaction.commit()
                     }
                 }
             }

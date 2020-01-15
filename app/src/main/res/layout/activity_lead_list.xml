@@ -12,6 +12,7 @@
 
         <FrameLayout
             android:id="@+id/content_frame"
+            android:elevation="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -43,6 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:elevation="4dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 

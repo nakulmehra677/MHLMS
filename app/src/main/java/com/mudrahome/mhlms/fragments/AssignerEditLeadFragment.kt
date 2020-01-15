@@ -52,6 +52,7 @@ class AssignerEditLeadFragment(
     private var alarmDay = 0
     private var alarmHour = 0
     private var alarmMinute = 0
+    private var oldAssignToUId: String? = null
 
     @SuppressLint("RestrictedApi")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -61,6 +62,8 @@ class AssignerEditLeadFragment(
 
         binding = FragmentAssignerEditLeadDetailsBinding.bind(view)
         val builder = AlertDialog.Builder(activity!!)
+
+        oldAssignToUId = leadDetails.assignedToUId
 
         binding.customerName.setText(leadDetails.name)
         binding.loanAmount.setText(leadDetails.loanAmount)
@@ -105,7 +108,7 @@ class AssignerEditLeadFragment(
                 for (user in salesPersonList) {
                     if (user.userName == strAssignedTo) {
                         leadDetails.assignedToUId = user.uId
-                        leadDetails.assignedTo = strAssignedTo
+                        leadDetails.assignedTo = strAssignedTo!!
                     }
                 }
             }
@@ -126,7 +129,7 @@ class AssignerEditLeadFragment(
                 position: Int, id: Long
             ) {
                 strCustomerRemarks = parent.getItemAtPosition(position).toString()
-                leadDetails.salesmanRemarks = strCustomerRemarks
+                leadDetails.salesmanRemarks = strCustomerRemarks!!
 
                 if (strCustomerRemarks == "Customer Interested but Document Pending" || strCustomerRemarks == "Customer follow Up") {
                     binding.reminderLayout.setVisibility(View.VISIBLE)
@@ -233,6 +236,11 @@ class AssignerEditLeadFragment(
                     }
                     val timeManager = TimeManager()
                     leadDetails.timeStamp = timeManager.timeStamp
+
+                    if (!oldAssignToUId.equals(leadDetails.assignedToUId)) {
+                        leadDetails.assignDate = timeManager.strDate
+                        leadDetails.assignTime = timeManager.strTime
+                    }
 
                     listener.onSubmitClicked(leadDetails)
                 }

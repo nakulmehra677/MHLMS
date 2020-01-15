@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.mudrahome.mhlms.R
 import com.mudrahome.mhlms.fragments.LeadDetailsFragment
@@ -129,11 +130,12 @@ class LeadsItemAdapter(
                     vh2.assign.visibility = View.GONE
 
                 vh2.itemView.setOnClickListener {
-                    val leadDetailsFragment = LeadDetailsFragment(model, currentUserType)
-                    leadDetailsFragment.show(
-                        (context as AppCompatActivity).supportFragmentManager,
-                        "f"
-                    )
+
+                    val fragment: Fragment = LeadDetailsFragment(model, currentUserType)
+                    (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, fragment)
+                        .addToBackStack(null)
+                        .commit()
                 }
             }
         }

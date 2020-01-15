@@ -4,7 +4,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="passwords_not_matching">Passwords are not matching.</string>
     <string name="fill_all_fields">Fill all the fields.</string>
-    <string name="fill_details_correctly">Fill details correctly.</string>
     <string name="no_internet">No Internet Connection.</string>
     <string name="authentication_failed">Authentication failed.</string>
     <string name="user_created">User created.</string>
@@ -33,9 +32,16 @@
     <string name="loan_against_property">Loan Against Property</string>
     <string name="over_draft">Over Draft</string>
 
+
+    <string name="not_provided">Not Provided</string>
+
     <!--  Nature of employment -->
     <string name="salaried">Salaried</string>
     <string name="self_employed">Self Employed</string>
+
+    <!--    Call later-->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!--  UserType -->
     <string name="telecaller">Telecaller</string>
@@ -77,14 +83,32 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-
     <string name="emoji">Made with &#128153; by Nakul</string>
 
     <string name="google_key_api">AIzaSyC8VOTVKYz6JgqIuYOxb6boKRb_l9-wL10</string>
 
     <string name="othersLocation">Others</string>
 
+
+    <!--    Warning for uploading lead-->
+    <string name="fill_details_correctly">Fill details correctly.</string>
+    <string name="cannot_leave_contact">You cannot leave contact empty.</string>
+    <string name="cannot_leave_name">You cannot leave name empty</string>
+    <string name="cannot_leave_loan_amount">You cannot leave loan amount empty</string>
+    <string name="set_employment">Set employment</string>
+    <string name="set_employment_type">Set employment type</string>
+    <string name="set_loan_type">Set loan type</string>
+    <string name="set_property_type">Set property type</string>
+    <string name="set_location">Set location</string>
+    <string name="set_assignee">Set Assignee</string>
+
+    <string name="cannot_leave_remarks">You cannot leave remarks empty</string>
+    <string name="set_reminder">Set reminder first</string>
+    <string name="set_alarm">Set alarm</string>
+
+
     <string-array name="property_type">
+        <item>Not Provided</item>
         <item>Self Occupied Residential Property</item>
         <item>Self Occupied Commercial Property</item>
         <item>Rented</item>
@@ -93,6 +117,7 @@
     </string-array>
 
     <string-array name="property">
+        <item>Not Provided</item>
         <item>Flat</item>
         <item>Bunglow</item>
         <item>Open Land</item>
@@ -100,6 +125,7 @@
     </string-array>
 
     <string-array name="loan_type">
+        <item>Not Provided</item>
         <item>Home Loan</item>
         <item>Business Loan</item>
         <item>Personal Loan</item>
@@ -118,6 +144,7 @@
     </string-array>
 
     <string-array name="location">
+        <item>Not Provided</item>
         <item>Delhi</item>
         <item>Indore</item>
         <item>Jaipur</item>

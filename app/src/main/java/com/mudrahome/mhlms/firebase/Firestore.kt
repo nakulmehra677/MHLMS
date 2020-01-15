@@ -83,8 +83,16 @@ class Firestore {
             "salesmanReason", updateLead.salesmanReason,
             "status", updateLead.status,
             "timeStamp", updateLead.timeStamp,
-            "banks", updateLead.banks
-        )
+            "banks", updateLead.banks,
+            "employment", updateLead.employment,
+            "employmentType", updateLead.employmentType,
+            "forwarderName", updateLead.forwarderName,
+            "forwarderUId", updateLead.forwarderUId,
+            "location", updateLead.location,
+            "propertyType", updateLead.propertyType,
+            "loanType", updateLead.loanType
+
+            )
 
             .addOnSuccessListener { aVoid -> listener.onLeadUpdated() }
             .addOnFailureListener { e -> listener.onFailer() }
@@ -348,7 +356,6 @@ class Firestore {
                 for (document in documentSnapshots) {
                     val l = document.toObject(LeadDetails::class.java)
                     leads.add(l)
-                    Log.d("uuuuu", l.name)
                 }
 
                 val lastVisible = documentSnapshots.documents[documentSnapshots.size() - 1]
